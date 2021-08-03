@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
-import { AntDesign } from '@expo/vector-icons';
-import { MaterialCommunityIcons,Entypo } from '@expo/vector-icons'; 
+// import { AntDesign } from '@expo/vector-icons';
+// import { MaterialCommunityIcons,Entypo } from '@expo/vector-icons'; 
 import { View,Text,StyleSheet,Button,TouchableOpacity,ScrollView} from 'react-native';
 import SessionCard from './sessioncard';
 
@@ -24,7 +24,7 @@ const styles= StyleSheet.create({
         
     },
     planimage:{
-        height:"250",
+        height:250,
         backgroundColor:"yellow"
     },
     // sessioncontainer:{
