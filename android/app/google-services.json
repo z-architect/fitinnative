@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "770266185527",
+    "project_id": "fitin-ea7cb",
+    "storage_bucket": "fitin-ea7cb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:770266185527:android:20d2b29d0d72b24095e4b2",
+        "android_client_info": {
+          "package_name": "co.efuye.fitin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "770266185527-bho6veb9hp35i0iifg72sd1h9231iocv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALiR23Iyn2Cg2wzKHiot5dFEybFQXFzIQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "770266185527-bho6veb9hp35i0iifg72sd1h9231iocv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
