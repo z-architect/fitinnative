@@ -1,7 +1,7 @@
-package com.endgame;
+package co.efuye.fitin;
 
 import com.facebook.react.ReactActivity;
-
+import android.os.Bundle;
 public class MainActivity extends ReactActivity {
 
   /**
@@ -12,4 +12,8 @@ public class MainActivity extends ReactActivity {
   protected String getMainComponentName() {
     return "endgame";
   }
+  @Override
+protected void onCreate(Bundle savedInstanceState) {
+  super.onCreate(null);
+}
 }

@@ -3,12 +3,15 @@ import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, TextInput, S
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
-
+import { useAppSelector, useAppDispatch } from '../Reduxshit/hooks';
+import { signOut, logIn } from '../Reduxshit/userSlice';
 import { Input, Icon } from 'native-base';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 // console.log(x,"X",y)
 const Profile = () => {
+    const dispatch = useAppDispatch();
+
     return (
 
         <ScrollView style={styles.container} contentContainerStyle={{}} >
@@ -126,7 +129,7 @@ const Profile = () => {
                 </View>
 
             </View>
-            <TouchableOpacity style={styles.nextbutton}>
+            <TouchableOpacity style={styles.nextbutton} onPress={() => { dispatch(logIn()) }}>
                 <Text style={{ color: "white", fontSize: 24 }}>Next</Text>
             </TouchableOpacity>
         </ScrollView>

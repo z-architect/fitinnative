@@ -1,32 +1,51 @@
 import React from "react";
 import { View, Text, TouchableOpacity, ImageBackground, StyleSheet } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { Props } from "../types";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const LandingPage = ({ navigation, route }: Props) => {
+
+    const getData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('@hasOnboarded')
+            if (value !== null) {
+                // value previously stored
+                navigation.navigate("Login")
+            }
+            else {
+                navigation.navigate("Onboarding")
+            }
+        } catch (e) {
+            // error reading value
+        }
+    }
 
 
-const LandingPage = () => {
     return (
         <View style={styles.container}>
-            <View style={styles.landingimage}>
-                <ImageBackground source={require("../../MyAssets/colton.jpg")} resizeMode="cover" style={styles.landingimagebackground}>
-                    <View style={{ justifyContent: "center", alignItems: "center", marginTop: 60 }}>
-                        <View style={{
-                            transform: [{ rotate: "45deg" }]
-                        }}>
-                            <AntDesign name="closesquareo" color="white" size={70} />
+            <TouchableOpacity onPress={getData}>
+                <View style={styles.landingimage}>
+                    <ImageBackground source={require("../../MyAssets/colton.jpg")} resizeMode="cover" style={styles.landingimagebackground}>
+                        <View style={{ justifyContent: "center", alignItems: "center", marginTop: 60 }}>
+                            <View style={{
+                                transform: [{ rotate: "45deg" }]
+                            }}>
+                                <AntDesign name="closesquareo" color="white" size={70} />
+                            </View>
+                            <Text style={styles.landingimagetext}>
+                                Fit In
+                            </Text>
                         </View>
-                        <Text style={styles.landingimagetext}>
-                            Fit In
-                        </Text>
-                    </View>
-                </ImageBackground>
-            </View>
-            <View style={styles.lowertextcontainer}>
-                <View style={styles.innerlowertextcontainer}>
-                    <Text style={styles.bigtext}>Track Your Active Life Style</Text>
-                    <Text style={{ color: "white", fontSize: 40 }}>___</Text>
-                    <Text style={styles.smalltext}>With a goal driven approach</Text>
+                    </ImageBackground>
                 </View>
-            </View>
+                <View style={styles.lowertextcontainer}>
+                    <View style={styles.innerlowertextcontainer}>
+                        <Text style={styles.bigtext}>Track Your Active Life Style</Text>
+                        <Text style={{ color: "white", fontSize: 40 }}>___</Text>
+                        <Text style={styles.smalltext}>With a goal driven approach</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
         </View>
     )
 }

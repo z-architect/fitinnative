@@ -1,69 +1,113 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { Input } from 'native-base';
+import { Props } from '../types';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import Auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
-const Signin = () => {
+GoogleSignin.configure({
+    webClientId: "770266185527-bho6veb9hp35i0iifg72sd1h9231iocv.apps.googleusercontent.com",
+})
+const Signin = ({ navigation, route }: Props) => {
     const [authType, setauthType] = useState(true);
-    return (
-        <View style={styles.container}>
+    const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState<FirebaseAuthTypes.User>();
 
-            <View style={styles.tophalfcontainer}>
-                <View style={styles.logocontainer}>
-                    <View style={{
-                        transform: [{ rotate: "45deg" }]
+    // Handle user state changes
+    function onAuthStateChanged(user: any) {
+        setUser(user);
+        if (initializing) setInitializing(false);
+    }
+
+    useEffect(() => {
+        const subscriber = Auth().onAuthStateChanged(onAuthStateChanged);
+        return subscriber; // unsubscribe on unmount
+    }, []);
+    async function onGoogleButtonPress() {
+        // Get the users ID token
+        const { idToken } = await GoogleSignin.signIn();
+
+        // Create a Google credential with the token
+        const googleCredential = Auth.GoogleAuthProvider.credential(idToken);
+
+        // Sign-in the user with the credential
+        return Auth().signInWithCredential(googleCredential);
+    }
+    if (initializing) return null;
+    if (!user) {
+
+
+        return (
+            <View style={styles.container}>
+
+                <View style={styles.tophalfcontainer}>
+                    <View style={styles.logocontainer}>
+                        <View style={{
+                            transform: [{ rotate: "45deg" }]
+                        }}>
+                            <AntDesign name="closesquareo" color="white" size={60} />
+                        </View>
+                        <Text style={styles.logotext}>Fit in</Text>
+                    </View>
+                    <View style={styles.lowertextcontainer}>
+                        <View style={styles.innerlowertextcontainer}>
+                            <Text style={styles.bigtext}>Create a New Account</Text>
+                            <Text style={{ color: "white", fontSize: 32 }}>___</Text>
+                            <Text style={styles.smalltext}>For the best experience with fitin</Text>
+                        </View>
+                    </View>
+                </View>
+
+                <View style={styles.buttonscontainer}>
+                    <TouchableOpacity style={[styles.signupbutton, { borderBottomWidth: authType ? 3 : 0, width: authType ? "55%" : "45%" }]} onPress={() => { setauthType(true) }}>
+                        <Text style={styles.buttontext}>
+                            SignUp
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.signinbutton, { borderBottomWidth: authType ? 0 : 3, width: authType ? "45%" : "55%" }]} onPress={() => { setauthType(false) }}>
+                        <Text style={styles.buttontext}>
+                            SignIn
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.bottomhalfcontainer}>
+                    <TouchableOpacity style={styles.emailbutton} onPress={() => { navigation.navigate(authType ? "Signup" : "Login") }}>
+                        <Fontisto name="email" color="black" size={28} />
+                        <Text style={{ color: "black", marginHorizontal: 10 }} >
+                            {
+                                authType ?
+                                    "SIGN UP WITH EMAIL" :
+                                    "LOGIN WITH EMAIL"}
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.googlebutton} onPress={() => {
+
+                        onGoogleButtonPress().then(() => console.log('Signed in with Google!'))
+
                     }}>
-                        <AntDesign name="closesquareo" color="white" size={60} />
-                    </View>
-                    <Text style={styles.logotext}>Fit in</Text>
+                        <AntDesign name="googleplus" color="white" size={28} />
+                        <Text style={{ color: "white", marginHorizontal: 10 }}>
+                            {
+                                authType ?
+                                    "SIGN UP WITH GOOGLE" :
+                                    "LOGIN WITH GOOGLE"}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-                <View style={styles.lowertextcontainer}>
-                    <View style={styles.innerlowertextcontainer}>
-                        <Text style={styles.bigtext}>Create a New Account</Text>
-                        <Text style={{ color: "white", fontSize: 32 }}>___</Text>
-                        <Text style={styles.smalltext}>For the best experience with fitin</Text>
-                    </View>
-                </View>
-            </View>
 
-            <View style={styles.buttonscontainer}>
-                <TouchableOpacity style={[styles.signupbutton, { borderBottomWidth: authType ? 3 : 0, width: authType ? "55%" : "45%" }]} onPress={() => { setauthType(true) }}>
-                    <Text style={styles.buttontext}>
-                        SignUp
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.signinbutton, { borderBottomWidth: authType ? 0 : 3, width: authType ? "45%" : "55%" }]} onPress={() => { setauthType(false) }}>
-                    <Text style={styles.buttontext}>
-                        SignIn
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.bottomhalfcontainer}>
-                <TouchableOpacity style={styles.emailbutton}>
-                    <Fontisto name="email" color="black" size={28} />
-                    <Text style={{ color: "black", marginHorizontal: 10 }} >
-                        {
-                            authType ?
-                                "SIGN UP WITH EMAIL" :
-                                "LOGIN WITH EMAIL"}
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.googlebutton}>
-                    <AntDesign name="googleplus" color="white" size={28} />
-                    <Text style={{ color: "white", marginHorizontal: 10 }}>
-                        {
-                            authType ?
-                                "SIGN UP WITH GOOGLE" :
-                                "LOGIN WITH GOOGLE"}
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-        </View>)
+            </View>)
+    }
+    return (
+        <View>
+            <Text>Welcome {user.email}</Text>
+        </View>
+    );
 }
 const styles = StyleSheet.create({
     container: {

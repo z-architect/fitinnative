@@ -5,6 +5,8 @@ import {
     Button
 
 } from "native-base";
+import Auth from '@react-native-firebase/auth';
+import Emoji from 'react-native-emoji';
 import * as yup from 'yup';
 import { View, Text, Alert, TouchableOpacity, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -68,11 +70,31 @@ const Example = () => {
     // const [ConfirmPassword, setConfirmPassword] = useState("");
 
 
-    const HandleSubmit = (values: any) => {
-        Alert.alert(JSON.stringify(values))
+    const HandleSubmit = async (values: any) => {
+        // Alert.alert(JSON.stringify(values))
+        try {
+
+
+            let response = await Auth().createUserWithEmailAndPassword(values.Email, values.Password);
+            if (response && response.user) {
+                Alert.alert("success", "account succesfully create");
+            }
+
+        } catch (e) {
+            Alert.alert("error ", e.message)
+        }
     }
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentcontainer}>
+            <View style={styles.logocontainer}>
+                <View style={{
+                    transform: [{ rotate: "45deg" }]
+                }}>
+                    <AntDesign name="closesquareo" color="white" size={60} />
+                </View>
+
+                <Text style={styles.logotext}>FIT IN </Text>
+            </View>
             <Formik
                 initialValues={initialValues}
                 validationSchema={signupValidationSchema}
@@ -93,6 +115,7 @@ const Example = () => {
                                 <Text style={styles.cardheadertext}>SignUP</Text>
                             </View>
                             <View style={styles.form}>
+                                {/* <Text style={{ borderBottomWidth: 1, fontSize: 18, marginVertical: 20 }}>  </Text> */}
                                 <Text style={styles.label}>First Name*</Text>
                                 <Input p={2} placeholder="" variant="filled" isInvalid={errors.FirstName && touched.FirstName ? true : false} value={values.FirstName} onChangeText={handleChange('FirstName')} onBlur={handleBlur('FirstName')} />
                                 {errors.FirstName && touched.FirstName && (
@@ -108,6 +131,9 @@ const Example = () => {
                                 {errors.Email && touched.Email && (
                                     <Text style={styles.errorlabel}>{errors.Email}</Text>
                                 )}
+
+                                <Text style={{ borderBottomWidth: 1, fontSize: 18, marginVertical: 20, fontWeight: "bold" }}>   Getting to Know you </Text>
+
                                 <Text style={styles.label}>PhoneNumber</Text>
                                 <Input p={2} placeholder="" variant="filled" isInvalid={errors.PhoneNumber && touched.PhoneNumber ? true : false} value={values.PhoneNumber} onChangeText={handleChange('PhoneNumber')} onBlur={handleBlur('PhoneNumber')} />
                                 {errors.PhoneNumber && touched.PhoneNumber && (
@@ -128,6 +154,9 @@ const Example = () => {
                                 {errors.Role && touched.Role && (
                                     <Text style={styles.errorlabel}>{errors.Role}</Text>
                                 )}
+
+                                <Text style={{ borderBottomWidth: 1, fontSize: 18, marginVertical: 20, fontWeight: "bold" }}>  Securtiy </Text>
+
                                 <Text style={styles.label}>PassWord</Text>
                                 <Input p={2} placeholder="" variant="filled" isInvalid={errors.Password && touched.Password ? true : false} value={values.Password} onChangeText={handleChange('Password')} onBlur={handleBlur('Password')} />
                                 {errors.Password && touched.Password && (
@@ -146,17 +175,35 @@ const Example = () => {
                 }
                 }
             </Formik>
-        </View>
+            <View style={styles.bottomtextcontainer}>
+                <Text style={styles.bottomtext}> Already Have an account?</Text>
+                <TouchableOpacity style={{}}><Text style={{ fontSize: 18, color: "white" }}>SIgn In <Emoji name="smiley" style={{ fontSize: 22 }} /></Text></TouchableOpacity>
+            </View>
+        </ScrollView>
     )
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 1
+    },
+    contentcontainer: {
+        // flex: 1,
         backgroundColor: "rgb(50,71,85)",
         //backgroundColor: "rgb(241,243,245)",
-        justifyContent: "center",
+
         alignItems: "center"
 
+    },
+    logocontainer: {
+        // position: "absolute",
+        // top: 25,
+        height: y * 0.2,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    logotext: {
+        fontSize: 40,
+        color: "white"
     },
     card: {
         borderRadius: 40,
@@ -191,7 +238,17 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: "rgb(217,125,84)",
         marginVertical: 15
-    }
+    },
+    bottomtextcontainer: {
+        // position: "absolute",
+        // bottom: 25,
+        marginVertical: 20,
+        alignItems: "center"
+    },
+    bottomtext: {
+        color: "white",
+        fontSize: 14
+    },
 })
 export default Example;
 
