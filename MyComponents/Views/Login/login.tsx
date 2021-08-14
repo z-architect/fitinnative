@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import { View, Text, TouchableOpacity, Alert, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Formik, Field } from 'formik';
-import { Props } from '../types'
+import { Props } from '../../types'
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
@@ -238,22 +238,3 @@ const styles = StyleSheet.create({
     }
 })
 export default Login;
-
-// import React, { useState } from 'react';
-// import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
-// import AntDesign from 'react-native-vector-icons/AntDesign';
-// import { Input } from 'native-base';
-// const x = Dimensions.get("window").width;
-// const y = Dimensions.get("window").height;
-
-// const Auth = () => {
-//     return (
-//         <View>
-
-//         </View>
-//     )
-// }
-// const styles = StyleSheet.create({
-
-// })
-// export default Auth;

@@ -1,10 +1,10 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 // import { AntDesign } from '@expo/vector-icons';
 // import { MaterialCommunityIcons,Entypo } from '@expo/vector-icons'; 
-import { View,Text,StyleSheet,Button,TouchableOpacity,ScrollView} from 'react-native';
-import SessionCard from './sessioncard';
+import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
+import SessionCard from '../Session/sessioncard';
 
-const Plan = ()=>{
+const Plan = () => {
     return (
         <View style={styles.container}>
             <View style={styles.planimage}>
@@ -15,17 +15,17 @@ const Plan = ()=>{
     )
 }
 
-const styles= StyleSheet.create({
- 
-    container:{
-        flex:1,
-        backgroundColor:"rgb(242,243,244)",
-        borderWidth:2
-        
+const styles = StyleSheet.create({
+
+    container: {
+        flex: 1,
+        backgroundColor: "rgb(242,243,244)",
+        borderWidth: 2
+
     },
-    planimage:{
-        height:250,
-        backgroundColor:"yellow"
+    planimage: {
+        height: 250,
+        backgroundColor: "yellow"
     },
     // sessioncontainer:{
     //     margin:20,
@@ -37,7 +37,7 @@ const styles= StyleSheet.create({
     //     padding:10,
     //     margin:10,
 
-        
+
     // },
     // calandertitle:{
     //     backgroundColor:"pink",
@@ -67,7 +67,7 @@ const styles= StyleSheet.create({
     // },
     // calander:{
     //    height:420,
-      
+
 
     // },
     // day:{
@@ -94,7 +94,7 @@ export default Plan;
  <View style={styles.sessioncontainerheader}><Text>Plan Sessions</Text></View>
             <View style={styles.sessioncontainer}>
 
-            
+
             <View >
                 <SessionCard/>
                 <SessionCard/>
@@ -108,8 +108,8 @@ export default Plan;
                 </View>
             </TouchableOpacity>
 
-            <View style={styles.calandertitle}><Text>Plan Calander</Text></View>        
-            
-        
+            <View style={styles.calandertitle}><Text>Plan Calander</Text></View>
+
+
         </View>
       */

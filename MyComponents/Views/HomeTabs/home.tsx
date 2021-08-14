@@ -4,9 +4,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Input } from 'native-base';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Plans from '../planet/plans';
-import Monitor from '../graphs';
-import Tracking from './tracking';
+import Plans from '../Plans/plans';
+import Monitor from '../Monitoring/graphs';
+import Tracking from '../Tracking/tracking';
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;

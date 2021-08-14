@@ -3,8 +3,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
-import SessionCard from './sessioncard';
-import { Props } from './types';
+import SessionCard from '../Session/sessioncard';
+import { Props } from '../../types';
 const mydays = new Array(30).fill(false);
 const Calander = () => {
     const [Days, setDays] = useState(mydays);
@@ -54,7 +54,7 @@ const Plan = ({ navigation, route }: Props) => {
     return (
         <ScrollView style={styles.container} >
             <View style={styles.planimage}>
-                <ImageBackground source={require("../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
+                <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
                     <Text style={styles.imagetext}>
                         Cardio
                     </Text>

@@ -3,14 +3,25 @@ import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, TextInput, S
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { useAppSelector, useAppDispatch } from '../Reduxshit/hooks';
-import { signOut, logIn } from '../Reduxshit/userSlice';
+import { useAppSelector, useAppDispatch } from '../../Redux/hooks';
+import { signOut, logIn } from '../../Redux/userSlice';
 import { Input, Icon } from 'native-base';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 // console.log(x,"X",y)
 const Profile = () => {
     const dispatch = useAppDispatch();
+    // const [FirstName, SetFirstName] = useState("");
+    // const [LastName, SetLastName] = useState("")
+    // const [Email, SetEmail] = useState("")
+    // const [DateOfBirth, SetDateOfBirth] = useState("")
+    // const [Sex, SetSex] = useState("")
+    // const [Role, SetRole] = useState("");
+    // const [PhoneNumber, setPhoneNumber] = useState("");
+    // const [Password, setPassword] = useState("");
+    // const [ConfirmPassword, setConfirmPassword] = useState("");
+
+
 
     return (
 

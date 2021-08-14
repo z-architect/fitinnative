@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ImageBackground, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, Alert } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { Props } from "../types";
+import { Props } from "../../types";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const LandingPage = ({ navigation, route }: Props) => {
 
@@ -16,6 +16,7 @@ const LandingPage = ({ navigation, route }: Props) => {
                 navigation.navigate("Onboarding")
             }
         } catch (e) {
+            Alert.alert("somthn wong")
             // error reading value
         }
     }
@@ -25,7 +26,7 @@ const LandingPage = ({ navigation, route }: Props) => {
         <View style={styles.container}>
             <TouchableOpacity onPress={getData}>
                 <View style={styles.landingimage}>
-                    <ImageBackground source={require("../../MyAssets/colton.jpg")} resizeMode="cover" style={styles.landingimagebackground}>
+                    <ImageBackground source={require("../../../MyAssets/colton.jpg")} resizeMode="cover" style={styles.landingimagebackground}>
                         <View style={{ justifyContent: "center", alignItems: "center", marginTop: 60 }}>
                             <View style={{
                                 transform: [{ rotate: "45deg" }]

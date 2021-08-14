@@ -59,16 +59,6 @@ const Example = () => {
         Password: "",
         ConfirmPassword: ""
     }
-    // const [FirstName, SetFirstName] = useState("");
-    // const [LastName, SetLastName] = useState("")
-    // const [Email, SetEmail] = useState("")
-    // const [DateOfBirth, SetDateOfBirth] = useState("")
-    // const [Sex, SetSex] = useState("")
-    // const [Role, SetRole] = useState("");
-    // const [PhoneNumber, setPhoneNumber] = useState("");
-    // const [Password, setPassword] = useState("");
-    // const [ConfirmPassword, setConfirmPassword] = useState("");
-
 
     const HandleSubmit = async (values: any) => {
         // Alert.alert(JSON.stringify(values))
@@ -252,21 +242,3 @@ const styles = StyleSheet.create({
 })
 export default Example;
 
-// import React, { useState } from 'react';
-// import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
-// import AntDesign from 'react-native-vector-icons/AntDesign';
-// import { Input } from 'native-base';
-// const x = Dimensions.get("window").width;
-// const y = Dimensions.get("window").height;
-
-// const Auth = () => {
-//     return (
-//         <View>
-
-//         </View>
-//     )
-// }
-// const styles = StyleSheet.create({
-
-// })
-// export default Auth;

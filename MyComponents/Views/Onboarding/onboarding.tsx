@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Input } from 'native-base';
-import { Props } from '../types';
+import { Props } from '../../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -34,13 +34,13 @@ const OnBoarding = ({ navigation, route }: Props) => {
             pages={[
                 {
                     backgroundColor: "rgb(217,125,84)",
-                    image: <Image source={require('../../MyAssets/pngtryout.png')} style={{ width: 180, height: 180 }} />,
+                    image: <Image source={require('../../../MyAssets/pngtryout.png')} style={{ width: 180, height: 180 }} />,
                     title: 'Plans',
                     subtitle: 'Create Customized Workout Plans',
                 },
                 {
                     backgroundColor: '#fff',
-                    image: <Image source={require('../../MyAssets/undraw.png')} style={{ width: 180, height: 180 }} />,
+                    image: <Image source={require('../../../MyAssets/undraw.png')} style={{ width: 180, height: 180 }} />,
                     title: 'Tracking',
                     subtitle: 'Track your day tooday exercises in a way you see fit',
                 }

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Input, Button } from 'native-base';
-import SessionCard from '../sessioncard';
-import { Props } from '../types';
+import SessionCard from '../Session/sessioncard';
+import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
@@ -25,7 +25,7 @@ const Goal = ({ navigation, route }: Props) => {
                     <TouchableOpacity style={styles.goalcard}>
 
 
-                        <ImageBackground source={require("../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
+                        <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
 
                             <Text style={styles.goaltext}>Bulking UP</Text>
 
@@ -33,19 +33,19 @@ const Goal = ({ navigation, route }: Props) => {
                     </TouchableOpacity>
 
                     <View style={styles.goalcard}>
-                        <ImageBackground source={require("../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
+                        <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
                             <Text style={styles.goaltext}>Losing Weight</Text>
                         </ImageBackground>
                     </View>
                     <View style={styles.goalcard}>
-                        <ImageBackground source={require("../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
+                        <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
 
                             <Text style={styles.goaltext}>Maintanance</Text>
 
                         </ImageBackground>
                     </View>
                     <View style={styles.goalcard}>
-                        <ImageBackground source={require("../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
+                        <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
 
                             <Text style={styles.goaltext}>Athleticism</Text>
 

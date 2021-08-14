@@ -8,8 +8,10 @@ export type RootStackParamList = {
     Goal: undefined;
     Home: undefined;
     Plan: undefined;
+    Plans: undefined;
     Session: undefined;
     Set: undefined;
+    Current: undefined;
     Onboarding: undefined;
     Monitor: undefined;
     Profile: undefined;
@@ -64,6 +66,20 @@ export type PlanScreenNavigationProp = StackNavigationProp<
 export type PlanScreenRouteProp = RouteProp<
     RootStackParamList,
     'Plan'>;
+
+export type PlansScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'Plans'>;
+export type PlansScreenRouteProp = RouteProp<
+    RootStackParamList,
+    'Plans'>;
+
+export type CurrentScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'Current'>;
+export type CurrentRouteProp = RouteProp<
+    RootStackParamList,
+    'Current'>;
 
 export type SessionScreenNavigationProp = StackNavigationProp<
     RootStackParamList,

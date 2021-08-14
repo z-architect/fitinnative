@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, TextInput, S
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { Input } from 'native-base';
-import { Props } from '../types';
+import { Props } from '../../types';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
