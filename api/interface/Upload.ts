@@ -4,11 +4,12 @@ import {
   ReplaceResourceSpec,
   UploadEntity,
   UploadResourceResponseSpec,
-} from "../Spec/UploadSpec";
+  SuccessData,
+} from "../spec";
 import { instance } from "../config";
-import { SuccessData } from "../Spec/CommonSpec";
+import { requestDelete } from "../utils";
 
-class Upload {
+export class Upload {
   static async uploadResource(
     files: [any],
     _for: UploadEntity
@@ -72,15 +73,7 @@ class Upload {
     }
   }
 
-  static async removeResources(params: RemoveResourcesSpec): Promise<boolean> {
-    try {
-      const res = await instance.delete(`${instance.defaults.baseURL}/upload`, {
-        params,
-      });
-
-      return res.status === 204;
-    } catch (err) {
-      return false;
-    }
+  static async removeResources(params: RemoveResourcesSpec) {
+    return requestDelete("/upload", { params });
   }
 }

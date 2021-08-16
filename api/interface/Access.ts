@@ -1,43 +1,28 @@
-import { instance, refreshAuth, signoutOfFirebase } from "../config";
+import {
+  refreshAuth,
+  requestCreate,
+  requestUpdateWithReturn,
+  signoutOfFirebase,
+} from "../utils";
 import {
   SigninResponseSpec,
   SignupRequestSpec,
   SignupResponseSpec,
   UpdateFCMTokenRequestSpec,
   UpdateInstanceIdRequestSpec,
-} from "../Spec/AccessSpec";
-import { SuccessData } from "../Spec/CommonSpec";
+} from "../spec";
+import { instance } from "../config";
 
-class Access {
-  static async signup(
-    data: SignupRequestSpec
-  ): Promise<SuccessData<SignupResponseSpec> | null> {
-    try {
-      const res = await instance.post(
-        `${instance.defaults.baseURL}/access/signup`,
-        data
-      );
-
-      if (res.data && res.data.data) return res.data;
-
-      return null;
-    } catch (err) {
-      return null;
-    }
+export class Access {
+  static async signup(data: SignupRequestSpec) {
+    return requestCreate<SignupRequestSpec, SignupResponseSpec>(
+      "/access/signup",
+      data
+    );
   }
 
-  static async signin(): Promise<SuccessData<SigninResponseSpec> | null> {
-    try {
-      const res = await instance.put(
-        `${instance.defaults.baseURL}/access/signin`
-      );
-
-      if (res.data && res.data.data) return res.data;
-
-      return null;
-    } catch (err) {
-      return null;
-    }
+  static async signin() {
+    return requestUpdateWithReturn<any, SigninResponseSpec>("/access/signin");
   }
 
   static async updateFCMToken(
@@ -50,7 +35,12 @@ class Access {
         data
       );
 
-      return res.status === 204;
+      if (res.status === 204) {
+        // TODO change the token in local store
+        return true;
+      }
+
+      return false;
     } catch (err) {
       return false;
     }
