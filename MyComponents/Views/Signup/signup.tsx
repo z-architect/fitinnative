@@ -11,6 +11,10 @@ import * as yup from 'yup';
 import { View, Text, Alert, TouchableOpacity, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Formik, Field } from 'formik';
+import { Props } from '../../types'
+import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
+import { signOut, logIn } from '../../Redux/userSlice';
+
 //import Axios from 'axios';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -40,14 +44,14 @@ const signupValidationSchema = yup.object().shape({
         .required('Password is required'),
     DateOfBirth: yup
         .string()
-        .required('Password is required'),
+        .required('Your Date of Birth is Neccesary'),
     ConfirmPassword: yup
         .string()
         .oneOf([yup.ref('Password')], 'Passwords do not match')
         .required('Confirm password is required'),
 })
 
-const Example = () => {
+const Signup = ({ navigation, route }: Props) => {
     const initialValues = {
         FirstName: "",
         LastName: "",
@@ -59,20 +63,22 @@ const Example = () => {
         Password: "",
         ConfirmPassword: ""
     }
-
+    const dispatch = useAppDispatch();
     const HandleSubmit = async (values: any) => {
         // Alert.alert(JSON.stringify(values))
-        try {
+        await dispatch(logIn());
+        navigation.navigate("Profile")
+        // try {
 
 
-            let response = await Auth().createUserWithEmailAndPassword(values.Email, values.Password);
-            if (response && response.user) {
-                Alert.alert("success", "account succesfully create");
-            }
+        //     let response = await Auth().createUserWithEmailAndPassword(values.Email, values.Password);
+        //     if (response && response.user) {
+        //         Alert.alert("success", "account succesfully create");
+        //     }
 
-        } catch (e) {
-            Alert.alert("error ", e.message)
-        }
+        // } catch (e) {
+        //     Alert.alert("error ", e.message)
+        // }
     }
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.contentcontainer}>
@@ -157,8 +163,10 @@ const Example = () => {
                                 {errors.ConfirmPassword && touched.ConfirmPassword && (
                                     <Text style={styles.errorlabel}>{errors.ConfirmPassword}</Text>
                                 )}
-                                <Button disabled={!(dirty && isValid) ? true : false} onPress={handleSubmit} style={styles.button}>
-                                    SignuP In
+                                <Button
+                                    //disabled={!(dirty && isValid) ? true : false} 
+                                    onPress={handleSubmit} style={styles.button}>
+                                    Sign Up
                                 </Button>
                             </View>
                         </View>)
@@ -167,7 +175,7 @@ const Example = () => {
             </Formik>
             <View style={styles.bottomtextcontainer}>
                 <Text style={styles.bottomtext}> Already Have an account?</Text>
-                <TouchableOpacity style={{}}><Text style={{ fontSize: 18, color: "white" }}>SIgn In <Emoji name="smiley" style={{ fontSize: 22 }} /></Text></TouchableOpacity>
+                <TouchableOpacity style={{}}><Text style={{ fontSize: 18, color: "white" }} onPress={() => navigation.navigate("Login")}>Log In <Emoji name="smiley" style={{ fontSize: 22 }} /></Text></TouchableOpacity>
             </View>
         </ScrollView>
     )
@@ -240,5 +248,5 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
 })
-export default Example;
+export default Signup;
 

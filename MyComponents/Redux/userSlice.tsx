@@ -5,7 +5,7 @@ interface userState {
 }
 
 const UserState: userState = {
-    signedIn: true
+    signedIn: false
 }
 // Workaround: cast state instead of declaring variable type
 // const initialState = {

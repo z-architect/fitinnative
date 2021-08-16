@@ -24,6 +24,74 @@
 
 
 
+// import React, { useState } from 'react';
+// import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions, Alert } from "react-native";
+// import AntDesign from 'react-native-vector-icons/AntDesign';
+// import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+// import FontAwesome from 'react-native-vector-icons/FontAwesome5';
+// import { Input } from 'native-base';
+
+// const x = Dimensions.get("window").width;
+// const y = Dimensions.get("window").height;
+
+// const MealModal = () => {
+//     const [Modal, SetModal] = useState(true);
+//     return (
+//         <View style={styles.container}>
+//             <View style={styles.big}>
+//                 <Text>Hellow world</Text>
+//                 <TouchableOpacity onPress={() => { SetModal(true) }}>
+//                     <Text>Something</Text>
+//                 </TouchableOpacity>
+//             </View>
+
+//             {
+
+//                 Modal ?
+//                     <>
+//                         <View style={styles.overlay}>
+//                             <View style={styles.iconContainer}>
+
+//                             </View >
+//                             <View style={styles.buttonsContainer}>
+//                                 <TouchableOpacity>
+
+//                                 </TouchableOpacity>
+//                             </View>
+//                         </View>
+//                     </>
+//                     :
+//                     <></>
+//             }
+//         </View>
+//     )
+// }
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1,
+//         position: "relative"
+//     },
+//     overlay: {
+//         position: "absolute",
+//         top: 0,
+//         bottom: 0,
+//         right: 0,
+//         left: 0,
+//         backgroundColor: 'rgba(100,100,100,0.6)',
+//         justifyContent: "center",
+//         alignItems: "center"
+//     },
+//     iconContainer: {},
+//     buttonsContainer: {},
+//     big: {
+//         height: "100%",
+//         backgroundColor: "pink",
+//         justifyContent: "flex-end"
+//     },
+// })
+// export default MealModal;
+
+
 
 
 // import firebase from 'firebase';

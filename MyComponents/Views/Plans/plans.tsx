@@ -74,7 +74,7 @@ const Plans = ({ navigation, route }: Props) => {
 
             </ScrollView>
             <Text style={styles.textheader}>Current Plan</Text>
-            <TouchableOpacity style={styles.cardsplancontainer} onPress={() => { navigation.navigate("Current") }}>
+            <TouchableOpacity style={styles.cardsplancontainer} onPress={() => { navigation.navigate("Exercise") }}>
                 <ImageBackground source={require('../../../MyAssets/undraw.png')} style={styles.cardsplan} imageStyle={styles.cardimage}>
                     <View style={styles.cardsplantext}>
                         <Text style={{ fontSize: 26, fontWeight: "bold", color: "black" }}> Pilipino Curry</Text>

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 
-const SessionCard = (props: any) => {
+const SetCard = (props: any) => {
     return (
-        <TouchableOpacity style={styles.SessionCard} onPress={() => { props.setSelected(props.sessionMeta.id) }}>
-            <Text>{props.sessionMeta.name}</Text>
+        <TouchableOpacity style={styles.SessionCard} >
+            <Text>Name of Activity Set</Text>
             <View style={styles.sessioncardimage}>
                 <Text>Something</Text>
             </View>
@@ -31,4 +31,4 @@ const styles = StyleSheet.create({
     },
     sessioncardimage: {}
 })
-export default SessionCard;
+export default SetCard;

@@ -13,7 +13,9 @@ import * as yup from 'yup';
 import { View, Text, TouchableOpacity, Alert, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Formik, Field } from 'formik';
-import { Props } from '../../types'
+import { Props } from '../../types';
+import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
+import { signOut, logIn } from '../../Redux/userSlice';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
@@ -31,7 +33,7 @@ const loginValidationSchema = yup.object().shape({
 });
 
 const Login = ({ navigation, route }: Props) => {
-
+    const dispatch = useAppDispatch();
     const initialValues = {
         Email: "",
         Password: "",
@@ -76,16 +78,18 @@ const Login = ({ navigation, route }: Props) => {
 
     const HandleSubmit = async (values: any) => {
         // Alert.alert(JSON.stringify(values))
-        try {
+        await dispatch(logIn());
+        navigation.navigate("Home")
+        // try {
 
 
-            let response = await Auth().signInWithEmailAndPassword(values.Email, values.Password);
-            if (response && response.user) {
-                Alert.alert("success", "account succesfully create");
-            }
-        } catch (e) {
-            Alert.alert("error ", e.message)
-        }
+        //     let response = await Auth().signInWithEmailAndPassword(values.Email, values.Password);
+        //     if (response && response.user) {
+        //         Alert.alert("success", "account succesfully create");
+        //     }
+        // } catch (e) {
+        //     Alert.alert("error ", e.message)
+        // }
     }
     if (initializing) return null;
 
@@ -119,7 +123,7 @@ const Login = ({ navigation, route }: Props) => {
                         } = formik;
                         return (<View style={styles.card}>
                             <View style={styles.cardheader}>
-                                <Text style={styles.cardheadertext}>Signup</Text>
+                                <Text style={styles.cardheadertext}>Log In</Text>
                             </View>
                             <View style={styles.form}>
                                 {
@@ -161,7 +165,7 @@ const Login = ({ navigation, route }: Props) => {
                 </Formik>
                 <View style={styles.bottomtextcontainer}>
                     <Text style={styles.bottomtext}> Don't Have an account?</Text>
-                    <TouchableOpacity style={{}}><Text style={{ fontSize: 18, color: "white" }}>SIgn Up <Emoji name="smiley" style={{ fontSize: 22 }} /></Text></TouchableOpacity>
+                    <TouchableOpacity style={{}}><Text style={{ fontSize: 18, color: "white" }} onPress={() => navigation.navigate("Signup")}>SIgn Up <Emoji name="smiley" style={{ fontSize: 22 }} /></Text></TouchableOpacity>
                 </View>
             </View>
         )

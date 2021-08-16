@@ -7,6 +7,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Plans from '../Plans/plans';
 import Monitor from '../Monitoring/graphs';
 import Tracking from '../Tracking/tracking';
+import Meal from '../Tracking/meal';
+import Vitals from '../Tracking/vitals';
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -31,6 +33,12 @@ const Home = () => {
                     else if (route.name === 'Track') {
                         iconName = 'clock-o'
                     }
+                    else if (route.name === 'Meal') {
+                        iconName = 'leaf'
+                    }
+                    else if (route.name === 'Vitals') {
+                        iconName = 'heart'
+                    }
                     else {
                         iconName = "left"
                     }
@@ -45,6 +53,8 @@ const Home = () => {
             <Tabs.Screen name="Plans" component={Plans} />
             <Tabs.Screen name="Monitor" component={Monitor} />
             <Tabs.Screen name="Track" component={Tracking} />
+            <Tabs.Screen name="Meal" component={Meal} />
+            <Tabs.Screen name="Vitals" component={Vitals} />
             {/* <Tabs.Screen name="Plans" component={Plans } /> */}
         </Tabs.Navigator>
 

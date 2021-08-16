@@ -6,10 +6,12 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { useAppSelector, useAppDispatch } from '../../Redux/hooks';
 import { signOut, logIn } from '../../Redux/userSlice';
 import { Input, Icon } from 'native-base';
+import { NavigationContainer } from "@react-navigation/native";
+import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 // console.log(x,"X",y)
-const Profile = () => {
+const Profile = ({ navigation, route }: Props) => {
     const dispatch = useAppDispatch();
     // const [FirstName, SetFirstName] = useState("");
     // const [LastName, SetLastName] = useState("")
@@ -140,7 +142,7 @@ const Profile = () => {
                 </View>
 
             </View>
-            <TouchableOpacity style={styles.nextbutton} onPress={() => { dispatch(logIn()) }}>
+            <TouchableOpacity style={styles.nextbutton} onPress={() => { navigation.navigate("Goal") }}>
                 <Text style={{ color: "white", fontSize: 24 }}>Next</Text>
             </TouchableOpacity>
         </ScrollView>
