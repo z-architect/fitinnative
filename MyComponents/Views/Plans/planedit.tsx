@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground, Dimensions } from 'react-native';
 import SessionCard from '../Session/sessioncard';
 import { Props } from '../../types';
+const x = Dimensions.get("window").width;
+const y = Dimensions.get("window").height;
 const mydays = new Array(30).fill(false);
 const Calander = () => {
     const [Days, setDays] = useState(mydays);
@@ -25,7 +27,7 @@ const Calander = () => {
         <View style={styles.calander}>
             <View style={styles.calanderheader}>
                 <AntDesign name="left" size={24} color="white" />
-                <Text> Augest </Text>
+                <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}> Augest </Text>
                 <AntDesign name="right" size={24} color="white" />
             </View>
             <View style={styles.calanderheadertwo}>
@@ -53,6 +55,14 @@ const myarray = new Array(30).fill(7);
 const Plan = ({ navigation, route }: Props) => {
     return (
         <ScrollView style={styles.container} >
+            <View style={styles.head}>
+                <TouchableOpacity>
+                    <AntDesign name="check" size={32} color="rgb(50,71,85)" />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <AntDesign name="close" size={32} color="rgb(50,71,85)" />
+                </TouchableOpacity>
+            </View>
             <View style={styles.planimage}>
                 <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
                     <Text style={styles.imagetext}>
@@ -93,6 +103,17 @@ const styles = StyleSheet.create({
 
         // justifyContent:"space-between",
 
+    },
+    head: {
+        height: y * 0.1,
+        width: x,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "white",
+        paddingHorizontal: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: "grey"
     },
     container: {
         // flex:1,
@@ -141,7 +162,7 @@ const styles = StyleSheet.create({
     calanderheader: {
         flexDirection: "row",
         justifyContent: "space-between",
-        backgroundColor: "rgb(100,130,150)",
+        backgroundColor: "rgb(50,71,85)",
         height: 60,
         alignItems: "center"
     },

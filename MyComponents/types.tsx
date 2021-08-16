@@ -15,6 +15,9 @@ export type RootStackParamList = {
     Onboarding: undefined;
     Monitor: undefined;
     Profile: undefined;
+    Exercise: undefined;
+    Meal: undefined;
+    Vitals: undefined;
 }
 
 
@@ -94,6 +97,13 @@ export type SetScreenNavigationProp = StackNavigationProp<
 export type SetScreenRouteProp = RouteProp<
     RootStackParamList,
     'Set'>;
+
+export type ExerciseScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'Exercise'>;
+export type ExerciseScreenRouteProp = RouteProp<
+    RootStackParamList,
+    'Exercise'>;
 
 export type Props = {
     navigation: LandingScreenNavigationProp,

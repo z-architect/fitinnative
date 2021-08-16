@@ -21,7 +21,7 @@ const OnBoarding = ({ navigation, route }: Props) => {
         } catch (e) {
             Alert.alert(e.message)
         }
-        navigation.navigate("Signup")
+        navigation.navigate("Auth")
 
     }
     const skipOnboarding = async () => {

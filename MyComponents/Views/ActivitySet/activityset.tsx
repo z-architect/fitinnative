@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert } from 'react-native';
 
 import { useEffect } from 'react';
 import NumericInput from 'react-native-numeric-input';
@@ -7,14 +7,53 @@ import { Modal, Button, Switch } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import Axios from 'axios';
 import Activity from './activity';
+import {
+  GifSearch,
+} from 'react-native-gif-search';
+import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-const ActivitySet = () => {
+const ActivitySet = ({ navigation, route }: Props) => {
   const [showModal, setShowModal] = useState(false)
   const [showActivityModal, setShowActivityModal] = useState(false)
-
+  const [showgifModal, SetShowgifModal] = useState(false)
+  const [Visible, SetVisible] = useState(true)
   return (
     <>
+      <Modal isOpen={showgifModal} onClose={() => { SetShowgifModal(false); SetVisible(false); }}>
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header>GIF Selection</Modal.Header>
+          <Modal.Body>
+
+
+            <View style={styles.gifcontainerouter}>
+
+              <GifSearch
+                style={styles.gifcontainer}
+                giphyApiKey={"bEbcELv6yDBowe2xR9Yem24sMUQflMNR"}
+                onGifSelected={(gif_url) => { Alert.alert(gif_url) }}
+                horizontal={false}
+                gifsToLoad={10}
+                maxGifsToLoad={25}
+                visible={Visible}
+                numColumns={3}
+                loadingSpinnerColor={'blue'}
+                placeholderTextColor={'grey'}
+                placeholderText={'Search an exercise '}
+
+                textInputStyle={{ fontWeight: 'bold', color: 'black', borderBottomColor: "grey", borderBottomWidth: 1 }}
+                onBackPressed={() => { SetVisible(false); SetShowgifModal(false); }}
+                noGifsFoundText={"No Gifs found :("}
+                noGifsFoundTextStyle={{ fontWeight: 'bold' }}
+                onError={(error) => { if (Visible) { Alert.alert(error) } }}
+
+              />
+            </View>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>
+
       <Modal isOpen={showActivityModal} onClose={() => setShowActivityModal(false)}>
         <Modal.Content maxWidth="400px">
           <Modal.CloseButton />
@@ -29,9 +68,10 @@ const ActivitySet = () => {
 
             <TextInput placeholder="Description ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
 
-            <TouchableOpacity style={styles.button}  >
+            <TouchableOpacity style={styles.button} onPress={() => { SetShowgifModal(true); SetVisible(true); }}  >
               <Text style={{ color: "white" }}>Add a GIF</Text>
             </TouchableOpacity>
+
 
           </Modal.Body>
           <Modal.Footer>
@@ -78,6 +118,8 @@ const ActivitySet = () => {
           </Modal.Footer>
         </Modal.Content>
       </Modal>
+
+
       <View style={styles.container}>
         <View style={styles.card}>
 
@@ -166,7 +208,7 @@ const ActivitySet = () => {
 
         </View>
 
-        <TouchableOpacity onPress={() => setShowModal(true)} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Create Set </Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Create Set </Text></TouchableOpacity>
 
       </View>
     </>
@@ -274,6 +316,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 32,
     backgroundColor: "rgb(50,71,85)"
+  }
+  , gifcontainerouter: {
+    height: y * 0.5,
+    alignItems: "center"
+  },
+  gifcontainer: {
+    backgroundColor: "white",
+    borderWidth: 3,
+    width: "100%",
+    borderColor: "rgb(50,71,85)",
+    borderRadius: 20,
+
+
+
   }
 })
 

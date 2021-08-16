@@ -10,7 +10,7 @@ const LandingPage = ({ navigation, route }: Props) => {
             const value = await AsyncStorage.getItem('@hasOnboarded')
             if (value !== null) {
                 // value previously stored
-                navigation.navigate("Login")
+                navigation.navigate("Auth")
             }
             else {
                 navigation.navigate("Onboarding")

@@ -22,12 +22,15 @@ import Profile from './MyComponents/Views/Profile/Profile';
 
 import Home from './MyComponents/Views/HomeTabs/home';
 import Goal from './MyComponents/Views/GoalSetting/goal';
-import Plan from './MyComponents/Views/Plans/plan';
+import Plan from './MyComponents/Views/Plans/plancreation';
 import Plans from './MyComponents/Views/Plans/plans';
 import Session from './MyComponents/Views/Session/session';
 import Set from './MyComponents/Views/ActivitySet/activityset';
 import Monitoring from './MyComponents/Views/Monitoring/graphs';
 import Tracking from './MyComponents/Views/Tracking/tracking'
+import Meal from './MyComponents/Views/Tracking/meal';
+import Vitals from './MyComponents/Views/Tracking/vitals';
+import Exercise from './MyComponents/Views/Tracking/exercise';
 
 import { RootStackParamList } from './MyComponents/types';
 import { logIn, signOut } from './MyComponents/Redux/userSlice';
@@ -51,7 +54,7 @@ const App = () => {
         headerShown: false
       }}>
         {
-          IsSignedIn ?
+          !IsSignedIn ?
             (<>
               <Stack.Screen name="Landing" component={Landingpage} />
               <Stack.Screen name="Onboarding" component={OnBoarding} />
@@ -68,6 +71,7 @@ const App = () => {
                 <Stack.Screen name="Session" component={Session} />
                 <Stack.Screen name="Goal" component={Goal} />
                 <Stack.Screen name="Plan" component={Plan} />
+                <Stack.Screen name="Exercise" component={Exercise} />
               </>
             )
         }

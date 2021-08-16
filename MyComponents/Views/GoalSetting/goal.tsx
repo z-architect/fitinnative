@@ -32,25 +32,25 @@ const Goal = ({ navigation, route }: Props) => {
                         </ImageBackground>
                     </TouchableOpacity>
 
-                    <View style={styles.goalcard}>
+                    <TouchableOpacity style={styles.goalcard}>
                         <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
                             <Text style={styles.goaltext}>Losing Weight</Text>
                         </ImageBackground>
-                    </View>
-                    <View style={styles.goalcard}>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.goalcard}>
                         <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
 
                             <Text style={styles.goaltext}>Maintanance</Text>
 
                         </ImageBackground>
-                    </View>
-                    <View style={styles.goalcard}>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.goalcard}>
                         <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.ImageBackground} imageStyle={{ borderRadius: 20 }}>
 
                             <Text style={styles.goaltext}>Athleticism</Text>
 
                         </ImageBackground>
-                    </View>
+                    </TouchableOpacity>
 
                 </ScrollView>
 

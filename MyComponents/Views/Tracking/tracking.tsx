@@ -85,31 +85,39 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: "rgba(255,255,255,0.8)",
+        backgroundColor: "rgba(255,255,255,0.5)",
+        borderColor: "white",
+        borderWidth: 1,
         justifyContent: "center",
         alignItems: "center",
 
     },
     circle1: {
         position: "absolute",
-        bottom: 80,
-        left: 50
+        bottom: 90,
+        left: 55
     },
     circle2: {
         position: "absolute",
-        bottom: 160,
+        bottom: 170,
         marginHorizontal: (x - 80) / 2
     },
     circle3: {
         position: "absolute",
-        bottom: 80,
-        right: 50
+        bottom: 90,
+        right: 55
     },
     circlex: {
         position: "absolute",
         bottom: 40,
         marginHorizontal: (x - 80) / 2,
         backgroundColor: "rgba(217,125,84,0.8)",
+        borderWidth: 0,
+        shadowColor: "rgb(217,125,84)",
+        shadowRadius: 3.0,
+        shadowOpacity: 0.5,
+        elevation: 6,
+
     }
 })
 export default Tracking;
