@@ -27,13 +27,12 @@ import Meal from './MyComponents/Views/Tracking/meal';
 import Vitals from './MyComponents/Views/Tracking/vitals';
 import Exercise from './MyComponents/Views/Tracking/exercise';
 import GIFTEST from './MyComponents/Views/ActivitySet/giftest';
+import { NavigationContainer } from '@react-navigation/native';
 const MeApp = () => {
     return (
         <NativeBaseProvider>
             <Provider store={store}>
-
                 <App />
-
             </Provider>
         </NativeBaseProvider>
     )

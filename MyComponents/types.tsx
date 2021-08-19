@@ -9,7 +9,7 @@ export type RootStackParamList = {
     Home: undefined;
     Plan: undefined;
     Plans: undefined;
-    Session: undefined;
+    Session: { id: string } | undefined;
     Set: undefined;
     Current: undefined;
     Onboarding: undefined;

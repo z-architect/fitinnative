@@ -12,7 +12,6 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-
 import Landingpage from './MyComponents/Views/Landing/landing';
 import OnBoarding from './MyComponents/Views/Onboarding/onboarding';
 import Authselection from './MyComponents/Views/AuthSelection/authselection';
@@ -50,7 +49,7 @@ const App = () => {
 
 
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{
+      <Stack.Navigator initialRouteName="Home" screenOptions={{
         headerShown: false
       }}>
         {
@@ -75,11 +74,6 @@ const App = () => {
               </>
             )
         }
-
-
-
-
-
       </Stack.Navigator>
     </NavigationContainer>
 

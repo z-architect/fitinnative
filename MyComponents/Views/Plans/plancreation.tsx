@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground, Dimensions, TextInput, Alert } from 'react-native';
-import SessionCard from '../Session/sessioncard';
+import SessionCard from './sessioncard';
 import { Props } from '../../types';
-
+import Axios from 'axios';
+import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
@@ -51,7 +52,8 @@ const SessionMeta = {
     id: "12"
 };
 const Plan = ({ navigation, route }: Props) => {
-
+    let userId = 78;
+    // useAppSelector(state=>state.user.id)
     const [Plan, SetPlan] = useState({
         type: "",
         image: "",
@@ -61,6 +63,7 @@ const Plan = ({ navigation, route }: Props) => {
         description: "",
         private: true
     });
+    const [Sessions, SetSessions] = useState([""])
     const [SelectedSession, SetSelectedSession] = useState("");
     const [Days, setDays] = useState(mydays);
 
@@ -97,15 +100,54 @@ const Plan = ({ navigation, route }: Props) => {
         }
 
     }
+    useEffect(() => {
+        Axios.get('api/sessions')
+            .then(response => {
+                SetSessions(response.data)
+            })
+            .catch(e => {
+                Alert.alert("sorry papi api fetch failed for sessions")
+            })
+    }, [])
+    const createPlan = () => {
+
+        Axios.post('/api/plan/', {
+            createdBy: userId,
+            plan: Plan
+        }).then(response => Alert.alert("plan succesfully created"))
+            .catch(e => {
+                Alert.alert("Plan creation Api failed")
+            })
+        /*
+        
+        */
+    }
+    const deleteSession = (id: string) => {
+        Axios.delete(`/api/session/:${id}`).then(response =>
+            // SetSessions(response.data)
+            Alert.alert("succesfuly deleted a session"))
+            .catch(e => {
+                Alert.alert("failed to delete the session, api failed")
+            })
+    }
+    const editSession = (id: string) => {
+        // navigation.navigate({
+        //     "Session",
+        //     {id:id}
+        // })
+        // navigation.navigate("session")
+    }
     return (
         <ScrollView style={styles.container} >
             <View style={styles.head}>
                 <TouchableOpacity onPress={() => {
-
+                    createPlan();
                 }}>
                     <AntDesign name="check" size={32} color="rgb(50,71,85)" />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                    navigation.goBack();
+                }}>
                     <AntDesign name="close" size={32} color="rgb(50,71,85)" />
                 </TouchableOpacity>
             </View>
@@ -143,12 +185,34 @@ const Plan = ({ navigation, route }: Props) => {
 
 
                 <ScrollView style={styles.sessioncontainer} contentContainerStyle={styles.sessioncontainerinner} nestedScrollEnabled={true}>
-                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                    {
+                        Sessions.length > 0 ?
+                            (<>{
+
+                                Sessions.map((data, i) =>
+                                    (<SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession(i.toString()) }} deleteSession={() => { deleteSession(i.toString()) }} />))
+                            }
+                                {/* <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} /> */}
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                            </>)
+                            :
+                            (<>
+                                <Text>
+                                    There aren't any sessions created yet!!!
+                                </Text>
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                            </>)
+                    }
+
 
                 </ScrollView>
             </View>
@@ -205,8 +269,16 @@ const styles = StyleSheet.create({
 
     sessioncontainer: {
         marginHorizontal: 20,
+        paddingHorizontal: 10,
         height: 250,
-        borderRadius: 15,
+        borderRadius: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: "lightgrey"
+        // shadowColor: "black",
+        // shadowRadius: 3.0,
+        // shadowOpacity: 0.5,
+
+        // elevation: 3
         // borderWidth:1
     },
     sessioncontainerinner: {

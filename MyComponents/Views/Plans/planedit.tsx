@@ -2,27 +2,21 @@ import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground, Dimensions } from 'react-native';
-import SessionCard from '../Session/sessioncard';
+import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground, Dimensions, TextInput, Alert } from 'react-native';
+import SessionCard from './sessioncard';
 import { Props } from '../../types';
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-const mydays = new Array(30).fill(false);
-const Calander = () => {
-    const [Days, setDays] = useState(mydays);
-    const setDay = (no: number) => {
-        setDays((Days) => {
-            let newdays = [...Days]
-            if (newdays[no]) {
-                newdays[no] = false;
-            }
-            else {
-                newdays[no] = true;
-            }
 
-            return [...newdays]
-        })
-    }
+const mydays = new Array(30).fill(
+    {
+        isSet: false,
+        filledBy: ""
+    });
+
+const Calander = (props: any) => {
+
     return (
         <View style={styles.calander}>
             <View style={styles.calanderheader}>
@@ -38,9 +32,9 @@ const Calander = () => {
             <View style={styles.calanderbody}>
                 {
                     myarray.map((item, i) => (
-                        <TouchableOpacity key={i} style={[styles.day, { backgroundColor: Days[i] ? "grey" : "white" }]} onPress={() => { setDay(i) }} >
+                        <TouchableOpacity key={i} style={[styles.day, { backgroundColor: props.Days[i].isSet ? "grey" : "white" }]} onPress={() => { props.setDay(i, props.Selected) }} >
                             <View >
-                                <Text style={{ color: Days[i] ? "white" : "black" }}>{i + 1}</Text>
+                                <Text style={{ color: props.Days[i].isSet ? "white" : "black" }}>{i + 1}</Text>
                             </View>
                         </TouchableOpacity>
                     ))
@@ -52,23 +46,96 @@ const Calander = () => {
 
 
 const myarray = new Array(30).fill(7);
-const Plan = ({ navigation, route }: Props) => {
+const SessionMeta = {
+    name: "Plyometrics",
+    id: "12"
+};
+const PlanEdit = ({ navigation, route }: Props) => {
+
+    const [Plan, SetPlan] = useState({
+        type: "",
+        image: "",
+        category: "",
+        difficulty: "",
+        title: "",
+        description: "",
+        private: true
+    });
+    const [SelectedSession, SetSelectedSession] = useState("");
+    const [Days, setDays] = useState(mydays);
+
+    const setDay = (no: number, sessionId: string) => {
+        if (!Days[no].isSet && sessionId === "") {
+            Alert.alert("sorry Fams, you have to select a session first")
+        }
+        else {
+            if (Days[no].isSet) {
+                SetSelectedSession("")
+            }
+
+            setDays((Days) => {
+                let newdays = [...Days]
+                if (newdays[no].isSet) {
+                    newdays[no] = {
+                        isSet: false,
+                        filledBy: ""
+                    }
+
+
+                }
+                else {
+
+                    newdays[no] = {
+                        isSet: true,
+                        filledBy: sessionId
+                    }
+                }
+
+                return [...newdays]
+            });
+
+        }
+
+    }
     return (
         <ScrollView style={styles.container} >
             <View style={styles.head}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+
+                }}>
                     <AntDesign name="check" size={32} color="rgb(50,71,85)" />
                 </TouchableOpacity>
                 <TouchableOpacity>
                     <AntDesign name="close" size={32} color="rgb(50,71,85)" />
                 </TouchableOpacity>
             </View>
+
             <View style={styles.planimage}>
-                <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
-                    <Text style={styles.imagetext}>
-                        Cardio
-                    </Text>
-                </ImageBackground>
+                {
+                    (Plan.image === "") ?
+                        (
+                            <View style={[styles.image, { backgroundColor: "lightgrey", justifyContent: "flex-start", alignItems: "center" }]}>
+                                <TouchableOpacity style={{ width: "100%", height: "60%", justifyContent: "center", alignItems: "center" }}>
+                                    <AntDesign name="picture" size={62} color="white" />
+                                </TouchableOpacity>
+                                <View style={{ height: "40%", width: "80%" }}>
+                                    <TextInput placeholder="Title" placeholderTextColor="white" style={[styles.input, { fontWeight: "bold" }]} />
+                                    <TextInput placeholder="Description" placeholderTextColor="white" style={styles.input} />
+                                </View>
+                            </View>
+                        ) :
+                        (
+                            <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
+                                <Text style={styles.imagetext}>
+                                    Cardio
+                                </Text>
+                            </ImageBackground>
+                        )
+
+
+
+                }
+
             </View>
 
             <View style={styles.sessioncontainerheader}><Text style={{ fontSize: 26 }}>Plan Sessions</Text></View>
@@ -76,12 +143,12 @@ const Plan = ({ navigation, route }: Props) => {
 
 
                 <ScrollView style={styles.sessioncontainer} contentContainerStyle={styles.sessioncontainerinner} nestedScrollEnabled={true}>
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
+                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
 
                 </ScrollView>
             </View>
@@ -92,7 +159,7 @@ const Plan = ({ navigation, route }: Props) => {
             </TouchableOpacity>
 
             <View style={styles.calandertitle}><Text style={{ fontSize: 26 }}>Plan Calander</Text></View>
-            <Calander />
+            <Calander Days={Days} setDay={setDay} Selected={SelectedSession} setSelected={SetSelectedSession} />
 
         </ScrollView>
 
@@ -202,7 +269,12 @@ const styles = StyleSheet.create({
         backgroundColor: "rgb(110,140,160)",
         justifyContent: "center",
         alignItems: "center"
+    },
+    input: {
+        borderBottomWidth: 1,
+        borderBottomColor: "white",
+        fontSize: 22
     }
 
 });
-export default Plan;
+export default PlanEdit;

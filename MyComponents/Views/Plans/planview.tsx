@@ -3,7 +3,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground, Dimensions } from 'react-native';
-import SessionCard from '../Session/sessioncard';
+import SessionCard from './sessioncard';
 import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;

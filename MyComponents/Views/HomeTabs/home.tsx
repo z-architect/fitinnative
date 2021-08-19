@@ -15,50 +15,52 @@ const y = Dimensions.get("window").height;
 const Tabs = createBottomTabNavigator();
 const Home = () => {
     return (
+        <>
+            <View style={{ position: "absolute", zIndex: 100, bottom: 30, left: (x - 80) / 2, height: 80, width: 80, borderRadius: 40, backgroundColor: "yellow" }}>
+
+            </View>
 
 
+            <Tabs.Navigator
+                screenOptions={({ route }) => ({
+                    tabBarIcon: ({ focused, color, size }) => {
+                        let iconName;
 
+                        if (route.name === 'Plans') {
+                            iconName = 'clone'
+                            // : 'gitlab';
+                        } else if (route.name === 'Monitor') {
+                            iconName = 'line-chart'
+                        }
+                        else if (route.name === 'Track') {
+                            iconName = 'clock-o'
+                        }
+                        else if (route.name === 'Meal') {
+                            iconName = 'leaf'
+                        }
+                        else if (route.name === 'Vitals') {
+                            iconName = 'heart'
+                        }
+                        else {
+                            iconName = "left"
+                        }
 
-        <Tabs.Navigator
-            screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
+                        // You can return any component that you like here!
+                        return <FontAwesome name={iconName} size={size} color={color} />;
+                    },
+                    tabBarActiveTintColor: 'tomato',
+                    tabBarInactiveTintColor: 'gray',
+                })}
+            >
+                <Tabs.Screen name="Plans" component={Plans} />
+                <Tabs.Screen name="Monitor" component={Monitor} />
+                <Tabs.Screen name="Track" component={Tracking} />
+                <Tabs.Screen name="Meal" component={Meal} />
+                <Tabs.Screen name="Vitals" component={Vitals} />
+                {/* <Tabs.Screen name="Plans" component={Plans } /> */}
+            </Tabs.Navigator>
 
-                    if (route.name === 'Plans') {
-                        iconName = 'clone'
-                        // : 'gitlab';
-                    } else if (route.name === 'Monitor') {
-                        iconName = 'line-chart'
-                    }
-                    else if (route.name === 'Track') {
-                        iconName = 'clock-o'
-                    }
-                    else if (route.name === 'Meal') {
-                        iconName = 'leaf'
-                    }
-                    else if (route.name === 'Vitals') {
-                        iconName = 'heart'
-                    }
-                    else {
-                        iconName = "left"
-                    }
-
-                    // You can return any component that you like here!
-                    return <FontAwesome name={iconName} size={size} color={color} />;
-                },
-                tabBarActiveTintColor: 'tomato',
-                tabBarInactiveTintColor: 'gray',
-            })}
-        >
-            <Tabs.Screen name="Plans" component={Plans} />
-            <Tabs.Screen name="Monitor" component={Monitor} />
-            <Tabs.Screen name="Track" component={Tracking} />
-            <Tabs.Screen name="Meal" component={Meal} />
-            <Tabs.Screen name="Vitals" component={Vitals} />
-            {/* <Tabs.Screen name="Plans" component={Plans } /> */}
-        </Tabs.Navigator>
-
-
+        </>
     )
 }
 const styles = StyleSheet.create({

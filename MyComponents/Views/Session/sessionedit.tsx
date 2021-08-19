@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Button, ScrollView, Dimensions, ImageBackground } from 'react-native';
 import { Props } from '../../types';
-import SessionCard from './sessioncard';
+import SessionCard from '../Plans/sessioncard';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 const Session = ({ navigation, route }: Props) => {
