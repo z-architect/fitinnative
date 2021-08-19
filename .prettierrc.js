@@ -5,4 +5,6 @@
 //   trailingComma: 'all',
 //   arrowParens: 'avoid',
 // };
-module.exports={}
+module.exports = {
+  tabWidth: 2,
+};
