@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Input } from 'native-base';
-import SessionCard from './sessioncard';
+import SessionCard from './sessioncardvariant';
 import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-
+const SessionMeta = {
+    name: "Plyometrics",
+    id: "12"
+};
 const CurrentPlan = ({ navigation, route }: Props) => {
     const [Current, setCurrent] = useState(true)
     return (
@@ -88,13 +91,13 @@ const CurrentPlan = ({ navigation, route }: Props) => {
                 </View>
                 <View style={styles.session}>
 
-                    <SessionCard />
+                    <SessionCard sessionMeta={SessionMeta} />
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.sessionbutton} onPress={() => { navigation.navigate("Session") }}>
+            <TouchableOpacity style={styles.sessionbutton} onPress={() => { navigation.navigate("Exercise") }}>
                 <View>
-                    <Text>Add session</Text>
+                    <Text>Start Session</Text>
                 </View>
             </TouchableOpacity>
         </View>

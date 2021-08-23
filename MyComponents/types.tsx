@@ -9,7 +9,12 @@ export type RootStackParamList = {
     Home: undefined;
     Plan: undefined;
     Plans: undefined;
+    PlanEdit: undefined;
+    PlanView: undefined;
+    Search: undefined;
     Session: { id: string } | undefined;
+    SessionView: undefined;
+    SessionEdit: undefined;
     Set: undefined;
     Current: undefined;
     Onboarding: undefined;

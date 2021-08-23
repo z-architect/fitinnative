@@ -17,7 +17,7 @@ import Profile from './MyComponents/Views/Profile/Profile';
 
 import Home from './MyComponents/Views/HomeTabs/home';
 import PlanCreation from './MyComponents/Views/Plans/plancreation';
-import Plans from './MyComponents/Views/Plans/plans';
+import Plans from './MyComponents/Views/Plans/planshome';
 import CurrentPlan from './MyComponents/Views/Plans/currentplan';
 import Session from './MyComponents/Views/Session/session';
 import Set from './MyComponents/Views/ActivitySet/activityset';

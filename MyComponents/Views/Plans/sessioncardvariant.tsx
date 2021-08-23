@@ -2,30 +2,24 @@ import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
-const SetCard = (props: any) => {
+import { flexDirection } from 'styled-system';
+const SessionCard = (props: any) => {
     return (
-        <View style={styles.SetCard} >
-            <TouchableOpacity style={styles.SetCardData} onPress={() => {
-                //  props.setSelected(props.SetMeta.id) 
-            }}>
-                <Text style={{ fontWeight: "bold" }}> -{props.no}-</Text>
-                <View style={[styles.Setcardimage, { backgroundColor: props.setcolor }]}>
+        <View style={styles.SessionCard} >
+            <TouchableOpacity style={styles.SessionCardData} onPress={() => { }}>
+                <View style={styles.sessioncardimage}>
 
                 </View>
-                <Text> Name of Set</Text>
+                <Text>{props.sessionMeta.name}</Text>
                 <View >
-                    <Text>Intensity</Text>
+                    <Text>Something</Text>
                 </View>
 
             </TouchableOpacity>
-            <View style={styles.SetCardIcons}>
-
-                <TouchableOpacity onPress={() => {
-                    //  props.deleteSet() 
-                }}>
-                    <AntDesign name="delete" size={24} color="red" />
-                </TouchableOpacity>
+            <View style={styles.SessionCardIcons}>
+                <Text >
+                    Today
+                </Text>
             </View>
         </View >
 
@@ -33,7 +27,7 @@ const SetCard = (props: any) => {
 }
 const styles = StyleSheet.create({
 
-    SetCard: {
+    SessionCard: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -47,7 +41,7 @@ const styles = StyleSheet.create({
         marginVertical: 10
 
     },
-    SetCardData: {
+    SessionCardData: {
         width: "75%",
         marginHorizontal: 5,
         flexDirection: "row",
@@ -55,18 +49,18 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
 
-    Setcardimage: {
+    sessioncardimage: {
         width: 60,
         height: 60,
         borderRadius: 30,
-
+        backgroundColor: "rgb(50,71,85)"
 
     },
-    SetCardIcons: {
+    SessionCardIcons: {
         width: "20%",
         marginHorizontal: 5,
         flexDirection: "row",
-        justifyContent: "flex-end"
+        justifyContent: "space-between"
     }
 })
-export default SetCard;
+export default SessionCard;

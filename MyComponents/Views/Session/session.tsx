@@ -66,7 +66,7 @@ const Session = ({ navigation, route }: Props) => {
                         <AntDesign name="check" size={32} color="rgb(50,71,85)" />
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <AntDesign name="close" size={32} color="rgb(50,71,85)" />
+                        <AntDesign name="close" size={32} color="red" />
                     </TouchableOpacity>
                 </View>
 
@@ -98,14 +98,14 @@ const Session = ({ navigation, route }: Props) => {
 
                 </View>
                 <ScrollView style={styles.sessionContainer}>
-                    <SetCard setcolor="orange" />
-                    <SetCard setcolor="green" />
-                    <SetCard setcolor="red" />
-                    <SetCard setcolor="blue" />
-                    <SetCard setcolor="red" />
-                    <SetCard setcolor="orange" />
-                    <SetCard setcolor="purple" />
-                    <SetCard setcolor="yellow" />
+                    <SetCard no={1} setcolor="orange" />
+                    <SetCard no={2} setcolor="green" />
+                    {/* <SetCard no={3} setcolor="red" />
+                    <SetCard no={4} setcolor="blue" />
+                    <SetCard no={5} setcolor="red" />
+                    <SetCard no={6} setcolor="orange" />
+                    <SetCard no={7} setcolor="purple" />
+                    <SetCard no={8} setcolor="yellow" /> */}
 
 
 

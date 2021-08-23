@@ -127,7 +127,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
           <View style={styles.head}>
             <View style={styles.gif}>
-              <Text> GIF</Text>
+              <Text style={{ color: "rgb(217,125,84)" }}> GIF</Text>
             </View>
             <View style={styles.input}>
               <TouchableOpacity onPress={() => { setShowModal(true) }}>
@@ -217,7 +217,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgb(217,125,84)",
+    backgroundColor: "rgb(110,140,160)", //"rgb(217,125,84)",
     alignItems: "center",
     justifyContent: "center"
   },
@@ -315,7 +315,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 32,
-    backgroundColor: "rgb(50,71,85)"
+    borderColor: "white",
+    borderWidth: 1,
+    backgroundColor: "rgb(110,140,160)"//"rgb(50,71,85)"
   }
   , gifcontainerouter: {
     height: y * 0.5,

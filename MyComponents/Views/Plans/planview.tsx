@@ -1,29 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground, Dimensions } from 'react-native';
-import SessionCard from './sessioncard';
+import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground, Dimensions, TextInput, Alert } from 'react-native';
+import SessionCard from './sessioncardvarianttwo';
 import { Props } from '../../types';
+import { Input, Checkbox, Switch, Radio,Modal } from 'native-base';
+import Axios from 'axios';
+import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-const mydays = new Array(30).fill(false);
 
-const Calander = () => {
-    const [Days, setDays] = useState(mydays);
-    const setDay = (no: number) => {
-        setDays((Days) => {
-            let newdays = [...Days]
-            if (newdays[no]) {
-                newdays[no] = false;
-            }
-            else {
-                newdays[no] = true;
-            }
+const mydays = new Array(30).fill(
+    {
+        isSet: false,
+        filledBy: ""
+    });
 
-            return [...newdays]
-        })
-    }
+const Calander = (props: any) => {
+
     return (
         <View style={styles.calander}>
             <View style={styles.calanderheader}>
@@ -39,9 +35,9 @@ const Calander = () => {
             <View style={styles.calanderbody}>
                 {
                     myarray.map((item, i) => (
-                        <TouchableOpacity key={i} style={[styles.day, { backgroundColor: Days[i] ? "grey" : "white" }]} onPress={() => { setDay(i) }} >
+                        <TouchableOpacity key={i} style={[styles.day, { backgroundColor: props.Days[i].isSet ? "grey" : "white" }]} onPress={() => { }} >
                             <View >
-                                <Text style={{ color: Days[i] ? "white" : "black" }}>{i + 1}</Text>
+                                <Text style={{ color: props.Days[i].isSet ? "white" : "black" }}>{i + 1}</Text>
                             </View>
                         </TouchableOpacity>
                     ))
@@ -53,50 +49,301 @@ const Calander = () => {
 
 
 const myarray = new Array(30).fill(7);
-const Plan = ({ navigation, route }: Props) => {
+const SessionMeta = {
+    name: "Plyometrics",
+    id: "12"
+};
+const PlanView = ({ navigation, route }: Props) => {
+    let userId = 78;
+    // useAppSelector(state=>state.user.id)
+    // const [Plan, SetPlan] = useState({
+    //     type: "",
+    //     title: "",
+    //     description: "",
+    //     image: "",
+    //     category: "",
+    //     difficulty: "",
+    //     private: true
+    // });
+
+    const [Type, SetType] = useState("");
+    const [Description, SetDescription] = useState("");
+    const [Image, SetImage] = useState("");
+    const [Title, SetTitle] = useState("");
+    const [Private, SetPrivate] = useState(true);
+
+    const [Value, SetValue] = useState("hard");
+    const [Category, SetCategory] = useState([""]);
+
+    const [Sessions, SetSessions] = useState([""])
+    const [SelectedSession, SetSelectedSession] = useState("");
+
+    const [Days, setDays] = useState(mydays);
+    const [showModal,setShowModal] = useState(false)
+    const setDay = (no: number, sessionId: string) => {
+        // if (!Days[no].isSet && sessionId === "") {
+        //     Alert.alert("sorry Fams, you have to select a session first")
+        // }
+        // else {
+        //     if (Days[no].isSet) {
+        //         SetSelectedSession("")
+        //     }
+
+        //     setDays((Days) => {
+        //         let newdays = [...Days]
+        //         if (newdays[no].isSet) {
+        //             newdays[no] = {
+        //                 isSet: false,
+        //                 filledBy: ""
+        //             }
+
+
+        //         }
+        //         else {
+
+        //             newdays[no] = {
+        //                 isSet: true,
+        //                 filledBy: sessionId
+        //             }
+        //         }
+
+        //         return [...newdays]
+        //     });
+
+        // }
+
+    }
+
+    useEffect(() => {
+        // Axios.get('api/sessions')
+        //     .then(response => {
+        //         SetSessions(response.data)
+        //     })
+        //     .catch(e => {
+        //         Alert.alert("sorry papi api fetch failed for sessions")
+        //     })
+
+        let dataz = new Array(30).fill(
+            {
+                isSet: false,
+                filledBy: ""
+            });
+        dataz[1] = {
+            isSet: true,
+            filledBy: "7"
+        };
+        dataz[5] = {
+            isSet: true,
+            filledBy: "7"
+        };
+        dataz[9] = {
+            isSet: true,
+            filledBy: "7"
+        };
+        dataz[13] = {
+            isSet: true,
+            filledBy: "7"
+        };
+        dataz[17] = {
+            isSet: true,
+            filledBy: "7"
+        };
+        dataz[21] = {
+            isSet: true,
+            filledBy: "7"
+        };
+        dataz[25] = {
+            isSet: true,
+            filledBy: "7"
+        };
+
+        dataz[5]["isSet"] = true; dataz[5]["filledBy"] = "21";
+        dataz[9]["isSet"] = true; dataz[9]["filledBy"] = "23";
+        dataz[13]["isSet"] = true; dataz[13]["filledBy"] = "21";
+        dataz[17]["isSet"] = true; dataz[17]["filledBy"] = "23";
+        dataz[21]["isSet"] = true; dataz[21]["filledBy"] = "21";
+        dataz[25]["isSet"] = true; dataz[25]["filledBy"] = "23";
+        setDays(dataz);
+        SetType("Workout");
+        SetImage("//lkjlk");
+        SetTitle("My plan");
+        SetDescription("a plan for all the athletes");
+        SetPrivate(false);
+        SetValue("easy");
+        SetCategory(["LosingWeight", "", "Athleticism", ""]);
+
+    
+        //     const [Type, SetType] = useState();
+        // const [Description, SetDescription] = useState("");
+        // const [Image, SetImage] = useState("");
+        // const [Title, SetTitle] = useState("");
+        // const [Private, SetPrivate] = useState("");
+
+        // const [Value, SetValue] = useState("hard");
+        // const [Category, SetCategory] = useState([]);
+
+
+    }, [])
+
+    const createPlan = () => {
+
+        // Axios.post('/api/plan/', {
+        //     createdBy: userId,
+        //     plan: "Plan"
+        // }).then(response => Alert.alert("plan succesfully created"))
+        //     .catch(e => {
+        //         Alert.alert("Plan creation Api failed")
+        //     })
+        // /*
+
+        // */
+    }
+    const deletePlan = () => {
+
+
+    }
+    const deleteSession = (id: string) => {
+        // Axios.delete(`/api/session/:${id}`).then(response =>
+        //     // SetSessions(response.data)
+        //     Alert.alert("succesfuly deleted a session"))
+        //     .catch(e => {
+        //         Alert.alert("failed to delete the session, api failed")
+        //     })
+    }
+    const editSession = (id: string) => {
+        // navigation.navigate({
+        //     "Session",
+        //     {id:id}
+        // })
+        // navigation.navigate("session")
+    }
     return (
+        <>
+         <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+                <Modal.Content maxWidth="400px">
+                    <Modal.CloseButton />
+                    <Modal.Header>Sets</Modal.Header>
+                    <Modal.Body>
+                    
+                    </Modal.Body>
+                    <Modal.Footer>
+                        
+                    </Modal.Footer>
+                </Modal.Content>
+            </Modal>
+
+
+
         <ScrollView style={styles.container} >
             <View style={styles.head}>
-                <TouchableOpacity>
-                    <AntDesign name="check" size={32} color="rgb(50,71,85)" />
+                <TouchableOpacity onPress={() => {
+                    createPlan();
+                }}>
+                    <AntDesign name="left" size={32} color="rgb(50,71,85)" />
                 </TouchableOpacity>
-                <TouchableOpacity>
-                    <AntDesign name="close" size={32} color="rgb(50,71,85)" />
-                </TouchableOpacity>
-            </View>
-            <View style={styles.planimage}>
-                <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
-                    <Text style={styles.imagetext}>
-                        Cardio
-                    </Text>
-                </ImageBackground>
+
+
+
+                <View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
+                    <TouchableOpacity onPress={() => {
+                        deletePlan();
+                    }}>
+                        <AntDesign name="delete" size={32} color="black" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate("PlanEdit");
+                    }}>
+                        <AntDesign name="edit" size={32} color="rgb(217,125,84)" />
+                    </TouchableOpacity>
+                </View>
+
+
             </View>
 
-            <View style={styles.sessioncontainerheader}><Text style={{ fontSize: 26 }}>Plan Sessions</Text></View>
+            <View style={styles.planimage}>
+                {
+                    (Image === "") ?
+                        (
+                            <View style={[styles.image, { backgroundColor: "lightgrey", justifyContent: "flex-start", alignItems: "center" }]}>
+                                <TouchableOpacity style={{ width: "100%", height: "60%", justifyContent: "center", alignItems: "center" }}>
+                                    <AntDesign name="picture" size={62} color="white" />
+                                </TouchableOpacity>
+                                <View style={{ height: "40%", width: "80%" }}>
+                                    <TextInput placeholder="Title" placeholderTextColor="white" style={[styles.input, { fontWeight: "bold" }]} />
+                                    <TextInput placeholder="Description" placeholderTextColor="white" style={styles.input} />                  
+                                </View>
+                            </View>
+                        ) :
+                        (
+                            <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
+                                <Text style={styles.imagetext}>
+                                    Cardio
+                                </Text>
+                                <View style={{ height: "60%", width: "100%" ,justifyContent:"flex-end"}}>
+                                   
+                                    <Text  style={[{color:"white",fontSize:22,marginVertical:15,fontWeight:"bold",paddingLeft:15}]} >{Description}</Text>
+                                   <View style={{flexDirection:"row",justifyContent:"space-between",width:"100%",}}> 
+                                        <Text style={{borderLeftColor:"white",color:"white",fontSize:22,fontWeight:"bold"}}>{'\u2B24'} Meal</Text>
+                                        <Text style={{borderLeftColor:"white",color:"white",fontSize:22,fontWeight:"bold"}}>{'\u2B24'} Maintainance</Text>
+                                        <Text style={{borderLeftColor:"white",color:"white",fontSize:22,fontWeight:"bold"}}>{'\u2B24'} Easy</Text>
+                                    </View> 
+                                </View>
+                            </ImageBackground>
+                        )
+
+
+
+                }
+
+            </View>
+
+          
+
+
+            <View style={styles.sessioncontainerheader}><Text style={{ fontSize: 26 }}>Sessions in the Plan</Text></View>
             <View style={styles.sessioncontainerwindow}>
 
 
                 <ScrollView style={styles.sessioncontainer} contentContainerStyle={styles.sessioncontainerinner} nestedScrollEnabled={true}>
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
+                    {
+                        Sessions.length > 0 ?
+                            (<>{
+
+                                Sessions.map((data, i) =>
+                                    (<SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession(i.toString()) }} deleteSession={() => { deleteSession(i.toString()) }} />))
+                            }
+
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                            </>)
+                            :
+                            (<>
+                                <Text>
+                                    There aren't any sessions created yet!!!
+                                </Text>
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                            </>)
+                    }
+
 
                 </ScrollView>
             </View>
+            {/*
             <TouchableOpacity style={styles.sessionbutton} onPress={() => { navigation.navigate("Session") }}>
                 <View>
                     <Text>Add session</Text>
                 </View>
             </TouchableOpacity>
-
+*/}
             <View style={styles.calandertitle}><Text style={{ fontSize: 26 }}>Plan Calander</Text></View>
-            <Calander />
+            <Calander Days={Days} setDay={setDay} Selected={SelectedSession} setSelected={SetSelectedSession} />
 
         </ScrollView>
-
+</>
     )
 }
 const styles = StyleSheet.create({
@@ -131,6 +378,12 @@ const styles = StyleSheet.create({
         fontSize: 38,
         margin: 20
     },
+    planmetacontainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        padding: 20,
+
+    },
     image: {
         flex: 1,
         justifyContent: "flex-end",
@@ -139,8 +392,16 @@ const styles = StyleSheet.create({
 
     sessioncontainer: {
         marginHorizontal: 20,
+        paddingHorizontal: 10,
         height: 250,
-        borderRadius: 15,
+        borderRadius: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: "lightgrey"
+        // shadowColor: "black",
+        // shadowRadius: 3.0,
+        // shadowOpacity: 0.5,
+
+        // elevation: 3
         // borderWidth:1
     },
     sessioncontainerinner: {
@@ -203,7 +464,64 @@ const styles = StyleSheet.create({
         backgroundColor: "rgb(110,140,160)",
         justifyContent: "center",
         alignItems: "center"
+    },
+    input: {
+        borderBottomWidth: 1,
+        borderBottomColor: "white",
+        fontSize: 22
     }
 
 });
-export default Plan;
+export default PlanView;
+
+
+/*
+<View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
+                    <TouchableOpacity onPress={() => {
+                        deletePlan();
+                    }}>
+                        <AntDesign name="delete" size={32} color="black" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => {
+                        navigation.goBack();
+                    }}>
+                        <AntDesign name="close" size={32} color="red" />
+                    </TouchableOpacity>
+                </View>
+                */
+
+
+
+                /*
+                  <View style={styles.planmetacontainer}>
+                <View style={{ width: "50%" }}>
+
+                    <View >
+                        <Text style={{ fontWeight: "bold", fontSize: 24, marginVertical: 15 }}> Public</Text>
+                        {/* <Text>{Private ? "No" : "Yes"} </Text> 
+                 
+                        </View>
+
+                        <Text style={{ fontWeight: "bold", fontSize: 24, marginVertical: 15 }}> Easy</Text>
+                         <Text> {Value}</Text> 
+                    </View>
+                    <View style={{ width: "50%", alignItems: "baseline", paddingLeft: 20 }}>
+    
+    
+                        <Text style={{ fontWeight: "bold", fontSize: 24, marginVertical: 15 }}> Maintainance</Text>
+                         <Text>Maintainance</Text> 
+                         <Checkbox
+                            value="Maintenance"
+                            accessibilityLabel="This is a  checkbox"
+                            defaultIsChecked
+                            isDisabled={true}
+                        > Maintenance </Checkbox> 
+    
+                        <Text style={{ fontWeight: "bold", fontSize: 24, marginVertical: 15 }}> Meal</Text>
+                        <Text>Meal </Text> 
+                    </View>
+    
+    
+                </View>
+                */

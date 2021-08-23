@@ -190,11 +190,12 @@ const styles = StyleSheet.create({
         shadowRadius: 3.0,
         shadowOpacity: 0.5,
         elevation: 6,
+
     }
 })
 export default Home;
 
-// tabBarButton: () => (i
+// tabBarButton: () => (
 //     <TouchableOpacity style={styles.maincircle} onPress={() => { SetModal(false) }}>
 //         <Text>H</Text>
 //     </TouchableOpacity>)

@@ -6,19 +6,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const LandingPage = ({ navigation, route }: Props) => {
 
     const getData = async () => {
-        try {
-            const value = await AsyncStorage.getItem('@hasOnboarded')
-            if (value !== null) {
-                // value previously stored
-                navigation.navigate("Auth")
-            }
-            else {
-                navigation.navigate("Onboarding")
-            }
-        } catch (e) {
-            Alert.alert("somthn wong")
-            // error reading value
-        }
+        navigation.navigate("Onboarding")
+        // try {
+        //     const value = await AsyncStorage.getItem('@hasOnboarded')
+        //     if (value !== null) {
+        //         // value previously stored
+        //         navigation.navigate("Auth")
+        //     }
+        //     else {
+        //         navigation.navigate("Onboarding")
+        //     }
+        // } catch (e) {
+        //     Alert.alert("somthn wong")
+        //     // error reading value
+        // }
     }
 
 

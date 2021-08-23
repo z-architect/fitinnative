@@ -22,14 +22,21 @@ import Profile from './MyComponents/Views/Profile/Profile';
 import Home from './MyComponents/Views/HomeTabs/home';
 import Goal from './MyComponents/Views/GoalSetting/goal';
 import Plan from './MyComponents/Views/Plans/plancreation';
-import Plans from './MyComponents/Views/Plans/plans';
+import Plans from './MyComponents/Views/Plans/planshome';
+import PlanEdit from './MyComponents/Views/Plans/planedit';
+import PlanView from './MyComponents/Views/Plans/planview';
+import Search from './MyComponents/Views/Plans/plansearch';
+
 import Session from './MyComponents/Views/Session/session';
+import SessionView from './MyComponents/Views/Session/sessionview';
+import SessionEdit from './MyComponents/Views/Session/sessionedit';
 import Set from './MyComponents/Views/ActivitySet/activityset';
 import Monitoring from './MyComponents/Views/Monitoring/graphs';
 import Tracking from './MyComponents/Views/Tracking/tracking'
 import Meal from './MyComponents/Views/Tracking/meal';
 import Vitals from './MyComponents/Views/Tracking/vitals';
 import Exercise from './MyComponents/Views/Tracking/exercise';
+import Current from './MyComponents/Views/Plans/currentplan';
 
 import { RootStackParamList } from './MyComponents/types';
 import { logIn, signOut } from './MyComponents/Redux/userSlice';
@@ -49,7 +56,7 @@ const App = () => {
 
 
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{
+      <Stack.Navigator initialRouteName="Landing" screenOptions={{
         headerShown: false
       }}>
         {
@@ -68,8 +75,14 @@ const App = () => {
                 <Stack.Screen name="Profile" component={Profile} />
                 <Stack.Screen name="Set" component={Set} />
                 <Stack.Screen name="Session" component={Session} />
+                <Stack.Screen name="SessionView" component={SessionView} />
+                <Stack.Screen name="SessionEdit" component={SessionEdit} />
                 <Stack.Screen name="Goal" component={Goal} />
                 <Stack.Screen name="Plan" component={Plan} />
+                <Stack.Screen name="PlanEdit" component={PlanEdit} />
+                <Stack.Screen name="PlanView" component={PlanView} />
+                <Stack.Screen name="Search" component={Search} />
+                <Stack.Screen name="Current" component={Current} />
                 <Stack.Screen name="Exercise" component={Exercise} />
               </>
             )

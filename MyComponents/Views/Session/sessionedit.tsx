@@ -1,36 +1,134 @@
 import { NavigationContainer } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button, ScrollView, Dimensions, ImageBackground } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimensions, ImageBackground } from 'react-native';
 import { Props } from '../../types';
-import SessionCard from '../Plans/sessioncard';
+import SetCard from './setcard';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
+import { Modal, Button, Switch } from 'native-base';
+import Setz from './setCardUnselected';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-const Session = ({ navigation, route }: Props) => {
+
+const SessionEdit = ({ navigation, route }: Props) => {
+    const [showModal, setShowModal] = useState(false);
+
+    const [Type, SetType] = useState("Meal");
+    const [Image, SetImage] = useState("");
+    const [Title, SetTitle] = useState("My session");
+    const [Description, SetDescription] = useState("The best session one can ask for");
+    const [OrderTable, SetOrderTable] = useState([
+        {
+            sessionId: "34",
+            orderNumber: 1
+        }
+
+    ]);
+    useEffect(() => {
+        SetOrderTable([
+            { sessionId: "45", orderNumber: 1 },
+            { sessionId: "44", orderNumber: 2 },
+            { sessionId: "42", orderNumber: 3 },
+            { sessionId: "34", orderNumber: 4 },
+            { sessionId: "75", orderNumber: 5 },
+            { sessionId: "35", orderNumber: 6 },
+            { sessionId: "12", orderNumber: 7 }
+        ])
+
+    }, [])
     return (
         <>
+            <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+                <Modal.Content maxWidth="400px">
+                    <Modal.CloseButton />
+                    <Modal.Header>Sets</Modal.Header>
+                    <Modal.Body>
+                        <Setz />
+                        <Setz />
+                        <Setz />
+                        <Setz />
+                        <Setz />
+                        <Setz />
+                        <Setz />
+                        <Setz />
+
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button.Group variant="ghost" space={2}>
+
+                            <Button
+                                onPress={() => {
+                                    navigation.navigate("Set")
+                                }}
+                            >
+                                + New Set
+                            </Button>
+                        </Button.Group>
+                    </Modal.Footer>
+                </Modal.Content>
+            </Modal>
             <View style={styles.container}>
-                <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
+                {/* <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
                     <View >
                         <Text style={{ fontSize: 26, fontWeight: "bold", color: "black" }}> Pilipino Curry</Text>
                         <Text> 380 Kcal</Text>
                     </View>
-                </ImageBackground>
+                </ImageBackground> */}
+                <View style={styles.head}>
+                    <TouchableOpacity onPress={() => {
+                        //createPlan();
+                    }}>
+                        <AntDesign name="check" size={32} color="rgb(50,71,85)" />
+                    </TouchableOpacity>
+
+
+
+                    <TouchableOpacity onPress={() => {
+                        //navigation.goBack();
+                    }}>
+                        <AntDesign name="close" size={32} color="red" />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.Sessionimage}>
+                    {
+                        (Image === "") ?
+                            (
+                                <View style={[styles.image, { backgroundColor: "lightgrey", justifyContent: "flex-start", alignItems: "center" }]}>
+                                    <TouchableOpacity style={{ width: "100%", height: "60%", justifyContent: "center", alignItems: "center" }}>
+                                        <AntDesign name="picture" size={62} color="white" />
+                                    </TouchableOpacity>
+                                    <View style={{ height: "40%", width: "80%" }}>
+                                        <TextInput placeholder="Title" value={Title} onChangeText={(val) => { SetTitle(val) }} placeholderTextColor="white" style={[styles.input, { fontWeight: "bold" }]} />
+                                        <TextInput placeholder="Description" value={Description} onChangeText={(val) => { SetDescription(val) }} placeholderTextColor="white" style={styles.input} />
+                                    </View>
+                                </View>
+                            ) :
+                            (
+                                <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
+                                    <Text style={styles.imagetext}>
+                                        {Title}
+                                    </Text>
+                                </ImageBackground>
+                            )
+                    }
+
+                </View>
                 <ScrollView style={styles.sessionContainer}>
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-                    <SessionCard />
-
-
+                    <SetCard no={1} setcolor="orange" />
+                    <SetCard no={2} setcolor="green" />
+                    <SetCard no={3} setcolor="red" />
+                    <SetCard no={4} setcolor="blue" />
+                    <SetCard no={5} setcolor="red" />
+                    <SetCard no={6} setcolor="orange" />
+                    <SetCard no={7} setcolor="purple" />
+                    <SetCard no={8} setcolor="yellow" />
 
                 </ScrollView >
-                <TouchableOpacity style={styles.addbutton} onPress={() => { navigation.navigate("Set") }}>
+                <TouchableOpacity style={styles.addbutton} onPress={() => { setShowModal(true) }}>
                     <View>
-                        <Text> Add Session</Text>
+                        <Text> Add Set</Text>
                     </View>
 
                 </TouchableOpacity>
@@ -47,6 +145,10 @@ const styles = StyleSheet.create({
 
         backgroundColor: "rgb(240,243,244)"
 
+    },
+    Sessionimage: {
+        height: 300,
+        //backgroundColor:"yellow"
     },
     image: {
         width: "100%",
@@ -72,6 +174,28 @@ const styles = StyleSheet.create({
 
 
     },
+    input: {
+        borderBottomWidth: 1,
+        borderBottomColor: "white",
+        color: "white",
+        fontSize: 22
+    },
+    imagetext: {
+        color: "white",
+        fontSize: 38,
+        margin: 20
+    },
+    head: {
+        height: y * 0.1,
+        width: x,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "white",
+        paddingHorizontal: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: "grey"
+    },
 
 })
-export default Session;
+export default SessionEdit;

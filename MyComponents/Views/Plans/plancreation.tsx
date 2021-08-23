@@ -5,6 +5,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground, Dimensions, TextInput, Alert } from 'react-native';
 import SessionCard from './sessioncard';
 import { Props } from '../../types';
+import { Input, Checkbox, Switch, Radio } from 'native-base';
 import Axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
 const x = Dimensions.get("window").width;
@@ -54,18 +55,29 @@ const SessionMeta = {
 const Plan = ({ navigation, route }: Props) => {
     let userId = 78;
     // useAppSelector(state=>state.user.id)
-    const [Plan, SetPlan] = useState({
-        type: "",
-        image: "",
-        category: "",
-        difficulty: "",
-        title: "",
-        description: "",
-        private: true
-    });
+    // const [Plan, SetPlan] = useState({
+    //     type: "",
+    //     title: "",
+    //     description: "",
+    //     image: "",
+    //     category: "",
+    //     difficulty: "",
+    //     private: true
+    // });
+
+    const [Type, SetType] = useState();
+    const [Description, SetDescription] = useState("");
+    const [Image, SetImage] = useState("");
+    const [Title, SetTitle] = useState("");
+    const [Difficulty, SetDifficulty] = useState("");
+    const [Private, SetPrivate] = useState("");
+
     const [Sessions, SetSessions] = useState([""])
+
     const [SelectedSession, SetSelectedSession] = useState("");
     const [Days, setDays] = useState(mydays);
+    const [Value, SetValue] = useState("hard");
+    const [Category, SetCategory] = useState("Losing Weight");
 
     const setDay = (no: number, sessionId: string) => {
         if (!Days[no].isSet && sessionId === "") {
@@ -101,13 +113,13 @@ const Plan = ({ navigation, route }: Props) => {
 
     }
     useEffect(() => {
-        Axios.get('api/sessions')
-            .then(response => {
-                SetSessions(response.data)
-            })
-            .catch(e => {
-                Alert.alert("sorry papi api fetch failed for sessions")
-            })
+        // Axios.get('api/sessions')
+        //     .then(response => {
+        //         SetSessions(response.data)
+        //     })
+        //     .catch(e => {
+        //         Alert.alert("sorry papi api fetch failed for sessions")
+        //     })
     }, [])
     const createPlan = () => {
 
@@ -121,6 +133,10 @@ const Plan = ({ navigation, route }: Props) => {
         /*
         
         */
+    }
+    const deletePlan = () => {
+
+
     }
     const deleteSession = (id: string) => {
         Axios.delete(`/api/session/:${id}`).then(response =>
@@ -145,16 +161,26 @@ const Plan = ({ navigation, route }: Props) => {
                 }}>
                     <AntDesign name="check" size={32} color="rgb(50,71,85)" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
-                    navigation.goBack();
-                }}>
-                    <AntDesign name="close" size={32} color="rgb(50,71,85)" />
-                </TouchableOpacity>
+
+                <View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
+                    <TouchableOpacity onPress={() => {
+                        deletePlan();
+                    }}>
+                        <AntDesign name="delete" size={32} color="black" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => {
+                        navigation.goBack();
+                    }}>
+                        <AntDesign name="close" size={32} color="red" />
+                    </TouchableOpacity>
+                </View>
+
             </View>
 
             <View style={styles.planimage}>
                 {
-                    (Plan.image === "") ?
+                    (Image === "") ?
                         (
                             <View style={[styles.image, { backgroundColor: "lightgrey", justifyContent: "flex-start", alignItems: "center" }]}>
                                 <TouchableOpacity style={{ width: "100%", height: "60%", justifyContent: "center", alignItems: "center" }}>
@@ -179,6 +205,71 @@ const Plan = ({ navigation, route }: Props) => {
                 }
 
             </View>
+
+            <View style={styles.planmetacontainer}>
+                <View>
+                    <Text> Difficulty</Text>
+                    <Radio.Group
+                        name="myRadioGroup"
+                        accessibilityLabel="favorite number"
+                        value={Value}
+                        onChange={(nextValue) => {
+                            SetValue(nextValue)
+                        }}
+                    >
+                        <Radio value="hard" my={1}>
+                            Hard
+                        </Radio>
+                        <Radio value="medium" my={2}>
+                            Medium
+                        </Radio>
+                        <Radio value="easy" my={2}>
+                            Easy
+                        </Radio>
+                    </Radio.Group>
+                </View>
+                <View>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10 }}>
+                        <Text> Public</Text>
+                        <Switch />
+                    </View>
+
+                    <Text> Category</Text>
+                    <Radio.Group
+                        name="somegroup"
+                        onChange={(nextValue) => SetCategory(nextValue)}
+                        value={Category}
+                        accessibilityLabel="choose numbers"
+                    >
+
+
+                        <Radio
+                            value="Losing Weight"
+                            accessibilityLabel="This is a  checkbox"
+
+                        //colorScheme="orange"
+                        > Losing Weight </Radio>
+                        <Radio
+                            value="Bulking Up"
+                            accessibilityLabel="This is a  checkbox"
+
+                        > Bulking Up </Radio>
+                        <Radio
+                            value="Athleticism"
+                            accessibilityLabel="This is a  checkbox"
+
+                        > Athleticism </Radio>
+                        <Radio
+                            value="Maintenance"
+                            accessibilityLabel="This is a  checkbox"
+
+                        > Maintenance </Radio>
+                    </Radio.Group>
+                </View>
+
+
+            </View>
+
 
             <View style={styles.sessioncontainerheader}><Text style={{ fontSize: 26 }}>Plan Sessions</Text></View>
             <View style={styles.sessioncontainerwindow}>
@@ -260,6 +351,11 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 38,
         margin: 20
+    },
+    planmetacontainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        padding: 20
     },
     image: {
         flex: 1,

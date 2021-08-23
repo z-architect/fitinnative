@@ -27,7 +27,7 @@ const Plans = ({ navigation, route }: Props) => {
                 <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
                     Featured Plans
                 </Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => { navigation.navigate("Search") }}>
                     <Text>
                         See All Plans <AntDesign name="right" color="grey" size={28} />
                     </Text>
@@ -60,6 +60,8 @@ const Plans = ({ navigation, route }: Props) => {
                     </View>
                 </TouchableOpacity>
 
+
+
                 <TouchableOpacity style={styles.cardsfeatured}>
                     <ImageBackground source={require('../../../MyAssets/undraw.png')} style={styles.cardsfeaturedimage} imageStyle={{ borderRadius: 20 }}>
 
@@ -73,8 +75,9 @@ const Plans = ({ navigation, route }: Props) => {
 
 
             </ScrollView>
+
             <Text style={styles.textheader}>Current Plan</Text>
-            <TouchableOpacity style={styles.cardsplancontainer} onPress={() => { navigation.navigate("Exercise") }}>
+            <TouchableOpacity style={styles.cardsplancontainer} onPress={() => { navigation.navigate("Current") }}>
                 <ImageBackground source={require('../../../MyAssets/undraw.png')} style={styles.cardsplan} imageStyle={styles.cardimage}>
                     <View style={styles.cardsplantext}>
                         <Text style={{ fontSize: 26, fontWeight: "bold", color: "black" }}> Pilipino Curry</Text>
@@ -83,6 +86,10 @@ const Plans = ({ navigation, route }: Props) => {
                 </ImageBackground>
             </TouchableOpacity>
 
+            <TouchableOpacity style={styles.createbutton} onPress={() => { navigation.navigate("Plan") }}>
+                <AntDesign name="plus" size={24} color="white" />
+                <Text style={{ color: "white", fontSize: 18 }}>Creat your own plan</Text>
+            </TouchableOpacity>
             <Text style={styles.textheader}>Saved Plans</Text>
 
             <TouchableOpacity style={styles.cardsplancontainer}>
@@ -93,6 +100,8 @@ const Plans = ({ navigation, route }: Props) => {
                     </View>
                 </ImageBackground>
             </TouchableOpacity>
+
+
 
         </ScrollView>
     )
@@ -126,6 +135,17 @@ const styles = StyleSheet.create({
         padding: 10,
         fontSize: 18,
         fontWeight: "bold"
+    },
+    createbutton: {
+        width: "60%",
+        height: 80,
+        marginHorizontal: "20%",
+        marginVertical: 10,
+        borderRadius: 32,
+        backgroundColor: "rgb(110,140,160)",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center"
     },
     buttontext: {
         color: "black",
