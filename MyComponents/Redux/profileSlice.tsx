@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface userState {
+interface profileState {
     signedIn: boolean
 }
 
-const UserState: userState = {
+const profileState: profileState = {
     signedIn: false
 }
 // Workaround: cast state instead of declaring variable type
@@ -24,12 +24,12 @@ const UserState: userState = {
 //    dailyGlassesOfWater: 0,
 //    dailyHoursOfSleep: 0,
 
-signedIn: true
+//signedIn: true
 
 //},
-export const userSlice = createSlice({
-    name: 'user',
-    initialState: UserState,
+export const profileSlice = createSlice({
+    name: 'profile',
+    initialState: profileState,
     reducers: {
         logIn: (state) => {
             state.signedIn = true;
@@ -40,7 +40,7 @@ export const userSlice = createSlice({
     }
 
 })
-export const { logIn, signOut } = userSlice.actions;
+export const { logIn, signOut } = profileSlice.actions;
 
 
-export default userSlice.reducer;
+export default profileSlice.reducer;

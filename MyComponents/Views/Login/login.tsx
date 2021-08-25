@@ -15,7 +15,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Formik, Field } from 'formik';
 import { Props } from '../../types';
 import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
-import { signOut, logIn } from '../../Redux/userSlice';
+import { signOut, logIn } from '../../Redux/profileSlice';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 

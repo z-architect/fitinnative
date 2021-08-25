@@ -43,7 +43,7 @@ import Exercise from './MyComponents/Views/Tracking/exercise';
 import Current from './MyComponents/Views/Plans/currentplan';
 
 import { RootStackParamList } from './MyComponents/types';
-import { logIn, signOut } from './MyComponents/Redux/userSlice';
+import { logIn, signOut } from './MyComponents/Redux/profileSlice';
 import { RootState } from './MyComponents/Redux/store';
 import { useAppSelector, useAppDispatch } from './MyComponents/Redux/hooks';
 
@@ -55,12 +55,12 @@ const App = () => {
   // const IsSignedIn = useSelector((state: RootState) => state.user.signedIn)
   // const [IsSignedIn, SetIsSignedIn] = useState(false);
 
-  const IsSignedIn = useAppSelector((state) => state.user.signedIn);
+  const IsSignedIn = useAppSelector((state) => state.profile.signedIn);
   return (
 
 
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="MealPlan" screenOptions={{
+      <Stack.Navigator initialRouteName="Home" screenOptions={{
         headerShown: false
       }}>
         {

@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useAppSelector, useAppDispatch } from '../../Redux/hooks';
-import { signOut, logIn } from '../../Redux/userSlice';
+import { signOut, logIn } from '../../Redux/profileSlice';
 import { Input, Icon } from 'native-base';
 import { NavigationContainer } from "@react-navigation/native";
 import { Props } from '../../types';
