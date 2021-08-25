@@ -7,27 +7,29 @@ const SessionCard = (props: any) => {
     return (
         <View style={styles.SessionCard} >
             <TouchableOpacity style={styles.SessionCardData} onPress={() => {
-                props.setSelected(props.sessionMeta.id)
-                props.setTime(true)
+                // props.setSelected(props.sessionMeta.id) 
             }}>
                 <View style={styles.sessioncardimage}>
 
                 </View>
-                <Text>{props.sessionMeta.name}</Text>
+                <Text>{
+                    // props.sessionMeta.name
+                    "Food1"
+                }</Text>
                 <View >
                     <Text>Something</Text>
                 </View>
 
             </TouchableOpacity>
-            <View style={styles.SessionCardIcons}>
-                <TouchableOpacity onPress={() => { props.editSession() }}>
+            <Text>
+                7:40
+            </Text>
+            <TouchableOpacity onPress={() => {
+                // props.deleteSession() 
+            }}>
+                <AntDesign name="delete" size={24} color="red" />
+            </TouchableOpacity>
 
-                    <AntDesign name="edit" size={24} color="blue" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => { props.deleteSession() }}>
-                    <AntDesign name="delete" size={24} color="red" />
-                </TouchableOpacity>
-            </View>
         </View >
 
     )

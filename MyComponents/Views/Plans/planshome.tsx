@@ -101,6 +101,12 @@ const Plans = ({ navigation, route }: Props) => {
                 </ImageBackground>
             </TouchableOpacity>
 
+            <Text style={styles.textheader}>My Plans</Text>
+            <TouchableOpacity style={[styles.createbutton, { backgroundColor: "rgb(217,125,84)", marginBottom: 60 }]} onPress={() => { navigation.navigate("MyPlans") }}>
+
+                <Text style={{ color: "white", fontSize: 18 }}>My Plans</Text>
+            </TouchableOpacity>
+
 
 
         </ScrollView>

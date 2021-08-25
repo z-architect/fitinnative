@@ -8,6 +8,7 @@ import { Props } from '../../types';
 import { Input, Checkbox, Switch, Radio,Modal } from 'native-base';
 import Axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
+import MyModal from './deletemodal';
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -79,7 +80,7 @@ const PlanView = ({ navigation, route }: Props) => {
     const [SelectedSession, SetSelectedSession] = useState("");
 
     const [Days, setDays] = useState(mydays);
-    const [showModal,setShowModal] = useState(false)
+    const [DeleteModal,setDeleteModal] = useState(true)
     const setDay = (no: number, sessionId: string) => {
         // if (!Days[no].isSet && sessionId === "") {
         //     Alert.alert("sorry Fams, you have to select a session first")
@@ -219,18 +220,36 @@ const PlanView = ({ navigation, route }: Props) => {
     }
     return (
         <>
-         <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <MyModal DeleteModal={DeleteModal} setDeleteModal={setDeleteModal}/>
+         {/* <Modal isOpen={DeleteModal} onClose={() => setDeleteModal(false)}>
                 <Modal.Content maxWidth="400px">
                     <Modal.CloseButton />
-                    <Modal.Header>Sets</Modal.Header>
-                    <Modal.Body>
-                    
-                    </Modal.Body>
-                    <Modal.Footer>
-                        
-                    </Modal.Footer>
+                    <View style={styles.modaltophalf}>
+
+                       <View style={styles.giantxcontainer}>
+                           <AntDesign name="close" size={78} color="black"/>
+                        </View> 
+                        <Text style={{fontSize:34,fontWeight:"bold"}}>
+                            Are you Sure?
+                        </Text>
+                    </View>
+                    <View style={styles.modalbottomhalf}>
+                        <View>
+                <Text> Do you really want to delete these records?</Text>
+                <Text>This action can not be undone!!!</Text>
+                        </View>
+        <View style={styles.modlabuttoncontainer}>
+                    <TouchableOpacity style={[styles.modalbutton,{backgroundColor:"rgb(110,140,160)"}]}>
+                <Text style={{color:"white",fontWeight:"bold"}}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.modalbutton,{backgroundColor:"rgba(217,125,84,0.9)"}]}>
+                <Text style={{color:"white",fontWeight:"bold"}}>Delete</Text>
+            </TouchableOpacity>
+        </View>
+                    </View>
                 </Modal.Content>
-            </Modal>
+            </Modal> */}
 
 
 
@@ -246,7 +265,7 @@ const PlanView = ({ navigation, route }: Props) => {
 
                 <View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
                     <TouchableOpacity onPress={() => {
-                        deletePlan();
+                        setDeleteModal(true)
                     }}>
                         <AntDesign name="delete" size={32} color="black" />
                     </TouchableOpacity>
@@ -469,7 +488,43 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "white",
         fontSize: 22
-    }
+    },
+    // modaltophalf:{
+    //     height:y*0.25,
+    //     width:"100%",
+    //     alignItems:"center",
+    //     justifyContent:"flex-end"
+    // },
+    // modalbottomhalf:{
+    //     height:y*0.25,
+    //     width:"100%",
+    //     justifyContent:"space-around",
+    //     padding:20
+    // },
+    // giantxcontainer:{
+    //     justifyContent:"center",
+    //     alignItems:"center",
+    //     height:160,
+    //     width:160,
+    //     borderRadius:80,
+    //     borderWidth:1,
+    //     borderColor:"orange"
+    // },
+    // modlabuttoncontainer:{
+    //     flexDirection:"row",
+    //     width:"100%",
+    //     justifyContent:"space-evenly"
+    // },
+    // modalbutton:{
+    //     borderRadius:10,
+    //     height:50,
+    //     width:140,
+    //     justifyContent:"center",
+    //     alignItems:"center",
+
+
+    // }
+
 
 });
 export default PlanView;

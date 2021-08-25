@@ -154,170 +154,167 @@ const Plan = ({ navigation, route }: Props) => {
         // navigation.navigate("session")
     }
     return (
-        <ScrollView style={styles.container} >
-            <View style={styles.head}>
-                <TouchableOpacity onPress={() => {
-                    createPlan();
-                }}>
-                    <AntDesign name="check" size={32} color="rgb(50,71,85)" />
-                </TouchableOpacity>
+        <>
 
-                <View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
+            <ScrollView style={styles.container} >
+                <View style={styles.head}>
                     <TouchableOpacity onPress={() => {
-                        deletePlan();
+                        createPlan();
                     }}>
-                        <AntDesign name="delete" size={32} color="black" />
+                        <AntDesign name="check" size={32} color="rgb(50,71,85)" />
                     </TouchableOpacity>
+
+
 
                     <TouchableOpacity onPress={() => {
                         navigation.goBack();
                     }}>
                         <AntDesign name="close" size={32} color="red" />
                     </TouchableOpacity>
+
+
                 </View>
 
-            </View>
-
-            <View style={styles.planimage}>
-                {
-                    (Image === "") ?
-                        (
-                            <View style={[styles.image, { backgroundColor: "lightgrey", justifyContent: "flex-start", alignItems: "center" }]}>
-                                <TouchableOpacity style={{ width: "100%", height: "60%", justifyContent: "center", alignItems: "center" }}>
-                                    <AntDesign name="picture" size={62} color="white" />
-                                </TouchableOpacity>
-                                <View style={{ height: "40%", width: "80%" }}>
-                                    <TextInput placeholder="Title" placeholderTextColor="white" style={[styles.input, { fontWeight: "bold" }]} />
-                                    <TextInput placeholder="Description" placeholderTextColor="white" style={styles.input} />
+                <View style={styles.planimage}>
+                    {
+                        (Image === "") ?
+                            (
+                                <View style={[styles.image, { backgroundColor: "lightgrey", justifyContent: "flex-start", alignItems: "center" }]}>
+                                    <TouchableOpacity style={{ width: "100%", height: "60%", justifyContent: "center", alignItems: "center" }}>
+                                        <AntDesign name="picture" size={62} color="white" />
+                                    </TouchableOpacity>
+                                    <View style={{ height: "40%", width: "80%" }}>
+                                        <TextInput placeholder="Title" placeholderTextColor="white" style={[styles.input, { fontWeight: "bold" }]} />
+                                        <TextInput placeholder="Description" placeholderTextColor="white" style={styles.input} />
+                                    </View>
                                 </View>
-                            </View>
-                        ) :
-                        (
-                            <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
-                                <Text style={styles.imagetext}>
-                                    Cardio
-                                </Text>
-                            </ImageBackground>
-                        )
+                            ) :
+                            (
+                                <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
+                                    <Text style={styles.imagetext}>
+                                        Cardio
+                                    </Text>
+                                </ImageBackground>
+                            )
 
 
 
-                }
+                    }
 
-            </View>
-
-            <View style={styles.planmetacontainer}>
-                <View>
-                    <Text> Difficulty</Text>
-                    <Radio.Group
-                        name="myRadioGroup"
-                        accessibilityLabel="favorite number"
-                        value={Value}
-                        onChange={(nextValue) => {
-                            SetValue(nextValue)
-                        }}
-                    >
-                        <Radio value="hard" my={1}>
-                            Hard
-                        </Radio>
-                        <Radio value="medium" my={2}>
-                            Medium
-                        </Radio>
-                        <Radio value="easy" my={2}>
-                            Easy
-                        </Radio>
-                    </Radio.Group>
                 </View>
-                <View>
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10 }}>
-                        <Text> Public</Text>
-                        <Switch />
+
+                <View style={styles.planmetacontainer}>
+                    <View>
+                        <Text> Difficulty</Text>
+                        <Radio.Group
+                            name="myRadioGroup"
+                            accessibilityLabel="favorite number"
+                            value={Value}
+                            onChange={(nextValue) => {
+                                SetValue(nextValue)
+                            }}
+                        >
+                            <Radio value="hard" my={1}>
+                                Hard
+                            </Radio>
+                            <Radio value="medium" my={2}>
+                                Medium
+                            </Radio>
+                            <Radio value="easy" my={2}>
+                                Easy
+                            </Radio>
+                        </Radio.Group>
+                    </View>
+                    <View>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10 }}>
+                            <Text> Public</Text>
+                            <Switch />
+                        </View>
+
+                        <Text> Category</Text>
+                        <Radio.Group
+                            name="somegroup"
+                            onChange={(nextValue) => SetCategory(nextValue)}
+                            value={Category}
+                            accessibilityLabel="choose numbers"
+                        >
+
+
+                            <Radio
+                                value="Losing Weight"
+                                accessibilityLabel="This is a  checkbox"
+
+                            //colorScheme="orange"
+                            > Losing Weight </Radio>
+                            <Radio
+                                value="Bulking Up"
+                                accessibilityLabel="This is a  checkbox"
+
+                            > Bulking Up </Radio>
+                            <Radio
+                                value="Athleticism"
+                                accessibilityLabel="This is a  checkbox"
+
+                            > Athleticism </Radio>
+                            <Radio
+                                value="Maintenance"
+                                accessibilityLabel="This is a  checkbox"
+
+                            > Maintenance </Radio>
+                        </Radio.Group>
                     </View>
 
-                    <Text> Category</Text>
-                    <Radio.Group
-                        name="somegroup"
-                        onChange={(nextValue) => SetCategory(nextValue)}
-                        value={Category}
-                        accessibilityLabel="choose numbers"
-                    >
 
-
-                        <Radio
-                            value="Losing Weight"
-                            accessibilityLabel="This is a  checkbox"
-
-                        //colorScheme="orange"
-                        > Losing Weight </Radio>
-                        <Radio
-                            value="Bulking Up"
-                            accessibilityLabel="This is a  checkbox"
-
-                        > Bulking Up </Radio>
-                        <Radio
-                            value="Athleticism"
-                            accessibilityLabel="This is a  checkbox"
-
-                        > Athleticism </Radio>
-                        <Radio
-                            value="Maintenance"
-                            accessibilityLabel="This is a  checkbox"
-
-                        > Maintenance </Radio>
-                    </Radio.Group>
                 </View>
 
 
-            </View>
+                <View style={styles.sessioncontainerheader}><Text style={{ fontSize: 26 }}>Plan Sessions</Text></View>
+                <View style={styles.sessioncontainerwindow}>
 
 
-            <View style={styles.sessioncontainerheader}><Text style={{ fontSize: 26 }}>Plan Sessions</Text></View>
-            <View style={styles.sessioncontainerwindow}>
+                    <ScrollView style={styles.sessioncontainer} contentContainerStyle={styles.sessioncontainerinner} nestedScrollEnabled={true}>
+                        {
+                            Sessions.length > 0 ?
+                                (<>{
 
-
-                <ScrollView style={styles.sessioncontainer} contentContainerStyle={styles.sessioncontainerinner} nestedScrollEnabled={true}>
-                    {
-                        Sessions.length > 0 ?
-                            (<>{
-
-                                Sessions.map((data, i) =>
-                                    (<SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession(i.toString()) }} deleteSession={() => { deleteSession(i.toString()) }} />))
-                            }
-                                {/* <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                    Sessions.map((data, i) =>
+                                        (<SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession(i.toString()) }} deleteSession={() => { deleteSession(i.toString()) }} />))
+                                }
+                                    {/* <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
                                 <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
                                 <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
                                 <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
                                 <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
                                 <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} /> */}
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                            </>)
-                            :
-                            (<>
-                                <Text>
-                                    There aren't any sessions created yet!!!
-                                </Text>
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                            </>)
-                    }
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                </>)
+                                :
+                                (<>
+                                    <Text>
+                                        There aren't any sessions created yet!!!
+                                    </Text>
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                </>)
+                        }
 
 
-                </ScrollView>
-            </View>
-            <TouchableOpacity style={styles.sessionbutton} onPress={() => { navigation.navigate("Session") }}>
-                <View>
-                    <Text>Add session</Text>
+                    </ScrollView>
                 </View>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.sessionbutton} onPress={() => { navigation.navigate("Session") }}>
+                    <View>
+                        <Text>Add session</Text>
+                    </View>
+                </TouchableOpacity>
 
-            <View style={styles.calandertitle}><Text style={{ fontSize: 26 }}>Plan Calander</Text></View>
-            <Calander Days={Days} setDay={setDay} Selected={SelectedSession} setSelected={SetSelectedSession} />
+                <View style={styles.calandertitle}><Text style={{ fontSize: 26 }}>Plan Calander</Text></View>
+                <Calander Days={Days} setDay={setDay} Selected={SelectedSession} setSelected={SetSelectedSession} />
 
-        </ScrollView>
-
+            </ScrollView>
+        </>
     )
 }
 const styles = StyleSheet.create({

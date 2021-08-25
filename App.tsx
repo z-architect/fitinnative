@@ -21,16 +21,20 @@ import Profile from './MyComponents/Views/Profile/Profile';
 
 import Home from './MyComponents/Views/HomeTabs/home';
 import Goal from './MyComponents/Views/GoalSetting/goal';
-import Plan from './MyComponents/Views/Plans/plancreation';
+import PlanCreation from './MyComponents/Views/Plans/plancreation';
+import MealPlan from './MyComponents/Views/Plans/plancreationmeal';
 import Plans from './MyComponents/Views/Plans/planshome';
 import PlanEdit from './MyComponents/Views/Plans/planedit';
 import PlanView from './MyComponents/Views/Plans/planview';
+import MyPlans from './MyComponents/Views/Plans/myplans';
 import Search from './MyComponents/Views/Plans/plansearch';
 
-import Session from './MyComponents/Views/Session/session';
+import SessionCreation from './MyComponents/Views/Session/session';
 import SessionView from './MyComponents/Views/Session/sessionview';
 import SessionEdit from './MyComponents/Views/Session/sessionedit';
-import Set from './MyComponents/Views/ActivitySet/activityset';
+import SetCreation from './MyComponents/Views/ActivitySet/activityset';
+import SetEdit from './MyComponents/Views/ActivitySet/setedit';
+import SetView from './MyComponents/Views/ActivitySet/setview';
 import Monitoring from './MyComponents/Views/Monitoring/graphs';
 import Tracking from './MyComponents/Views/Tracking/tracking'
 import Meal from './MyComponents/Views/Tracking/meal';
@@ -56,11 +60,11 @@ const App = () => {
 
 
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Landing" screenOptions={{
+      <Stack.Navigator initialRouteName="MealPlan" screenOptions={{
         headerShown: false
       }}>
         {
-          !IsSignedIn ?
+          IsSignedIn ?
             (<>
               <Stack.Screen name="Landing" component={Landingpage} />
               <Stack.Screen name="Onboarding" component={OnBoarding} />
@@ -73,14 +77,18 @@ const App = () => {
               <>
                 <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="Profile" component={Profile} />
-                <Stack.Screen name="Set" component={Set} />
-                <Stack.Screen name="Session" component={Session} />
-                <Stack.Screen name="SessionView" component={SessionView} />
-                <Stack.Screen name="SessionEdit" component={SessionEdit} />
                 <Stack.Screen name="Goal" component={Goal} />
-                <Stack.Screen name="Plan" component={Plan} />
+                <Stack.Screen name="Plan" component={PlanCreation} />
+                <Stack.Screen name="MealPlan" component={MealPlan} />
                 <Stack.Screen name="PlanEdit" component={PlanEdit} />
                 <Stack.Screen name="PlanView" component={PlanView} />
+                <Stack.Screen name="MyPlans" component={MyPlans} />
+                <Stack.Screen name="Session" component={SessionCreation} />
+                <Stack.Screen name="SessionView" component={SessionView} />
+                <Stack.Screen name="SessionEdit" component={SessionEdit} />
+                <Stack.Screen name="Set" component={SetCreation} />
+                <Stack.Screen name="SetEdit" component={SetEdit} />
+                <Stack.Screen name="SetView" component={SetView} />
                 <Stack.Screen name="Search" component={Search} />
                 <Stack.Screen name="Current" component={Current} />
                 <Stack.Screen name="Exercise" component={Exercise} />

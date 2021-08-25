@@ -10,31 +10,37 @@ const y = Dimensions.get("window").height;
 const DailyGoals = () => {
     return (
         <View style={styles.container}>
-            <View>
-                <Text>
-                    Your Goals :
-                </Text>
-            </View>
+            <View style={styles.innercontainer}>
+                <View style={{ marginBottom: 20 }}>
+                    <IonIcons name="water-outline" color="black" size={200} />
+                    <View >
+                        <Text style={{ color: "lightblue" }}>
+                            Your Goals : 2 Glasses Per Day
+                        </Text>
+                    </View>
 
-            <View style={styles.card}>
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>
-                        Water
-                    </Text>
                 </View>
 
-                <View style={styles.inputcontainer}>
-                    <IonIcons name="water-outline" size={82} color="black" />
-                    <Text> Glass of Water</Text>
-                    <NumericInput type='plus-minus'
-                        onChange={value => console.log(value)}
-                        textColor="black"
-                        iconStyle={{ color: "white" }}
-                        rounded
-                        rightButtonBackgroundColor='rgb(50,71,85)'
-                        leftButtonBackgroundColor='rgb(50,71,85)' />
-                </View>
+                <View style={styles.card}>
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>
+                            Water
+                        </Text>
+                    </View>
 
+                    <View style={styles.inputcontainer}>
+
+                        <Text> Glass of Water</Text>
+                        <NumericInput type='plus-minus'
+                            onChange={value => console.log(value)}
+                            textColor="black"
+                            iconStyle={{ color: "white" }}
+                            rounded
+                            rightButtonBackgroundColor='rgb(50,71,85)'
+                            leftButtonBackgroundColor='rgb(50,71,85)' />
+                    </View>
+
+                </View>
             </View>
         </View>
     )
@@ -45,6 +51,12 @@ const styles = StyleSheet.create({
         width: x,
         justifyContent: "center",
         alignItems: "center"
+    },
+    innercontainer: {
+        height: 0.8 * y,
+        width: "100%",
+        alignItems: "center"
+        //backgroundColor: "pink",
     },
     card: {
         height: y * 0.4,
