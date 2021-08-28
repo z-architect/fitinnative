@@ -6,6 +6,7 @@ import NumericInput from 'react-native-numeric-input';
 import { Modal, Button, Switch } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import Axios from 'axios';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import Activity from './activity';
 import {
   GifSearch,
@@ -121,11 +122,29 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
 
       <View style={styles.container}>
+        <View style={styles.head}>
+          <TouchableOpacity onPress={() => {
+            //createPlan();
+          }}>
+            <AntDesign name="check" size={32} color="rgb(50,71,85)" />
+          </TouchableOpacity>
+
+
+
+          <TouchableOpacity onPress={() => {
+            navigation.goBack();
+          }}>
+            <AntDesign name="close" size={32} color="red" />
+          </TouchableOpacity>
+
+
+        </View>
+
         <View style={styles.card}>
 
 
 
-          <View style={styles.head}>
+          <View style={styles.cardhead}>
             <View style={styles.gif}>
               <Text style={{ color: "rgb(217,125,84)" }}> GIF</Text>
             </View>
@@ -217,9 +236,9 @@ const ActivitySet = ({ navigation, route }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgb(110,140,160)", //"rgb(217,125,84)",
+    backgroundColor: "rgba(110,140,160,0.8)", //"rgb(217,125,84)",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "space-between"
   },
   card: {
     height: y * 0.5,
@@ -229,9 +248,20 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "space-between"
   },
-  head: {
+  cardhead: {
     flexDirection: "row",
     height: "15%"
+  },
+  head: {
+    height: y * 0.1,
+    width: x,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "grey"
   },
   body: {
     height: "65%",
@@ -309,7 +339,7 @@ const styles = StyleSheet.create({
     // position: "absolute",
     // bottom: 50,
     width: "60%",
-    marginTop: 20,
+    marginVertical: 20,
     marginHorizontal: "20%",
     height: 60,
     justifyContent: "center",

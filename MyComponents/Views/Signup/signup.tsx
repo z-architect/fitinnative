@@ -1,9 +1,8 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Input, Modal, Select } from "native-base";
 import Emoji from "react-native-emoji";
 import * as yup from "yup";
 import {
-  Alert,
   Dimensions,
   ScrollView,
   StyleSheet,
@@ -21,9 +20,7 @@ import { Access } from "../../../api/interface";
 import { onAuthStateChanged, signupToFirebase } from "../../../api/utils";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import DatePicker from "react-native-date-picker";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import PhoneInput from "react-native-phone-number-input";
-import { GifSearch } from "react-native-gif-search";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const y = Dimensions.get("window").height;
@@ -76,20 +73,20 @@ const Signup = ({ navigation }: Props) => {
 
   const dispatch = useAppDispatch();
 
-  function automaticSignup() {
-    void handleSubmit({
-      firstName: "Daniel",
-      middleName: "",
-      lastName: "Tsegaw",
-      email: "dullkingsman@gmail.com",
-      phoneNumber: "+251975250953",
-      dateOfBirth: "2021-08-25T14:33:09.429Z",
-      sex: Sex.MALE,
-      role: Role.TRAINEE,
-      password: "alabama",
-      confirmPassword: "alabama",
-    });
-  }
+  // function automaticSignup() {
+  //   void handleSubmit({
+  //     firstName: "Daniel",
+  //     middleName: "",
+  //     lastName: "Tsegaw",
+  //     email: "dullkingsman@gmail.com",
+  //     phoneNumber: "+251975250953",
+  //     dateOfBirth: "2021-08-25T14:33:09.429Z",
+  //     sex: Sex.MALE,
+  //     role: Role.TRAINEE,
+  //     password: "alabama",
+  //     confirmPassword: "alabama",
+  //   });
+  // }
 
   useEffect(() => {
     console.log(initialValues);

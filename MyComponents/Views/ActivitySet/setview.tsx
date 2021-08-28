@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { View, Text, Switch, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import { useEffect } from 'react';
 import NumericInput from 'react-native-numeric-input';
-import { Modal, Button, Switch } from 'native-base';
+import { Modal, Button } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import Axios from 'axios';
 import Activity from './activity';
@@ -19,16 +20,47 @@ const ActivitySet = ({ navigation, route }: Props) => {
     const [showgifModal, SetShowgifModal] = useState(false)
     const [Visible, SetVisible] = useState(true);
 
+    const [Description, SetDescription] = useState("this is a set intended to make you lots of pushups")
     const [Activity, SetActivity] = useState("PushUps");
+    const [Repetition, SetRepitition] = useState(10);
+    const [Duration, SetDuration] = useState(4);
+    const [Tempo, SetTempo] = useState(true);
+    const [Met, SetMet] = useState(18);
     return (
         <>
 
             <View style={styles.container}>
+
+                <View style={styles.head}>
+                    <TouchableOpacity onPress={() => {
+                        // createPlan();
+                    }}>
+                        <AntDesign name="left" size={32} color="rgb(50,71,85)" />
+                    </TouchableOpacity>
+
+
+
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
+                        <TouchableOpacity onPress={() => {
+                            //deletePlan();
+                        }}>
+                            <AntDesign name="delete" size={32} color="black" />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => {
+                            navigation.navigate("PlanEdit");
+                        }}>
+                            <AntDesign name="edit" size={32} color="rgb(217,125,84)" />
+                        </TouchableOpacity>
+                    </View>
+
+
+                </View>
                 <View style={styles.card}>
 
 
 
-                    <View style={styles.head}>
+                    <View style={styles.cardhead}>
                         <View style={styles.gif}>
                             <Text style={{ color: "rgb(217,125,84)" }}> GIF</Text>
                         </View>
@@ -42,24 +74,16 @@ const ActivitySet = ({ navigation, route }: Props) => {
                     <View style={styles.body}>
                         <View style={styles.bodyleft}>
                             <View>
-                                <NumericInput
-                                    type='up-down'
-                                    onChange={value => console.log(value)}
-                                    rounded
-                                    upDownButtonsBackgroundColor="rgb(50,71,85)"
-                                    iconStyle={{ color: "white" }}
-                                />
+                                <View style={styles.numericinputcontainer}>
+                                    <Text style={{ fontSize: 22, fontWeight: "bold" }}>{Duration}</Text>
+                                </View>
                                 <Text>Duration in Minutes</Text>
                             </View>
 
                             <View>
-                                <NumericInput
-                                    type='up-down'
-                                    onChange={value => console.log(value)}
-                                    rounded
-                                    upDownButtonsBackgroundColor="rgb(50,71,85)"
-                                    iconStyle={{ color: "white" }}
-                                />
+                                <View style={styles.numericinputcontainer}>
+                                    <Text style={{ fontSize: 22, fontWeight: "bold" }}>{Repetition}</Text>
+                                </View>
                                 <Text>Repetition</Text>
                             </View>
 
@@ -69,22 +93,18 @@ const ActivitySet = ({ navigation, route }: Props) => {
                             <View style={{ alignItems: "center" }}>
                                 <Text style={{ fontWeight: "bold" }} >Tempo</Text>
                                 <View style={{ flexDirection: "row", marginBottom: 5, alignItems: "center" }}>
-                                    <Text style={{ marginRight: 5 }}>Intense</Text>
-                                    <Switch size="lg" trackColor={{ true: 'rgb(50,71,85)', false: "grey" }} />
-                                    <Text style={{ marginLeft: 5 }}>Chill</Text>
+                                    <Text style={{ marginRight: 5, color: "rgb(217,125,84)" }}>Intense</Text>
+                                    <Switch value={Tempo} onValueChange={() => { SetTempo(!Tempo) }} disabled={true} trackColor={{ true: 'rgb(50,71,85)', false: "grey" }} />
+                                    <Text style={{ marginLeft: 5, color: "rgb(50,71,85)" }}>Chill</Text>
                                 </View>
                             </View>
 
                             <View style={{ alignItems: "center" }}>
                                 <Text style={{ fontWeight: "bold" }}>METs</Text>
-                                <NumericInput type='plus-minus'
-                                    onChange={value => console.log(value)}
-                                    textColor="black"
-                                    iconStyle={{ color: "white" }}
-                                    rounded
-                                    rightButtonBackgroundColor='rgb(50,71,85)'
-                                    leftButtonBackgroundColor='rgb(50,71,85)' />
-                                <Text>Calories Burn Rate</Text>
+                                <View style={styles.numericinputcontainer}>
+                                    <Text style={{ fontSize: 22, fontWeight: "bold" }}>{Met}</Text>
+                                </View>
+                                <Text style={{ color: "rgb(217,125,84)" }}>Calories Burn Rate</Text>
                             </View>
 
                         </View>
@@ -105,13 +125,13 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                     <View style={styles.foot}>
                         <Feather name="edit" size={22} color="lightblue" />
-                        <TextInput placeholder="Description" placeholderTextColor="black" style={{ marginHorizontal: 10, fontSize: 16, color: "black" }} />
+                        <TextInput placeholder="Description" value={Description} editable={false} onChangeText={(val) => { SetDescription(val) }} placeholderTextColor="black" style={{ marginHorizontal: 10, fontSize: 16, color: "black" }} />
                     </View>
 
 
                 </View>
 
-                <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Create Set </Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => { }} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Display Activity </Text></TouchableOpacity>
 
             </View>
         </>
@@ -122,7 +142,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "rgb(110,140,160)", //"rgb(217,125,84)",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "space-between"
     },
     card: {
         height: y * 0.5,
@@ -132,9 +152,20 @@ const styles = StyleSheet.create({
         padding: 20,
         justifyContent: "space-between"
     },
-    head: {
+    cardhead: {
         flexDirection: "row",
         height: "15%"
+    },
+    head: {
+        height: y * 0.1,
+        width: x,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "white",
+        paddingHorizontal: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: "grey"
     },
     body: {
         height: "65%",
@@ -212,7 +243,7 @@ const styles = StyleSheet.create({
         // position: "absolute",
         // bottom: 50,
         width: "60%",
-        marginTop: 20,
+        marginVertical: 20,
         marginHorizontal: "20%",
         height: 60,
         justifyContent: "center",
@@ -232,9 +263,15 @@ const styles = StyleSheet.create({
         width: "100%",
         borderColor: "rgb(50,71,85)",
         borderRadius: 20,
-
-
-
+    },
+    numericinputcontainer: {
+        width: 150,
+        height: 60,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: "lightgrey",
+        borderRadius: 15,
     }
 })
 

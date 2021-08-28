@@ -1,16 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface profileState {
-  signedIn: boolean;
+    signedIn: boolean
 }
 
-const ProfileState: profileState = {
-  signedIn: false,
-};
+const profileState: profileState = {
+    signedIn: false
+}
 // Workaround: cast state instead of declaring variable type
 // const initialState = {
 //     value: 0,
 //   } as CounterState
+
 
 //{
 //    id:"",
@@ -23,21 +24,23 @@ const ProfileState: profileState = {
 //    dailyGlassesOfWater: 0,
 //    dailyHoursOfSleep: 0,
 
-signedIn: true;
+//signedIn: true
 
 //},
 export const profileSlice = createSlice({
-  name: "profile",
-  initialState: ProfileState,
-  reducers: {
-    logIn: (state) => {
-      state.signedIn = true;
-    },
-    signOut: (state) => {
-      state.signedIn = false;
-    },
-  },
-});
+    name: 'profile',
+    initialState: profileState,
+    reducers: {
+        logIn: (state) => {
+            state.signedIn = true;
+        },
+        signOut: (state) => {
+            state.signedIn = false;
+        }
+    }
+
+})
 export const { logIn, signOut } = profileSlice.actions;
+
 
 export default profileSlice.reducer;

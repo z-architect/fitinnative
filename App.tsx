@@ -28,7 +28,6 @@ import SessionEdit from "./MyComponents/Views/Session/sessionedit";
 import Set from "./MyComponents/Views/ActivitySet/activityset";
 import Exercise from "./MyComponents/Views/Tracking/exercise";
 import Current from "./MyComponents/Views/Plans/currentplan";
-import { Access } from "./api/interface";
 import { Provider } from "react-redux";
 import store from "./MyComponents/Redux/store";
 import NetInfo from "@react-native-community/netinfo";
@@ -69,22 +68,20 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Goal"
+          initialRouteName="Landing"
           screenOptions={{
             headerShown: false,
           }}
         >
           {!IsSignedIn ? (
             <>
-              {/*<Stack.Screen name="Goal" component={Goal} />*/}
-              <Stack.Screen name="Profile" component={Profile} />
-              {/*<Stack.Screen name="Landing" component={Landingpage} />*/}
-              {/*{!hasBeenOnboarded ? (*/}
-              {/*  <Stack.Screen name="Onboarding" component={OnBoarding} />*/}
-              {/*) : null}*/}
-              {/*<Stack.Screen name="Auth" component={Authselection} />*/}
-              {/*<Stack.Screen name="Signup" component={Signup} />*/}
-              {/*<Stack.Screen name="Login" component={Login} />*/}
+              <Stack.Screen name="Landing" component={Landingpage} />
+              {!hasBeenOnboarded ? (
+                <Stack.Screen name="Onboarding" component={OnBoarding} />
+              ) : null}
+              <Stack.Screen name="Auth" component={Authselection} />
+              <Stack.Screen name="Signup" component={Signup} />
+              <Stack.Screen name="Login" component={Login} />
             </>
           ) : (
             <>
