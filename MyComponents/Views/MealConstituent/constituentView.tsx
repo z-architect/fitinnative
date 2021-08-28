@@ -7,62 +7,33 @@ import NumericInput from 'react-native-numeric-input';
 import { Modal, Button } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import Axios from 'axios';
-import Activity from './activity';
+import Meal from './meal';
 import {
     GifSearch,
 } from 'react-native-gif-search';
 import { Props } from '../../types';
-import MyModal from '../Plans/deletemodal';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-const ActivitySet = ({ navigation, route }: Props) => {
+const MealConstituent = ({ navigation, route }: Props) => {
     const [showModal, setShowModal] = useState(false)
-    //const [showActivityModal, setShowActivityModal] = useState(false)
+    const [showMealModal, setShowMealModal] = useState(false)
     const [showgifModal, SetShowgifModal] = useState(false)
     const [Visible, SetVisible] = useState(true);
 
     const [Description, SetDescription] = useState("this is a set intended to make you lots of pushups")
-    const [Activity, SetActivity] = useState("PushUps");
+    const [Meal, SetMeal] = useState("PushUps");
     const [Repetition, SetRepitition] = useState(10);
     const [Duration, SetDuration] = useState(4);
     const [Tempo, SetTempo] = useState(true);
     const [Met, SetMet] = useState(18);
-    const [DeleteModal, setDeleteModal] = useState(false);
-    const [showActivityModal, setShowActivityModal] = useState(false);
     return (
         <>
-            <MyModal DeleteModal={DeleteModal} setDeleteModal={setDeleteModal} />
-
-            <Modal isOpen={showActivityModal} onClose={() => setShowActivityModal(false)}>
-                <Modal.Content maxWidth="400px">
-                    <Modal.CloseButton />
-                    <Modal.Header style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-
-                        Activity XYZ</Modal.Header>
-                    <Modal.Body style={{ alignItems: "center" }}>
-                        <View style={[styles.gifenlarged, { marginRight: 10 }]}>
-
-                        </View>
-
-                        <Text style={{ color: "black", marginVertical: 10 }} >
-                            The Description of the activity
-                        </Text>
-
-                        <TouchableOpacity style={styles.button} onPress={() => { setShowActivityModal(false); }}  >
-                            <Text style={{ color: "white" }}>Close</Text>
-                        </TouchableOpacity>
-
-
-                    </Modal.Body>
-
-                </Modal.Content>
-            </Modal>
 
             <View style={styles.container}>
 
                 <View style={styles.head}>
                     <TouchableOpacity onPress={() => {
-                        navigation.goBack();
+                        // createPlan();
                     }}>
                         <AntDesign name="left" size={32} color="rgb(50,71,85)" />
                     </TouchableOpacity>
@@ -71,13 +42,13 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                     <View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
                         <TouchableOpacity onPress={() => {
-                            setDeleteModal(true);
+                            //deletePlan();
                         }}>
                             <AntDesign name="delete" size={32} color="black" />
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={() => {
-                            navigation.navigate("SetEdit");
+                            navigation.navigate("PlanEdit");
                         }}>
                             <AntDesign name="edit" size={32} color="rgb(217,125,84)" />
                         </TouchableOpacity>
@@ -94,8 +65,8 @@ const ActivitySet = ({ navigation, route }: Props) => {
                             <Text style={{ color: "rgb(217,125,84)" }}> GIF</Text>
                         </View>
                         <View style={styles.input}>
-                            <TouchableOpacity onPress={() => { setShowActivityModal(true); }}>
-                                <TextInput placeholder="select something" value={Activity} editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
+                            <TouchableOpacity onPress={() => { setShowModal(true) }}>
+                                <TextInput placeholder="select something" value={Meal} editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -122,7 +93,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
                             <View style={{ alignItems: "center" }}>
                                 <Text style={{ fontWeight: "bold" }} >Tempo</Text>
                                 <View style={{ flexDirection: "row", marginBottom: 5, alignItems: "center" }}>
-                                    <Text style={{ marginRight: 5, color: "rgb(110,140,160)" }}>Intense</Text>
+                                    <Text style={{ marginRight: 5, color: "rgb(217,125,84)" }}>Intense</Text>
                                     <Switch value={Tempo} onValueChange={() => { SetTempo(!Tempo) }} disabled={true} trackColor={{ true: 'rgb(50,71,85)', false: "grey" }} />
                                     <Text style={{ marginLeft: 5, color: "rgb(50,71,85)" }}>Chill</Text>
                                 </View>
@@ -133,7 +104,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
                                 <View style={styles.numericinputcontainer}>
                                     <Text style={{ fontSize: 22, fontWeight: "bold" }}>{Met}</Text>
                                 </View>
-                                <Text style={{ color: "rgb(110,140,160)" }}>Calories Burn Rate</Text>
+                                <Text style={{ color: "rgb(217,125,84)" }}>Calories Burn Rate</Text>
                             </View>
 
                         </View>
@@ -160,9 +131,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                 </View>
 
-                <TouchableOpacity onPress={() => {
-                    setShowActivityModal(true)
-                }} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Display Activity </Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => { }} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Display Meal </Text></TouchableOpacity>
 
             </View>
         </>
@@ -176,7 +145,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between"
     },
     card: {
-        height: y * 0.55,
+        height: y * 0.5,
         width: "90%",
         backgroundColor: "white",
         borderRadius: 10,
@@ -242,14 +211,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
-    gifenlarged: {
-        height: 240,
-        width: 240,
-        borderWidth: 1,
-        borderRadius: 120,
-        justifyContent: "center",
-        alignItems: "center"
-    },
     input: {
         justifyContent: "center",
         padding: 10,
@@ -308,10 +269,10 @@ const styles = StyleSheet.create({
         height: 60,
         justifyContent: "center",
         alignItems: "center",
-        borderWidth: 3,
+        borderWidth: 1,
         borderColor: "lightgrey",
         borderRadius: 15,
     }
 })
 
-export default ActivitySet;
+export default MealConstituent;

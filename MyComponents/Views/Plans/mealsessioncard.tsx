@@ -14,10 +14,12 @@ const SessionCard = (props: any) => {
                 </View>
                 <Text>{
                     // props.sessionMeta.name
-                    "Food1"
+                    props.sessionMeta.sessId
                 }</Text>
                 <View >
-                    <Text>Something</Text>
+                    <Text>{
+                        props.sessionMeta.time
+                    }</Text>
                 </View>
 
             </TouchableOpacity>
@@ -26,6 +28,7 @@ const SessionCard = (props: any) => {
             </Text>
             <TouchableOpacity onPress={() => {
                 // props.deleteSession() 
+                props.deleteSession();
             }}>
                 <AntDesign name="delete" size={24} color="red" />
             </TouchableOpacity>

@@ -19,7 +19,7 @@ const DeltetModal = (props: any) => {
                             <AntDesign name="close" size={78} color="black" />
                         </View>
                         <Text style={{ fontSize: 34, fontWeight: "bold" }}>
-                            Are you Sure?
+                            Are you sure?
                         </Text>
                     </View>
                     <View style={styles.modalbottomhalf}>
@@ -32,7 +32,7 @@ const DeltetModal = (props: any) => {
                                 <Text style={{ color: "white", fontWeight: "bold" }}>Cancel</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={[styles.modalbutton, { backgroundColor: "rgba(217,125,84,0.9)" }]}>
+                            <TouchableOpacity style={[styles.modalbutton, { backgroundColor: "rgba(255,0,0,0.7)" }]}>
                                 <Text style={{ color: "white", fontWeight: "bold" }}>Delete</Text>
                             </TouchableOpacity>
                         </View>
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         height: 160,
         width: 160,
         borderRadius: 80,
-        borderWidth: 1,
+        borderWidth: 3,
         borderColor: "orange"
     },
     modlabuttoncontainer: {

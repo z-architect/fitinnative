@@ -11,7 +11,8 @@ export type RootStackParamList = {
     MealPlan: undefined;
     Plans: undefined;
     PlanEdit: undefined;
-    MealPlanEdit: undefined;
+    MealEdit: undefined;
+    MealView: undefined;
     PlanView: undefined;
     MealPlanView: undefined;
     MyPlans: undefined;
@@ -19,9 +20,15 @@ export type RootStackParamList = {
     Session: { id: string } | undefined;
     SessionView: undefined;
     SessionEdit: undefined;
+    MealSession: { id: string } | undefined;
+    MealSessionView: undefined;
+    MealSessionEdit: undefined;
     Set: undefined;
     SetEdit: undefined;
     SetView: undefined;
+    Constituent: undefined;
+    ConstituentEdit: undefined;
+    ConstituentView: undefined;
     Current: undefined;
     Onboarding: undefined;
     Monitor: undefined;

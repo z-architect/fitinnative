@@ -7,20 +7,20 @@ import NumericInput from 'react-native-numeric-input';
 import { Modal, Button, Switch } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import Axios from 'axios';
-import Activity from './activity';
+import Meal from './meal';
 import {
     GifSearch,
 } from 'react-native-gif-search';
 import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-const ActivitySet = ({ navigation, route }: Props) => {
+const MealConstituentEdit = ({ navigation, route }: Props) => {
     const [showModal, setShowModal] = useState(false);
-    const [showActivityModal, setShowActivityModal] = useState(false);
+    const [showMealModal, setShowMealModal] = useState(false);
     const [showgifModal, SetShowgifModal] = useState(false);
     const [Visible, SetVisible] = useState(true);
     const [Description, SetDescription] = useState("this is a set intended to make you lots of pushups")
-    const [ActivityValue, SetActivity] = useState("PushUps");
+    const [Meal, SetMeal] = useState("PushUps");
     const [Repetition, SetRepitition] = useState(10);
     const [Duration, SetDuration] = useState(4);
     const [Tempo, SetTempo] = useState(false);
@@ -62,17 +62,17 @@ const ActivitySet = ({ navigation, route }: Props) => {
                 </Modal.Content>
             </Modal>
 
-            <Modal isOpen={showActivityModal} onClose={() => setShowActivityModal(false)}>
+            <Modal isOpen={showMealModal} onClose={() => setShowMealModal(false)}>
                 <Modal.Content maxWidth="400px">
                     <Modal.CloseButton />
                     <Modal.Header style={{ flexDirection: "row", alignItems: "center" }}>
                         <View style={[styles.gif, { marginRight: 15 }]}>
 
                         </View>
-                        Create Activity</Modal.Header>
+                        Create Meal</Modal.Header>
                     <Modal.Body>
 
-                        <TextInput placeholder="Activity name ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+                        <TextInput placeholder="Meal name ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
 
                         <TextInput placeholder="Description ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
 
@@ -87,7 +87,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                             <Button
                                 onPress={() => {
-                                    setShowActivityModal(false)
+                                    setShowMealModal(false)
                                 }}
                             >
                                 Create
@@ -102,14 +102,14 @@ const ActivitySet = ({ navigation, route }: Props) => {
                     <Modal.CloseButton />
                     <Modal.Header>Activities</Modal.Header>
                     <Modal.Body>
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -117,10 +117,10 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                             <Button
                                 onPress={() => {
-                                    setShowActivityModal(true)
+                                    setShowMealModal(true)
                                 }}
                             >
-                                + New Activity
+                                + New Meal
                             </Button>
                         </Button.Group>
                     </Modal.Footer>
@@ -157,7 +157,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
                         </View>
                         <View style={styles.input}>
                             <TouchableOpacity onPress={() => { setShowModal(true) }}>
-                                <TextInput placeholder="select something" value={ActivityValue} editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
+                                <TextInput placeholder="select something" value={Meal} editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between"
     },
     card: {
-        height: y * 0.55,
+        height: y * 0.5,
         width: "90%",
         backgroundColor: "white",
         borderRadius: 10,
@@ -376,4 +376,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ActivitySet;
+export default MealConstituentEdit;

@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView, ImageBackground, Dimensions, TextInput, Alert } from 'react-native';
+//import SessionCard from './sessioncard';
 import MealSessionCard from './mealsessioncard';
 import MealSessionCardUnselected from './mealSessioncardvariant';
 import { Props } from '../../types';
@@ -53,6 +55,7 @@ const Calander = (props: any) => {
                     myarray.map((item, i) => (
                         <TouchableOpacity key={i} style={[styles.day, { backgroundColor: props.Days[i].isSet ? "grey" : "white" }]} onPress={() => {
                             // props.setDay(i, props.Selected)
+
                             props.setCalenderModal(true);
                             props.setSelected(i);
                             //Alert.alert(i.toString())
@@ -76,6 +79,16 @@ const SessionMeta = {
 };
 const Plan = ({ navigation, route }: Props) => {
     let userId = 78;
+    // useAppSelector(state=>state.user.id)
+    // const [Plan, SetPlan] = useState({
+    //     type: "",
+    //     title: "",
+    //     description: "",
+    //     image: "",
+    //     category: "",
+    //     difficulty: "",
+    //     private: true
+    // });
 
     const [Type, SetType] = useState();
     const [Description, SetDescription] = useState("");
@@ -146,8 +159,46 @@ const Plan = ({ navigation, route }: Props) => {
         })
     }
 
-    useEffect(() => {
+    // if (!Days[no].isSet && sessionId === "") {
+    //     Alert.alert("sorry Fams, you have to select a session first")
+    // }
+    // else {
+    //     if (Days[no].isSet) {
+    //         SetSelectedSession("")
+    //     }
 
+    //     setDays((Days) => {
+    //         let newdays = [...Days]
+    //         if (newdays[no].isSet) {
+    //             newdays[no] = {
+    //                 isSet: false,
+    //                 filledBy: ""
+    //             }
+
+
+    //         }
+    //         else {
+
+    //             newdays[no] = {
+    //                 isSet: true,
+    //                 filledBy: sessionId
+    //             }
+    //         }
+
+    //         return [...newdays]
+    //     });
+
+    // }
+
+
+    useEffect(() => {
+        // Axios.get('api/sessions')
+        //     .then(response => {
+        //         SetSessions(response.data)
+        //     })
+        //     .catch(e => {
+        //         Alert.alert("sorry papi api fetch failed for sessions")
+        //     })
     }, [])
     const createPlan = () => {
 
@@ -175,7 +226,11 @@ const Plan = ({ navigation, route }: Props) => {
             })
     }
     const editSession = (id: string) => {
-
+        // navigation.navigate({
+        //     "Session",
+        //     {id:id}
+        // })
+        // navigation.navigate("session")
     }
     return (
         <>
@@ -219,7 +274,6 @@ const Plan = ({ navigation, route }: Props) => {
                             <View>
 
                                 <Text>Hour</Text>
-
                                 <NumericInput
                                     type='up-down'
                                     onChange={value => console.log(value)}
@@ -286,6 +340,9 @@ const Plan = ({ navigation, route }: Props) => {
                                 <MealSessionCard sessionMeta={mealsess} key={i} deleteSession={() => { removeSession(SelectedDate, mealsess.time) }} />
                             ))
                         }
+                        {/* <MealSessionCard sessionMeta={SessionMeta}  deleteSession={() => { deleteSession("99") }} />
+                        <MealSessionCard sessionMeta={SessionMeta}  deleteSession={() => { deleteSession("99") }} />
+                        <MealSessionCard sessionMeta={SessionMeta}  deleteSession={() => { deleteSession("99") }} /> */}
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -342,8 +399,13 @@ const Plan = ({ navigation, route }: Props) => {
                                     </Text>
                                 </ImageBackground>
                             )
+
+
+
                     }
+
                 </View>
+
                 <View style={styles.planmetacontainer}>
                     <View>
                         <Text> Difficulty</Text>
@@ -404,14 +466,26 @@ const Plan = ({ navigation, route }: Props) => {
                             > Maintenance </Radio>
                         </Radio.Group>
                     </View>
+
+
                 </View>
+
+
+
+
                 <View style={styles.calandertitle}><Text style={{ fontSize: 26 }}>Plan Calander</Text></View>
                 <Calander Days={Days} setCalenderModal={SetCalenderModal} setSelected={SetSelectedDate} />
+
             </ScrollView>
         </>
     )
 }
 const styles = StyleSheet.create({
+    main: {
+
+        // justifyContent:"space-between",
+
+    },
     head: {
         height: y * 0.1,
         width: x,
@@ -424,8 +498,10 @@ const styles = StyleSheet.create({
         borderBottomColor: "grey"
     },
     container: {
+        // flex:1,
         backgroundColor: "rgb(242,243,244)",
         borderWidth: 2
+
     },
     planimage: {
         height: 300,
@@ -541,7 +617,9 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     modaldaybutton: {
-
+        // height: 50,
+        // borderRadius: 10,
+        // backgroundColor: "rgb(110,140,160)"
         width: "80%",
         height: 80,
         marginHorizontal: "10%",
@@ -557,3 +635,46 @@ export default Plan;
 
 
 
+/*
+<View style={styles.sessioncontainerheader}><Text style={{ fontSize: 26 }}>Plan Sessions</Text></View>
+                <View style={styles.sessioncontainerwindow}>
+
+
+                    <ScrollView style={styles.sessioncontainer} contentContainerStyle={styles.sessioncontainerinner} nestedScrollEnabled={true}>
+                        {
+                            Sessions.length > 0 ?
+                                (<>{
+
+                                    Sessions.map((data, i) =>
+                                        (<SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession(i.toString()) }} deleteSession={() => { deleteSession(i.toString()) }} />))
+                                }
+                                     <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                </>)
+                                :
+                                (<>
+                                    <Text>
+                                        There aren't any sessions created yet!!!
+                                    </Text>
+                                    <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
+                                </>)
+                        }
+
+
+                    </ScrollView>
+                </View>
+                <TouchableOpacity style={styles.sessionbutton} onPress={() => { navigation.navigate("Session") }}>
+                    <View>
+                        <Text>Add session</Text>
+                    </View>
+                </TouchableOpacity>
+                */

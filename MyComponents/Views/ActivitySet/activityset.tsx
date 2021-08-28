@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
   card: {
-    height: y * 0.5,
+    height: y * 0.55,
     width: "90%",
     backgroundColor: "white",
     borderRadius: 10,

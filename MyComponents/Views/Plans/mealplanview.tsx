@@ -10,6 +10,7 @@ import { Modal, Checkbox, Switch, Radio } from 'native-base';
 import Axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
 import NumericInput from 'react-native-numeric-input';
+import MyModal from './deletemodal';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
@@ -74,12 +75,12 @@ const SessionMeta = {
     name: "Plyometrics",
     id: "12"
 };
-const Plan = ({ navigation, route }: Props) => {
+const MealPlanView = ({ navigation, route }: Props) => {
     let userId = 78;
 
     const [Type, SetType] = useState();
-    const [Description, SetDescription] = useState("");
-    const [Image, SetImage] = useState("");
+    const [Description, SetDescription] = useState("I am the wrath");
+    const [Image, SetImage] = useState("h");
     const [Title, SetTitle] = useState("");
     const [Difficulty, SetDifficulty] = useState("");
     const [Private, SetPrivate] = useState("");
@@ -91,7 +92,7 @@ const Plan = ({ navigation, route }: Props) => {
     const [Value, SetValue] = useState("hard");
     const [Category, SetCategory] = useState("Losing Weight");
 
-    const [Selection, SetSelection] = useState(false)
+    const [Selection, SetSelection] = useState(false);
     const [CalenderModal, SetCalenderModal] = useState(false);
     const [TimeSelect, SetTimeSelect] = useState(false);
 
@@ -99,6 +100,7 @@ const Plan = ({ navigation, route }: Props) => {
     const [SelectedTime, SetSelectedTime] = useState("12");
     const [SelectedDate, SetSelectedDate] = useState(4);
 
+    const [DeleteModal, setDeleteModal] = useState(false)
 
     const addSession = (datenumber: number, sessionId: string, time: string) => {
         setDays((days) => {
@@ -153,7 +155,7 @@ const Plan = ({ navigation, route }: Props) => {
 
         Axios.post('/api/plan/', {
             createdBy: userId,
-            plan: Plan
+            plan: Days
         }).then(response => Alert.alert("plan succesfully created"))
             .catch(e => {
                 Alert.alert("Plan creation Api failed")
@@ -179,102 +181,7 @@ const Plan = ({ navigation, route }: Props) => {
     }
     return (
         <>
-            <Modal isOpen={TimeSelect} onClose={() => SetTimeSelect(false)}>
-                <Modal.Content maxWidth="400px">
-                    <Modal.CloseButton />
-                    <Modal.Header>Select Time of Day</Modal.Header>
-                    <Modal.Body>
-
-                        <TouchableOpacity style={[styles.modaldaybutton, { backgroundColor: "lightblue" }]} onPress={async () => {
-                            await SetSelectedTime("22:45");
-                            addSession(SelectedDate, SelectedMeal, SelectedTime)
-                        }}>
-                            <Text>Morning</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={[styles.modaldaybutton, { backgroundColor: "lightyellow" }]} onPress={async () => {
-                            await SetSelectedTime("13:45");
-                            addSession(SelectedDate, SelectedMeal, SelectedTime)
-                        }}>
-                            <Text>Afternoon</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={[styles.modaldaybutton, { backgroundColor: "orange" }]} onPress={async () => {
-                            await SetSelectedTime("03:45");
-                            addSession(SelectedDate, SelectedMeal, SelectedTime)
-                        }}>
-                            <Text style={{ color: "white" }}>Evening</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={[styles.modaldaybutton, { backgroundColor: "rgba(0,0,0,0.5)" }]} onPress={async () => {
-                            await SetSelectedTime("09:45");
-                            addSession(SelectedDate, SelectedMeal, SelectedTime)
-                        }}>
-                            <Text style={{ color: "white" }}>Night</Text>
-                        </TouchableOpacity>
-
-                        <Text>OR.....</Text>
-                        <Text>Set the time of day yourself</Text>
-                        <View style={{ flexDirection: "row" }}>
-                            <View>
-
-                                <Text>Hour</Text>
-
-                                <NumericInput
-                                    type='up-down'
-                                    onChange={value => console.log(value)}
-                                    rounded
-                                    upDownButtonsBackgroundColor="rgb(50,71,85)"
-                                    iconStyle={{ color: "white" }}
-                                />
-                            </View>
-                            <View>
-
-                                <Text>Minute</Text>
-                                <NumericInput
-                                    type='up-down'
-                                    onChange={value => console.log(value)}
-                                    rounded
-                                    upDownButtonsBackgroundColor="rgb(50,71,85)"
-                                    iconStyle={{ color: "white" }}
-                                />
-                            </View>
-                        </View>
-
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <TouchableOpacity style={styles.modalbutton}>
-                            <Text>Done</Text>
-                        </TouchableOpacity>
-                    </Modal.Footer>
-                </Modal.Content>
-            </Modal>
-
-
-
-
-            <Modal isOpen={Selection} onClose={() => SetSelection(false)}>
-                <Modal.Content maxWidth="400px">
-                    <Modal.CloseButton />
-                    <Modal.Header>Select Meal Session</Modal.Header>
-                    <Modal.Body>
-
-                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <TouchableOpacity style={styles.modalbutton} onPress={() => { SetSelection(false) }}>
-                            <Text>Done</Text>
-                        </TouchableOpacity>
-                    </Modal.Footer>
-                </Modal.Content>
-            </Modal>
-
-
+            <MyModal DeleteModal={DeleteModal} setDeleteModal={setDeleteModal} />
             <Modal isOpen={CalenderModal} onClose={() => SetCalenderModal(false)}>
                 <Modal.Content maxWidth="600px">
                     <Modal.CloseButton />
@@ -283,18 +190,19 @@ const Plan = ({ navigation, route }: Props) => {
                         <Text>Meals of the Day</Text>
                         {
                             Days[SelectedDate].sessions.map((mealsess: any, i: any) => (
-                                <MealSessionCard sessionMeta={mealsess} key={i} deleteSession={() => { removeSession(SelectedDate, mealsess.time) }} />
+                                <MealSessionCard sessionMeta={mealsess} key={i} deleteSession={() => {
+
+                                    // removeSession(SelectedDate, mealsess.time)
+                                }} />
                             ))
                         }
 
                     </Modal.Body>
                     <Modal.Footer>
-                        <TouchableOpacity style={[styles.modalbutton, { backgroundColor: "rgb(217,125,84)" }]} onPress={() => { SetSelection(true) }}>
-                            <Text>+ Add New Meal Session</Text>
-                        </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.modalbutton} onPress={() => { SetSelection(true) }}>
-                            <Text>Add Meal</Text>
+
+                        <TouchableOpacity style={styles.modalbutton} onPress={() => { SetCalenderModal(false) }}>
+                            <Text>close</Text>
                         </TouchableOpacity>
                     </Modal.Footer>
                 </Modal.Content>
@@ -307,16 +215,24 @@ const Plan = ({ navigation, route }: Props) => {
                     <TouchableOpacity onPress={() => {
                         createPlan();
                     }}>
-                        <AntDesign name="check" size={32} color="rgb(50,71,85)" />
+                        <AntDesign name="left" size={32} color="rgb(50,71,85)" />
                     </TouchableOpacity>
 
 
 
-                    <TouchableOpacity onPress={() => {
-                        navigation.goBack();
-                    }}>
-                        <AntDesign name="close" size={32} color="red" />
-                    </TouchableOpacity>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
+                        <TouchableOpacity onPress={() => {
+                            setDeleteModal(true)
+                        }}>
+                            <AntDesign name="delete" size={32} color="black" />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => {
+                            navigation.navigate("PlanEdit");
+                        }}>
+                            <AntDesign name="edit" size={32} color="rgb(217,125,84)" />
+                        </TouchableOpacity>
+                    </View>
 
 
                 </View>
@@ -340,71 +256,36 @@ const Plan = ({ navigation, route }: Props) => {
                                     <Text style={styles.imagetext}>
                                         Cardio
                                     </Text>
+                                    <View style={{ height: "60%", width: "100%", justifyContent: "flex-end" }}>
+
+                                        <Text style={[{ color: "white", fontSize: 22, marginVertical: 15, fontWeight: "bold", paddingLeft: 15 }]} >{Description}</Text>
+                                        <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", }}>
+                                            <Text style={{ borderLeftColor: "white", color: "white", fontSize: 22, fontWeight: "bold" }}>{'\u2B24'} Meal</Text>
+                                            <Text style={{ borderLeftColor: "white", color: "white", fontSize: 22, fontWeight: "bold" }}>{'\u2B24'} Maintainance</Text>
+                                            <Text style={{ borderLeftColor: "white", color: "white", fontSize: 22, fontWeight: "bold" }}>{'\u2B24'} Easy</Text>
+                                        </View>
+                                    </View>
                                 </ImageBackground>
                             )
                     }
                 </View>
-                <View style={styles.planmetacontainer}>
-                    <View>
-                        <Text> Difficulty</Text>
-                        <Radio.Group
-                            name="myRadioGroup"
-                            accessibilityLabel="favorite number"
-                            value={Value}
-                            onChange={(nextValue) => {
-                                SetValue(nextValue)
-                            }}
-                        >
-                            <Radio value="hard" my={1} accessibilityLabel="This is a  checkbox">
-                                Hard
-                            </Radio>
-                            <Radio value="medium" my={2} accessibilityLabel="This is a  checkbox">
-                                Medium
-                            </Radio>
-                            <Radio value="easy" my={2} accessibilityLabel="This is a  checkbox">
-                                Easy
-                            </Radio>
-                        </Radio.Group>
-                    </View>
-                    <View>
-                        <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10 }}>
-                            <Text> Public</Text>
-                            <Switch />
-                        </View>
-
-                        <Text> Category</Text>
-                        <Radio.Group
-                            name="somegroup"
-                            onChange={(nextValue) => SetCategory(nextValue)}
-                            value={Category}
-                            accessibilityLabel="choose numbers"
-                        >
+                <View style={styles.sessioncontainerheader}><Text style={{ fontSize: 26 }}>Sessions in the Plan</Text></View>
+                <View style={styles.sessioncontainerwindow}>
+                    <ScrollView style={styles.sessioncontainer} contentContainerStyle={styles.sessioncontainerinner} nestedScrollEnabled={true}>
 
 
-                            <Radio
-                                value="Losing Weight"
-                                accessibilityLabel="This is a  checkbox"
+                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                        <MealSessionCardUnselected sessionMeta={SessionMeta} setSelected={SetSelectedMeal} setTime={SetTimeSelect} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
 
-                            //colorScheme="orange"
-                            > Losing Weight </Radio>
-                            <Radio
-                                value="Bulking Up"
-                                accessibilityLabel="This is a  checkbox"
-
-                            > Bulking Up </Radio>
-                            <Radio
-                                value="Athleticism"
-                                accessibilityLabel="This is a  checkbox"
-
-                            > Athleticism </Radio>
-                            <Radio
-                                value="Maintenance"
-                                accessibilityLabel="This is a  checkbox"
-
-                            > Maintenance </Radio>
-                        </Radio.Group>
-                    </View>
+                    </ScrollView>
                 </View>
+
+
+
+
                 <View style={styles.calandertitle}><Text style={{ fontSize: 26 }}>Plan Calander</Text></View>
                 <Calander Days={Days} setCalenderModal={SetCalenderModal} setSelected={SetSelectedDate} />
             </ScrollView>
@@ -553,7 +434,7 @@ const styles = StyleSheet.create({
     }
 
 });
-export default Plan;
+export default MealPlanView;
 
 
 

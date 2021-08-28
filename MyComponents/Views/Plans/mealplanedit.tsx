@@ -74,12 +74,12 @@ const SessionMeta = {
     name: "Plyometrics",
     id: "12"
 };
-const Plan = ({ navigation, route }: Props) => {
+const MealPlanEdit = ({ navigation, route }: Props) => {
     let userId = 78;
 
     const [Type, SetType] = useState();
-    const [Description, SetDescription] = useState("");
-    const [Image, SetImage] = useState("");
+    const [Description, SetDescription] = useState("Yabede plan lets wokrout");
+    const [Image, SetImage] = useState("j");
     const [Title, SetTitle] = useState("");
     const [Difficulty, SetDifficulty] = useState("");
     const [Private, SetPrivate] = useState("");
@@ -98,7 +98,6 @@ const Plan = ({ navigation, route }: Props) => {
     const [SelectedMeal, SetSelectedMeal] = useState("");
     const [SelectedTime, SetSelectedTime] = useState("12");
     const [SelectedDate, SetSelectedDate] = useState(4);
-
 
     const addSession = (datenumber: number, sessionId: string, time: string) => {
         setDays((days) => {
@@ -153,7 +152,7 @@ const Plan = ({ navigation, route }: Props) => {
 
         Axios.post('/api/plan/', {
             createdBy: userId,
-            plan: Plan
+            plan: Days
         }).then(response => Alert.alert("plan succesfully created"))
             .catch(e => {
                 Alert.alert("Plan creation Api failed")
@@ -340,6 +339,15 @@ const Plan = ({ navigation, route }: Props) => {
                                     <Text style={styles.imagetext}>
                                         Cardio
                                     </Text>
+                                    <View style={{ height: "60%", width: "100%", justifyContent: "flex-end" }}>
+
+                                        <Text style={[{ color: "white", fontSize: 22, marginVertical: 15, fontWeight: "bold", paddingLeft: 15 }]} >{Description}</Text>
+                                        <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", }}>
+                                            <Text style={{ borderLeftColor: "white", color: "white", fontSize: 22, fontWeight: "bold" }}>{'\u2B24'} Meal</Text>
+                                            <Text style={{ borderLeftColor: "white", color: "white", fontSize: 22, fontWeight: "bold" }}>{'\u2B24'} Maintainance</Text>
+                                            <Text style={{ borderLeftColor: "white", color: "white", fontSize: 22, fontWeight: "bold" }}>{'\u2B24'} Easy</Text>
+                                        </View>
+                                    </View>
                                 </ImageBackground>
                             )
                     }
@@ -553,7 +561,7 @@ const styles = StyleSheet.create({
     }
 
 });
-export default Plan;
+export default MealPlanEdit;
 
 
 

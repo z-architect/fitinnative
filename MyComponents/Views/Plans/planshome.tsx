@@ -11,6 +11,7 @@ const Plans = ({ navigation, route }: Props) => {
     const [Meal, setMeal] = useState(true);
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.containerinner}>
+
             <View style={styles.buttonscontainer}>
                 <TouchableOpacity style={[styles.mealbutton, { borderBottomWidth: Meal ? 3 : 0, width: Meal ? "55%" : "45%" }]} onPress={() => { setMeal(true) }}>
                     <Text style={styles.buttontext}>
@@ -23,6 +24,11 @@ const Plans = ({ navigation, route }: Props) => {
                     </Text>
                 </TouchableOpacity>
             </View>
+
+
+
+
+
             <View style={styles.textcontainer}>
                 <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
                     Featured Plans
@@ -37,7 +43,7 @@ const Plans = ({ navigation, route }: Props) => {
 
             <ScrollView style={{ width: x, height: 330 }} horizontal={true}>
 
-                <TouchableOpacity style={styles.cardsfeatured}>
+                <TouchableOpacity style={styles.cardsfeatured} onPress={() => { navigation.navigate("PlanView") }}>
                     <ImageBackground source={require('../../../MyAssets/undraw.png')} style={styles.cardsfeaturedimage} imageStyle={{ borderRadius: 20 }}>
 
                     </ImageBackground>
@@ -49,7 +55,7 @@ const Plans = ({ navigation, route }: Props) => {
                 </TouchableOpacity>
 
 
-                <TouchableOpacity style={styles.cardsfeatured}>
+                <TouchableOpacity style={styles.cardsfeatured} onPress={() => { navigation.navigate("PlanView") }}>
                     <ImageBackground source={require('../../../MyAssets/undraw.png')} style={styles.cardsfeaturedimage} imageStyle={{ borderRadius: 20 }}>
 
                     </ImageBackground>
@@ -62,7 +68,7 @@ const Plans = ({ navigation, route }: Props) => {
 
 
 
-                <TouchableOpacity style={styles.cardsfeatured}>
+                <TouchableOpacity style={styles.cardsfeatured} onPress={() => { navigation.navigate("PlanView") }}>
                     <ImageBackground source={require('../../../MyAssets/undraw.png')} style={styles.cardsfeaturedimage} imageStyle={{ borderRadius: 20 }}>
 
                     </ImageBackground>
@@ -72,9 +78,11 @@ const Plans = ({ navigation, route }: Props) => {
                         <Text> 380 Kcal</Text>
                     </View>
                 </TouchableOpacity>
-
 
             </ScrollView>
+
+
+
 
             <Text style={styles.textheader}>Current Plan</Text>
             <TouchableOpacity style={styles.cardsplancontainer} onPress={() => { navigation.navigate("Current") }}>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, Alert, TextInput, ScrollView, Dimensions, Touchable } from "react-native";
 import FontAwesome1 from 'react-native-vector-icons/FontAwesome';
 import { Input } from 'native-base';
-import { NavigationContainer } from '@react-navigation/native';
+import { DrawerActions, NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Plans from '../Plans/planshome';
 import Monitor from '../Monitoring/graphs';
@@ -13,9 +13,53 @@ import Vitals from '../Tracking/vitals';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
+import Setting from '../Settings/settings';
+import Profile from '../Profile/Profile';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+const Drawer = createDrawerNavigator();
 import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
+function CustomDrawerContent(props: any) {
+    return (
+        <DrawerContentScrollView {...props} style={{}} contentContainerStyle={{ justifyContent: "space-between", backgroundColor: "rgb(240,240,240)", height: y, width: x * 0.7, alignItems: "center" }}>
+            <TouchableOpacity style={{ alignSelf: "flex-start", padding: 25 }} onPress={() => {
+                props.navigation.dispatch(DrawerActions.closeDrawer());
+            }}>
+                <AntDesign name="close" color="grey" size={38} />
+            </TouchableOpacity>
+            <View style={{ width: (x * 0.7) - 20, marginLeft: 20 }}>
+
+                <DrawerItemList {...props} />
+            </View>
+            <View style={{ flexDirection: "row", marginVertical: 20, alignItems: "center" }}>
+
+                <Text style={{ fontWeight: "bold", fontSize: 28 }}>Fitin </Text>
+                <View style={{
+                    transform: [{ rotate: "45deg" }],
+                    marginHorizontal: 10
+                }}>
+                    <AntDesign name="closesquareo" color="rgb(217,125,84)" size={30} />
+                </View>
+            </View>
+        </DrawerContentScrollView>
+
+    );
+}
+
+const DrawerWraped = ({ navigation, route }: Props) => {
+    return (
+        <Drawer.Navigator initialRouteName="FitinHub" screenOptions={{
+            headerShown: false
+        }} drawerContent={(props) => <CustomDrawerContent {...props} />} >
+            <Drawer.Screen name="FitinHub" component={Home} />
+            <Drawer.Screen name="Profile" component={Profile} />
+            <Drawer.Screen name="Settings" component={Setting} />
+        </Drawer.Navigator>
+    )
+}
+
 const Tabs = createBottomTabNavigator();
 const Home = ({ navigation, route }: Props) => {
     const [Modal, SetModal] = useState(false);
@@ -63,7 +107,13 @@ const Home = ({ navigation, route }: Props) => {
                 <Tabs.Screen name="Track"
 
                     options={{
-                        tabBarIconStyle: { color: "white" },
+                        tabBarIconStyle: { color: Modal ? "white" : "rgb(217,125,84)" },
+                        tabBarInactiveTintColor: !Modal ? "white" : "rgb(217,125,84)",
+                        // tabBarStyle: {
+                        //     position: "absolute",
+                        //     bottom: 20
+                        // },
+                        tabBarLabel: "",
                         tabBarButton: props =>
                             <TouchableOpacity  {...props} style={styles.maincircle} />
 
@@ -92,9 +142,9 @@ const Home = ({ navigation, route }: Props) => {
 
                 Modal ?
                     <>
-                        <View style={styles.overlay}>
+                        <TouchableOpacity style={styles.overlay} onPress={() => { SetModal(false) }}>
                             <Text>Hello im the modal</Text>
-                        </View>
+                        </TouchableOpacity>
 
 
                         <TouchableOpacity style={[styles.circle, styles.circle1]} onPress={() => {
@@ -143,7 +193,7 @@ const styles = StyleSheet.create({
     },
     maincircle: {
         position: "absolute",
-        zIndex: 1,
+        zIndex: 10,
         bottom: -10,
         left: (x - 80) / 2,
         height: 80,
@@ -192,7 +242,7 @@ const styles = StyleSheet.create({
         elevation: 6,
     }
 })
-export default Home;
+export default DrawerWraped;
 
 // tabBarButton: () => (i
 //     <TouchableOpacity style={styles.maincircle} onPress={() => { SetModal(false) }}>

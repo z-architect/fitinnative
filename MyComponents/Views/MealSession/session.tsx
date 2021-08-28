@@ -1,60 +1,41 @@
 import { NavigationContainer } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimensions, ImageBackground } from 'react-native';
 import { Props } from '../../types';
-import SetCard from './setcardvariant';
+import ConstituentCard from './constituentCard';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { Modal, Button, Switch } from 'native-base';
-import Setz from './setCardUnselected';
-import MyModal from '../Plans/deletemodal';
+import Constituents from './constituentUnselected';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-
-const SessionView = ({ navigation, route }: Props) => {
+const Session = ({ navigation, route }: Props) => {
     const [showModal, setShowModal] = useState(false);
-
-    const [Type, SetType] = useState("Meal");
-    const [Image, SetImage] = useState("");
-    const [Title, SetTitle] = useState("My session");
-    const [Description, SetDescription] = useState("The best session one can ask for");
-    const [DeleteModal, setDeleteModal] = useState(false)
-    const [OrderTable, SetOrderTable] = useState([
-        {
-            sessionId: "34",
-            orderNumber: 1
-        }
-
-    ]);
-    useEffect(() => {
-        SetOrderTable([
-            { sessionId: "45", orderNumber: 1 },
-            { sessionId: "44", orderNumber: 2 },
-            { sessionId: "42", orderNumber: 3 },
-            { sessionId: "34", orderNumber: 4 },
-            { sessionId: "75", orderNumber: 5 },
-            { sessionId: "35", orderNumber: 6 },
-            { sessionId: "12", orderNumber: 7 }
-        ])
-
-    }, [])
+    const [Session, SetSession] = useState({
+        type: "",
+        image: "",
+        category: "",
+        difficulty: "",
+        title: "",
+        description: "",
+        private: true
+    });
     return (
         <>
-            <MyModal DeleteModal={DeleteModal} setDeleteModal={setDeleteModal} />
             <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
                 <Modal.Content maxWidth="400px">
                     <Modal.CloseButton />
-                    <Modal.Header>Sets</Modal.Header>
+                    <Modal.Header>Meal Constituents</Modal.Header>
                     <Modal.Body>
-                        <Setz />
-                        <Setz />
-                        <Setz />
-                        <Setz />
-                        <Setz />
-                        <Setz />
-                        <Setz />
-                        <Setz />
+                        <Constituents />
+                        <Constituents />
+                        <Constituents />
+                        <Constituents />
+                        <Constituents />
+                        <Constituents />
+                        <Constituents />
+                        <Constituents />
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -65,7 +46,7 @@ const SessionView = ({ navigation, route }: Props) => {
                                     navigation.navigate("Set")
                                 }}
                             >
-                                + New Set
+                                + New Constituent
                             </Button>
                         </Button.Group>
                     </Modal.Footer>
@@ -80,67 +61,61 @@ const SessionView = ({ navigation, route }: Props) => {
                 </ImageBackground> */}
                 <View style={styles.head}>
                     <TouchableOpacity onPress={() => {
-                        navigation.goBack();
+
                     }}>
-                        <AntDesign name="left" size={32} color="rgb(50,71,85)" />
+                        <AntDesign name="check" size={32} color="rgb(50,71,85)" />
                     </TouchableOpacity>
-
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
-                        <TouchableOpacity onPress={() => {
-                            setDeleteModal(true);
-                        }}>
-                            <AntDesign name="delete" size={32} color="black" />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => {
-                            navigation.navigate("SessionEdit");
-                        }}>
-                            <AntDesign name="edit" size={32} color="rgb(217,125,84)" />
-                        </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity>
+                        <AntDesign name="close" size={32} color="red" />
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.Sessionimage}>
                     {
-                        (Image === "") ?
+                        (Session.image === "") ?
                             (
                                 <View style={[styles.image, { backgroundColor: "lightgrey", justifyContent: "flex-start", alignItems: "center" }]}>
                                     <TouchableOpacity style={{ width: "100%", height: "60%", justifyContent: "center", alignItems: "center" }}>
                                         <AntDesign name="picture" size={62} color="white" />
                                     </TouchableOpacity>
-                                    <View style={{ height: "40%", width: "100%" }}>
-                                        <Text style={[styles.input, { fontWeight: "bold" }]}>{Title} </Text>
-                                        <Text style={styles.input} > {Description}  </Text>
+                                    <View style={{ height: "40%", width: "80%" }}>
+                                        <TextInput placeholder="Title" placeholderTextColor="white" style={[styles.input, { fontWeight: "bold" }]} />
+                                        <TextInput placeholder="Description" placeholderTextColor="white" style={styles.input} />
                                     </View>
                                 </View>
                             ) :
                             (
                                 <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
                                     <Text style={styles.imagetext}>
-                                        {Title}
+                                        Cardio
                                     </Text>
                                 </ImageBackground>
                             )
+
+
+
                     }
 
                 </View>
                 <ScrollView style={styles.sessionContainer}>
-                    <SetCard no={1} onSelect={() => { navigation.navigate("SetView") }} setcolor="orange" />
-                    <SetCard no={2} onSelect={() => { navigation.navigate("SetView") }} setcolor="green" />
-                    <SetCard no={3} onSelect={() => { navigation.navigate("SetView") }} setcolor="red" />
-                    <SetCard no={4} onSelect={() => { navigation.navigate("SetView") }} setcolor="blue" />
-                    <SetCard no={5} onSelect={() => { navigation.navigate("SetView") }} setcolor="red" />
-                    <SetCard no={6} onSelect={() => { navigation.navigate("SetView") }} setcolor="orange" />
-                    <SetCard no={7} onSelect={() => { navigation.navigate("SetView") }} setcolor="purple" />
-                    <SetCard no={8} onSelect={() => { navigation.navigate("SetView") }} setcolor="yellow" />
+                    <ConstituentCard no={1} setcolor="orange" />
+                    <ConstituentCard no={2} setcolor="green" />
+                    {/* <ConstituentCard no={3} setcolor="red" />
+                    <ConstituentCard no={4} setcolor="blue" />
+                    <ConstituentCard no={5} setcolor="red" />
+                    <ConstituentCard no={6} setcolor="orange" />
+                    <ConstituentCard no={7} setcolor="purple" />
+                    <ConstituentCard no={8} setcolor="yellow" /> */}
+
+
 
                 </ScrollView >
-                {/* <TouchableOpacity style={styles.addbutton} onPress={() => { setShowModal(true) }}>
+                <TouchableOpacity style={styles.addbutton} onPress={() => { setShowModal(true) }}>
                     <View>
                         <Text> Add Set</Text>
                     </View>
 
-                </TouchableOpacity> */}
+                </TouchableOpacity>
 
             </View >
         </>
@@ -184,9 +159,8 @@ const styles = StyleSheet.create({
 
     },
     input: {
-        // borderBottomWidth: 1,
-        // borderBottomColor: "white",
-        color: "white",
+        borderBottomWidth: 1,
+        borderBottomColor: "white",
         fontSize: 22
     },
     imagetext: {
@@ -207,4 +181,4 @@ const styles = StyleSheet.create({
     },
 
 })
-export default SessionView;
+export default Session;

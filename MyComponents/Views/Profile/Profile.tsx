@@ -31,6 +31,10 @@ const Profile = ({ navigation, route }: Props) => {
 
             <View style={styles.titlecontainer}>
                 <Text style={styles.title} >Profile Setup</Text>
+                <TouchableOpacity>
+
+                    <AntDesign name="close" color="red" size={32} />
+                </TouchableOpacity>
             </View>
 
             <View style={styles.profileconatainer} >
@@ -159,7 +163,10 @@ const styles = StyleSheet.create({
     },
     titlecontainer: {
         height: y * 0.08,
-        justifyContent: "center",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
+
 
     },
     title: {

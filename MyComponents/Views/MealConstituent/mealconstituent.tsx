@@ -1,31 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import { useEffect } from 'react';
 import NumericInput from 'react-native-numeric-input';
 import { Modal, Button, Switch } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import Axios from 'axios';
-import Activity from './activity';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Meal from './meal';
 import {
     GifSearch,
 } from 'react-native-gif-search';
 import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-const ActivitySet = ({ navigation, route }: Props) => {
-    const [showModal, setShowModal] = useState(false);
-    const [showActivityModal, setShowActivityModal] = useState(false);
-    const [showgifModal, SetShowgifModal] = useState(false);
-    const [Visible, SetVisible] = useState(true);
-    const [Description, SetDescription] = useState("this is a set intended to make you lots of pushups")
-    const [ActivityValue, SetActivity] = useState("PushUps");
-    const [Repetition, SetRepitition] = useState(10);
-    const [Duration, SetDuration] = useState(4);
-    const [Tempo, SetTempo] = useState(false);
-    const [Met, SetMet] = useState(18);
-
+const MealConstituent = ({ navigation, route }: Props) => {
+    const [showModal, setShowModal] = useState(false)
+    const [showmealModal, setShowmealModal] = useState(false)
+    const [showgifModal, SetShowgifModal] = useState(false)
+    const [Visible, SetVisible] = useState(true)
     return (
         <>
             <Modal isOpen={showgifModal} onClose={() => { SetShowgifModal(false); SetVisible(false); }}>
@@ -62,19 +55,29 @@ const ActivitySet = ({ navigation, route }: Props) => {
                 </Modal.Content>
             </Modal>
 
-            <Modal isOpen={showActivityModal} onClose={() => setShowActivityModal(false)}>
+            <Modal isOpen={showmealModal} onClose={() => setShowmealModal(false)}>
                 <Modal.Content maxWidth="400px">
                     <Modal.CloseButton />
                     <Modal.Header style={{ flexDirection: "row", alignItems: "center" }}>
                         <View style={[styles.gif, { marginRight: 15 }]}>
 
                         </View>
-                        Create Activity</Modal.Header>
+                        Create Food Item</Modal.Header>
                     <Modal.Body>
 
-                        <TextInput placeholder="Activity name ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+                        <TextInput placeholder="meal name ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
 
                         <TextInput placeholder="Description ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+
+                        <TextInput placeholder="Carbohydrate Per Gram" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+
+                        <TextInput placeholder="Fat ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+
+                        <TextInput placeholder="Protein ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+
+                        <TextInput placeholder="Sugar ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+                        <TextInput placeholder="Carbs ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+                        <TextInput placeholder="Fiber ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
 
                         <TouchableOpacity style={styles.button} onPress={() => { SetShowgifModal(true); SetVisible(true); }}  >
                             <Text style={{ color: "white" }}>Add a GIF</Text>
@@ -87,7 +90,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                             <Button
                                 onPress={() => {
-                                    setShowActivityModal(false)
+                                    setShowmealModal(false)
                                 }}
                             >
                                 Create
@@ -102,14 +105,14 @@ const ActivitySet = ({ navigation, route }: Props) => {
                     <Modal.CloseButton />
                     <Modal.Header>Activities</Modal.Header>
                     <Modal.Body>
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
+                        <Meal />
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -117,10 +120,10 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                             <Button
                                 onPress={() => {
-                                    setShowActivityModal(true)
+                                    setShowmealModal(true)
                                 }}
                             >
-                                + New Activity
+                                + New meal
                             </Button>
                         </Button.Group>
                     </Modal.Footer>
@@ -157,7 +160,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
                         </View>
                         <View style={styles.input}>
                             <TouchableOpacity onPress={() => { setShowModal(true) }}>
-                                <TextInput placeholder="select something" value={ActivityValue} editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
+                                <TextInput placeholder="select something" editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -167,9 +170,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
                             <View>
                                 <NumericInput
                                     type='up-down'
-                                    value={Duration}
-                                    minValue={0}
-                                    onChange={value => SetDuration(value)}
+                                    onChange={value => console.log(value)}
                                     rounded
                                     upDownButtonsBackgroundColor="rgb(50,71,85)"
                                     iconStyle={{ color: "white" }}
@@ -180,9 +181,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
                             <View>
                                 <NumericInput
                                     type='up-down'
-                                    value={Repetition}
-                                    minValue={0}
-                                    onChange={value => SetRepitition(value)}
+                                    onChange={value => console.log(value)}
                                     rounded
                                     upDownButtonsBackgroundColor="rgb(50,71,85)"
                                     iconStyle={{ color: "white" }}
@@ -197,7 +196,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
                                 <Text style={{ fontWeight: "bold" }} >Tempo</Text>
                                 <View style={{ flexDirection: "row", marginBottom: 5, alignItems: "center" }}>
                                     <Text style={{ marginRight: 5 }}>Intense</Text>
-                                    <Switch size="lg" value={Tempo} onValueChange={() => { SetTempo(!Tempo) }} trackColor={{ true: 'rgb(50,71,85)', false: "grey" }} />
+                                    <Switch size="lg" trackColor={{ true: 'rgb(50,71,85)', false: "grey" }} />
                                     <Text style={{ marginLeft: 5 }}>Chill</Text>
                                 </View>
                             </View>
@@ -205,18 +204,18 @@ const ActivitySet = ({ navigation, route }: Props) => {
                             <View style={{ alignItems: "center" }}>
                                 <Text style={{ fontWeight: "bold" }}>METs</Text>
                                 <NumericInput type='plus-minus'
-                                    value={Met}
-                                    minValue={0}
-                                    onChange={value => SetMet(value)}
+                                    onChange={value => console.log(value)}
                                     textColor="black"
                                     iconStyle={{ color: "white" }}
                                     rounded
                                     rightButtonBackgroundColor='rgb(50,71,85)'
                                     leftButtonBackgroundColor='rgb(50,71,85)' />
-                                <Text style={{ color: "rgb(217,125,84)" }}>Calories Burn Rate</Text>
+                                <Text>Calories Burn Rate</Text>
                             </View>
 
                         </View>
+
+
 
                         {/* <View style={styles.plusminus}>
             
@@ -232,13 +231,13 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                     <View style={styles.foot}>
                         <Feather name="edit" size={22} color="lightblue" />
-                        <TextInput placeholder="Description" value={Description} onChangeText={(val) => { SetDescription(val) }} placeholderTextColor="black" style={{ marginHorizontal: 10, fontSize: 16, color: "black" }} />
+                        <TextInput placeholder="Description" placeholderTextColor="black" style={{ marginHorizontal: 10, fontSize: 16, color: "black" }} />
                     </View>
 
 
                 </View>
 
-                <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Update </Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Create Set </Text></TouchableOpacity>
 
             </View>
         </>
@@ -252,7 +251,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between"
     },
     card: {
-        height: y * 0.55,
+        height: y * 0.5,
         width: "90%",
         backgroundColor: "white",
         borderRadius: 10,
@@ -376,4 +375,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ActivitySet;
+export default MealConstituent;

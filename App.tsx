@@ -21,20 +21,32 @@ import Profile from './MyComponents/Views/Profile/Profile';
 
 import Home from './MyComponents/Views/HomeTabs/home';
 import Goal from './MyComponents/Views/GoalSetting/goal';
-import PlanCreation from './MyComponents/Views/Plans/plancreation';
-import MealPlan from './MyComponents/Views/Plans/plancreationmeal';
 import Plans from './MyComponents/Views/Plans/planshome';
+
+import MealPlan from './MyComponents/Views/Plans/plancreationmeal';
+import MealEdit from './MyComponents/Views/Plans/mealplanedit';
+import MealView from './MyComponents/Views/Plans/mealplanview';
+import PlanCreation from './MyComponents/Views/Plans/plancreation';
 import PlanEdit from './MyComponents/Views/Plans/planedit';
 import PlanView from './MyComponents/Views/Plans/planview';
+
 import MyPlans from './MyComponents/Views/Plans/myplans';
 import Search from './MyComponents/Views/Plans/plansearch';
 
 import SessionCreation from './MyComponents/Views/Session/session';
 import SessionView from './MyComponents/Views/Session/sessionview';
 import SessionEdit from './MyComponents/Views/Session/sessionedit';
+import MealSession from './MyComponents/Views/MealSession/session';
+import MealSessionView from './MyComponents/Views/MealSession/sessionview';
+import MealSessionEdit from './MyComponents/Views/MealSession/sessionedit';
+
 import SetCreation from './MyComponents/Views/ActivitySet/activityset';
 import SetEdit from './MyComponents/Views/ActivitySet/setedit';
 import SetView from './MyComponents/Views/ActivitySet/setview';
+import Constituent from './MyComponents/Views/MealConstituent/mealconstituent';
+import ConstituentEdit from './MyComponents/Views/MealConstituent/constituentEdit';
+import ConstituentView from './MyComponents/Views/MealConstituent/constituentView';
+
 import Monitoring from './MyComponents/Views/Monitoring/graphs';
 import Tracking from './MyComponents/Views/Tracking/tracking'
 import Meal from './MyComponents/Views/Tracking/meal';
@@ -80,12 +92,20 @@ const App = () => {
                 <Stack.Screen name="Goal" component={Goal} />
                 <Stack.Screen name="Plan" component={PlanCreation} />
                 <Stack.Screen name="MealPlan" component={MealPlan} />
+                <Stack.Screen name="MealEdit" component={MealEdit} />
+                <Stack.Screen name="MealView" component={MealView} />
                 <Stack.Screen name="PlanEdit" component={PlanEdit} />
                 <Stack.Screen name="PlanView" component={PlanView} />
                 <Stack.Screen name="MyPlans" component={MyPlans} />
                 <Stack.Screen name="Session" component={SessionCreation} />
                 <Stack.Screen name="SessionView" component={SessionView} />
                 <Stack.Screen name="SessionEdit" component={SessionEdit} />
+                <Stack.Screen name="MealSession" component={MealSession} />
+                <Stack.Screen name="MealSessionView" component={MealSessionView} />
+                <Stack.Screen name="MealSessionEdit" component={MealSessionEdit} />
+                <Stack.Screen name="Constituent" component={Constituent} />
+                <Stack.Screen name="ConstituentEdit" component={ConstituentEdit} />
+                <Stack.Screen name="ConstituentView" component={ConstituentView} />
                 <Stack.Screen name="Set" component={SetCreation} />
                 <Stack.Screen name="SetEdit" component={SetEdit} />
                 <Stack.Screen name="SetView" component={SetView} />

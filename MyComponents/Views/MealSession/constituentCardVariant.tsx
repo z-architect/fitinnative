@@ -7,8 +7,7 @@ const SetCard = (props: any) => {
     return (
         <View style={styles.SetCard} >
             <TouchableOpacity style={styles.SetCardData} onPress={() => {
-                //  props.setSelected(props.SetMeta.id)
-                props.onSelect();
+                //  props.setSelected(props.SetMeta.id) 
             }}>
                 {/* <Text style={{ fontWeight: "bold" }}> -{props.no}-</Text> */}
                 <View style={[styles.Setcardimage, { backgroundColor: props.setcolor }]}>

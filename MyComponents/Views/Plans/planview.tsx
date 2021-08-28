@@ -80,7 +80,7 @@ const PlanView = ({ navigation, route }: Props) => {
     const [SelectedSession, SetSelectedSession] = useState("");
 
     const [Days, setDays] = useState(mydays);
-    const [DeleteModal,setDeleteModal] = useState(true)
+    const [DeleteModal,setDeleteModal] = useState(false)
     const setDay = (no: number, sessionId: string) => {
         // if (!Days[no].isSet && sessionId === "") {
         //     Alert.alert("sorry Fams, you have to select a session first")
@@ -256,7 +256,7 @@ const PlanView = ({ navigation, route }: Props) => {
         <ScrollView style={styles.container} >
             <View style={styles.head}>
                 <TouchableOpacity onPress={() => {
-                    createPlan();
+                    navigation.goBack();
                 }}>
                     <AntDesign name="left" size={32} color="rgb(50,71,85)" />
                 </TouchableOpacity>
@@ -330,14 +330,14 @@ const PlanView = ({ navigation, route }: Props) => {
                             (<>{
 
                                 Sessions.map((data, i) =>
-                                    (<SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession(i.toString()) }} deleteSession={() => { deleteSession(i.toString()) }} />))
+                                    (<SessionCard sessionMeta={SessionMeta} setSelected={()=>{navigation.navigate("SessionView")}}   />))
                             }
 
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={()=>{navigation.navigate("SessionView")}}   />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={()=>{navigation.navigate("SessionView")}}   />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={()=>{navigation.navigate("SessionView")}}   />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={()=>{navigation.navigate("SessionView")}}   />
+                                <SessionCard sessionMeta={SessionMeta} setSelected={()=>{navigation.navigate("SessionView")}}   />
                             </>)
                             :
                             (<>
