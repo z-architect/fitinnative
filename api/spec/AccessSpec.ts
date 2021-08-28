@@ -26,7 +26,7 @@ export enum Goal {
 export interface SignupRequestSpec {
   firstName?: string;
   middleName?: string;
-  lastname?: string;
+  lastName?: string;
   email?: string;
   phoneNumber?: string;
   sex: Sex;

@@ -1,12 +1,13 @@
 import axios from "axios";
 import messaging from "@react-native-firebase/messaging";
+import auth from "@react-native-firebase/auth";
 import iid from "@react-native-firebase/iid";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import GoogleServicesKey from "../android/app/google-services.json";
 
 // initialize axios
 export const instance = axios.create({
-  baseURL: "http://127.0.0.1:44032/v1",
+  baseURL: "http://192.168.110.109:44032/v1",
   headers: {
     common: {
       ["X-Instance-Id"]: getInstallationId(),
@@ -14,6 +15,8 @@ export const instance = axios.create({
     },
   },
 });
+
+// auth().useEmulator("http://192.168.0.109:9099");
 
 // initialize Google SDK
 GoogleSignin.configure({

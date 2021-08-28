@@ -15,6 +15,7 @@ import { instance } from "../config";
 
 export class Access {
   static async signup(data: SignupRequestSpec) {
+    console.log("before on auth");
     return requestCreate<SignupRequestSpec, SignupResponseSpec>(
       "/access/signup",
       data

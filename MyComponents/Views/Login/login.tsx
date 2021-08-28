@@ -1,244 +1,305 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Button, Input } from "native-base";
+import Emoji from "react-native-emoji";
+import Auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+
+import * as yup from "yup";
 import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { Formik } from "formik";
+import { Props } from "../../types";
+import { useAppDispatch } from "../../Redux/hooks";
+import { logIn } from "../../Redux/profileSlice";
+import {
+  onAuthStateChanged,
+  signinToFirebase,
+  signupToFirebase,
+} from "../../../api/utils";
+import { FirebaseAccessMethod } from "../../../api/spec";
+import { Access } from "../../../api/interface";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-    Input,
-    Icon,
-    Button
-
-} from "native-base";
-import Emoji from 'react-native-emoji';
-import Auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-
-import * as yup from 'yup';
-import { View, Text, TouchableOpacity, Alert, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import { Formik, Field } from 'formik';
-import { Props } from '../../types';
-import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
-import { signOut, logIn } from '../../Redux/userSlice';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const loginValidationSchema = yup.object().shape({
-    Email: yup
-        .string()
-        .email("Please enter valid email"),
-    PhoneNumber: yup
-        .string()
-        .matches(/(\d){8}\b/, 'Enter a valid phone number'),
-    Password: yup
-        .string()
-        .required('Password is required'),
-
+  email: yup.string().email("Please enter valid email"),
+  phoneNumber: yup.string().matches(/(\d){8}\b/, "Enter a valid phone number"),
+  password: yup.string().required("Password is required"),
 });
 
 const Login = ({ navigation, route }: Props) => {
-    const dispatch = useAppDispatch();
-    const initialValues = {
-        Email: "",
-        Password: "",
-        PhoneNumber: ""
+  const dispatch = useAppDispatch();
+  const initialValues = {
+    email: "",
+    password: "",
+    phoneNumber: "",
+  };
+
+  const [user, setUser] = useState<FirebaseAuthTypes.User>();
+
+  ////////////////////////////////
+  //   PHone Auth
+  //////////////////////////////////
+
+  const [confirm, setConfirm] =
+    useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
+  const [code, setCode] = useState("");
+
+  async function signInWithPhoneNumber(phoneNumber: string) {
+    const confirmation = await Auth().signInWithPhoneNumber(phoneNumber);
+    setConfirm(confirmation);
+  }
+
+  async function confirmCode() {
+    try {
+      if (confirm !== null) await confirm.confirm(code);
+    } catch (error) {
+      console.log("Invalid code.");
     }
-    const [initializing, setInitializing] = useState(true);
-    const [user, setUser] = useState<FirebaseAuthTypes.User>();
+  }
 
+  const HandleSubmit = async (values: any) => {
+    // Alert.alert(JSON.stringify(values))
+    const { email, password, phoneNumber } = values;
 
-    ////////////////////////////////
-    //   PHone Auth
-    //////////////////////////////////
-
-    const [confirm, setConfirm] = useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
-    const [code, setCode] = useState('');
-
-    async function signInWithPhoneNumber(phoneNumber: string) {
-        const confirmation = await Auth().signInWithPhoneNumber(phoneNumber);
-        setConfirm(confirmation);
-    }
-
-    async function confirmCode() {
-        try {
-            if (confirm !== null)
-                await confirm.confirm(code);
-        } catch (error) {
-            console.log('Invalid code.');
+    try {
+      const fireResult = await signinToFirebase(
+        FirebaseAccessMethod.EMAIL_AND_PASSWORD,
+        {
+          email,
+          password,
         }
-    }
-    function onAuthStateChanged(user: any) {
-        setUser(user);
-        if (initializing) setInitializing(false);
-    }
+      );
 
-    useEffect(() => {
-        const subscriber = Auth().onAuthStateChanged(onAuthStateChanged);
-        return subscriber; // unsubscribe on unmount
-    }, []);
+      await onAuthStateChanged(
+        (fireResult as FirebaseAuthTypes.UserCredential).user
+      );
 
+      const result = await Access.signin();
 
-
-
-    const HandleSubmit = async (values: any) => {
-        // Alert.alert(JSON.stringify(values))
+      if (result) {
+        await AsyncStorage.setItem(
+          "@profile",
+          JSON.stringify({ profile: result.data })
+        );
         await dispatch(logIn());
-        navigation.navigate("Home")
-        // try {
-
-
-        //     let response = await Auth().signInWithEmailAndPassword(values.Email, values.Password);
-        //     if (response && response.user) {
-        //         Alert.alert("success", "account succesfully create");
-        //     }
-        // } catch (e) {
-        //     Alert.alert("error ", e.message)
-        // }
+        navigation.navigate("Home");
+      } else {
+        // TODO handle fitin signup failure
+      }
+    } catch (err) {
+      console.error(err);
+      // TODO handle firebase signup failure
     }
-    if (initializing) return null;
 
-    if (!user) {
+    // try {
 
-        return (
-            <View style={styles.container}>
+    //     let response = await Auth().signInWithEmailAndPassword(values.Email, values.Password);
+    //     if (response && response.user) {
+    //         Alert.alert("success", "account succesfully create");
+    //     }
+    // } catch (e) {
+    //     Alert.alert("error ", e.message)
+    // }
+  };
 
-                <View style={styles.logocontainer}>
-                    <View style={{
-                        transform: [{ rotate: "45deg" }]
-                    }}>
-                        <AntDesign name="closesquareo" color="white" size={60} />
-                    </View>
-
-                    <Text style={styles.logotext}>FIT IN </Text>
-                </View>
-                <Formik
-                    initialValues={initialValues}
-                    validationSchema={loginValidationSchema}
-                    onSubmit={HandleSubmit}>
-                    {(formik) => {
-                        const { values,
-                            handleChange,
-                            handleSubmit,
-                            errors,
-                            touched,
-                            handleBlur,
-                            isValid,
-                            dirty
-                        } = formik;
-                        return (<View style={styles.card}>
-                            <View style={styles.cardheader}>
-                                <Text style={styles.cardheadertext}>Log In</Text>
-                            </View>
-                            <View style={styles.form}>
-                                {
-                                    true ?
-                                        <>
-                                            <Text style={styles.label}>Email</Text>
-                                            <Input p={2} placeholder="" variant="filled" isInvalid={errors.Email && touched.Email ? true : false} value={values.Email} onChangeText={handleChange('Email')} onBlur={handleBlur('Email')} />
-                                            {errors.Email && touched.Email && (
-                                                <Text style={styles.errorlabel}>{errors.Email}</Text>
-                                            )}</>
-                                        :
-                                        <>
-                                            <Text style={styles.label}>PhoneNumber</Text>
-                                            <Input p={2} placeholder="" variant="filled" isInvalid={errors.PhoneNumber && touched.PhoneNumber ? true : false} value={values.PhoneNumber} onChangeText={handleChange('PhoneNumber')} onBlur={handleBlur('PhoneNumber')} />
-                                            {errors.PhoneNumber && touched.PhoneNumber && (
-                                                <Text style={styles.errorlabel}>{errors.PhoneNumber}</Text>
-                                            )}</>
-
-                                }
-
-
-                                <Text style={styles.label}>PassWord</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.Password && touched.Password ? true : false} value={values.Password} onChangeText={handleChange('Password')} onBlur={handleBlur('Password')} />
-                                {errors.Password && touched.Password && (
-                                    <Text style={styles.errorlabel}>{errors.Password}</Text>
-                                )}
-                                <Button disabled={!(dirty && isValid) ? true : false} onPress={handleSubmit} style={styles.button}>
-                                    Login In
-                                </Button>
-                            </View>
-
-                        </View>
-                        )
-                    }
-
-
-
-                    }
-                </Formik>
-                <View style={styles.bottomtextcontainer}>
-                    <Text style={styles.bottomtext}> Don't Have an account?</Text>
-                    <TouchableOpacity style={{}}><Text style={{ fontSize: 18, color: "white" }} onPress={() => navigation.navigate("Signup")}>SIgn Up <Emoji name="smiley" style={{ fontSize: 22 }} /></Text></TouchableOpacity>
-                </View>
-            </View>
-        )
-    }
+  if (!user) {
     return (
-        <View>
-            <Text>Welcome {user.email}</Text>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+      >
+        <View style={styles.logoContainer}>
+          <View
+            style={{
+              transform: [{ rotate: "45deg" }],
+            }}
+          >
+            <AntDesign name="closesquareo" color="white" size={60} />
+          </View>
+
+          <Text style={styles.logoText}>FIT IN </Text>
         </View>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={loginValidationSchema}
+          onSubmit={HandleSubmit}
+        >
+          {(formik) => {
+            const {
+              values,
+              handleChange,
+              handleSubmit,
+              errors,
+              touched,
+              handleBlur,
+              isValid,
+              dirty,
+            } = formik;
+            return (
+              <View style={styles.card}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.cardHeaderText}>Log In</Text>
+                </View>
+                <View style={styles.form}>
+                  {true ? (
+                    <>
+                      <Text style={styles.label}>Email</Text>
+                      <Input
+                        p={2}
+                        placeholder=""
+                        variant="filled"
+                        isInvalid={errors.email && touched.email ? true : false}
+                        value={values.email}
+                        onChangeText={handleChange("email")}
+                        onBlur={handleBlur("email")}
+                      />
+                      {errors.email && touched.email && (
+                        <Text style={styles.errorLabel}>{errors.email}</Text>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Text style={styles.label}>PhoneNumber</Text>
+                      <Input
+                        p={2}
+                        placeholder=""
+                        variant="filled"
+                        isInvalid={
+                          errors.phoneNumber && touched.phoneNumber
+                            ? true
+                            : false
+                        }
+                        value={values.phoneNumber}
+                        onChangeText={handleChange("phoneNumber")}
+                        onBlur={handleBlur("phoneNumber")}
+                      />
+                      {errors.phoneNumber && touched.phoneNumber && (
+                        <Text style={styles.errorLabel}>
+                          {errors.phoneNumber}
+                        </Text>
+                      )}
+                    </>
+                  )}
+
+                  <Text style={styles.label}>Password</Text>
+                  <Input
+                    p={2}
+                    type="password"
+                    placeholder=""
+                    variant="filled"
+                    isInvalid={!!(errors.password && touched.password)}
+                    value={values.password}
+                    onChangeText={handleChange("password")}
+                    onBlur={handleBlur("password")}
+                  />
+                  {errors.password && touched.password && (
+                    <Text style={styles.errorLabel}>{errors.password}</Text>
+                  )}
+                  <Button
+                    disabled={false}
+                    onPress={handleSubmit}
+                    style={styles.button}
+                  >
+                    Login In
+                  </Button>
+                </View>
+              </View>
+            );
+          }}
+        </Formik>
+        <View style={styles.bottomTextContainer}>
+          <Text style={styles.bottomText}> Don't Have an account?</Text>
+          <TouchableOpacity style={{}}>
+            <Text
+              style={{ fontSize: 18, color: "white" }}
+              onPress={() => navigation.navigate("Signup")}
+            >
+              SIgn Up <Emoji name="smiley" style={{ fontSize: 22 }} />
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     );
-}
+  }
+  return (
+    <View>
+      <Text>Welcome {user.email}</Text>
+    </View>
+  );
+};
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        position: "relative",
-        backgroundColor: "rgb(50,71,85)",
-        // backgroundColor: "rgb(241,243,245)",
-        justifyContent: "center",
-        alignItems: "center"
+  container: {
+    flex: 1,
+  },
 
-    },
-    logocontainer: {
-        position: "absolute",
-        top: 25,
-        height: y * 0.2,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    logotext: {
-        fontSize: 40,
-        color: "white"
-    },
-    bottomtextcontainer: {
-        position: "absolute",
-        bottom: 25,
-        alignItems: "center"
-    },
-    bottomtext: {
-        color: "white",
-        fontSize: 14
-    },
+  contentContainer: {
+    position: "relative",
+    backgroundColor: "rgb(50,71,85)",
+    height: y,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
-    card: {
-        borderRadius: 40,
-        width: "80%",
-        shadowColor: "grey",
-        shadowOpacity: 0.5,
-        shadowRadius: 5.0,
-        elevation: 3,
-        backgroundColor: "white",
-        padding: 20
-    },
-    cardheader: {
-        borderBottomWidth: 1,
-        marginVertical: 20
-    },
-    cardheadertext: {
-        padding: 20,
-        fontSize: 30
-        , fontWeight: "bold"
-    },
-    form: {
-        //backgroundColor: "yellow"
-    },
-    label: {
+  logoContainer: {
+    position: "absolute",
+    top: 25,
+    height: y * 0.2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logoText: {
+    fontSize: 40,
+    color: "white",
+  },
+  bottomTextContainer: {
+    position: "absolute",
+    bottom: 25,
+    alignItems: "center",
+  },
+  bottomText: {
+    color: "white",
+    fontSize: 14,
+  },
 
-    },
-    errorlabel: {
-        color: "red",
-        fontSize: 14
-    },
-    button: {
-        backgroundColor: "rgb(217,125,84)",
-        marginVertical: 15
-    }
-})
+  card: {
+    borderRadius: 40,
+    width: "80%",
+    shadowColor: "grey",
+    shadowOpacity: 0.5,
+    shadowRadius: 5.0,
+    elevation: 3,
+    backgroundColor: "white",
+    padding: 20,
+  },
+  cardHeader: {
+    borderBottomWidth: 1,
+    marginVertical: 20,
+  },
+  cardHeaderText: {
+    padding: 20,
+    fontSize: 30,
+    fontWeight: "bold",
+  },
+  form: {
+    //backgroundColor: "yellow"
+  },
+  label: {},
+  errorLabel: {
+    color: "red",
+    fontSize: 14,
+  },
+  button: {
+    backgroundColor: "rgb(217,125,84)",
+    marginVertical: 15,
+  },
+});
 export default Login;
