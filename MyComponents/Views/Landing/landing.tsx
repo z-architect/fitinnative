@@ -22,7 +22,8 @@ const LandingPage = ({ navigation }: Props) => {
       if (!hasOnboarded) navigation.navigate("Onboarding");
       else navigation.navigate("Auth");
     } catch (err) {
-      Alert.alert(err.message); // TODO do something else
+      // TODO do something
+      navigation.navigate("Onboarding");
     }
   };
 
