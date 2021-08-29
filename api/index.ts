@@ -1,1 +1,4 @@
-export * as API from "./interface";
+import * as Utils from "./utils";
+import * as Interface from "./interface";
+
+export default { Interface, Utils };

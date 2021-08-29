@@ -45,6 +45,7 @@ export interface ProfileUpdateRequestSpec {
   lastName?: string;
   sex?: Sex;
   dateOfBirth?: string | Date;
+  currentGoal?: Goal;
   profilePicture?: string;
   dailyGlassesOfWater?: number;
   dailyHoursOfSleep?: number;

@@ -7,6 +7,7 @@ import {
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { AxiosRequestConfig } from "axios";
 import { getFCMToken, getInstallationId, instance } from "./config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
  * Refreshes all the default auth headers, ***instance id*** and ***fcm token***, in axios.
@@ -16,11 +17,25 @@ export async function refreshAuth(token?: string) {
   const installationId = await getInstallationId();
   const fcmToken = await getFCMToken();
 
-  if (installationId)
+  if (installationId) {
     instance.defaults.headers.common["X-Instance-Id"] = installationId;
-  if (fcmToken) instance.defaults.headers.common["X-FCM-Token"] = fcmToken;
+    await AsyncStorage.setItem(
+      "@installationId",
+      JSON.stringify({ installationId })
+    );
+  }
+  if (fcmToken) {
+    instance.defaults.headers.common["X-FCM-Token"] = fcmToken;
+    await AsyncStorage.setItem("@fcmToken", JSON.stringify({ fcmToken }));
+  }
 
-  if (token) instance.defaults.headers.common["Authorization"] = token;
+  if (token) {
+    instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    await AsyncStorage.setItem(
+      "@token",
+      JSON.stringify({ token: `Bearer ${token}` })
+    );
+  }
 }
 
 /**
@@ -30,8 +45,11 @@ export async function refreshAuth(token?: string) {
 export async function onAuthStateChanged(user: FirebaseAuthTypes.User | null) {
   try {
     const idToken = await user?.getIdToken();
+
     if (idToken) await refreshAuth(idToken);
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 /**
@@ -86,7 +104,7 @@ export async function signinToFirebase(
 }
 
 /**
- * Sign up to firebase. // TODO uUe this on sign up before calling the signup api interface
+ * Sign up to firebase. // TODO Use this on sign up before calling the signup api interface
  */
 export async function signupToFirebase(
   method: FirebaseAccessMethod,
@@ -133,6 +151,7 @@ export async function requestCreate<T, H>(
 
     return null;
   } catch (err) {
+    console.error(err);
     return null;
   }
 }
@@ -186,7 +205,7 @@ export async function requestUpdateWithReturn<T, H>(
   route: string,
   data?: T,
   config?: AxiosRequestConfig
-): Promise<H | null> {
+): Promise<SuccessData<H> | null> {
   try {
     const res = await instance.put(
       `${instance.defaults.baseURL}${route}`,
@@ -227,7 +246,7 @@ export async function requestDelete(
 export async function requestDeleteWithReturn<T>(
   route: string,
   config?: AxiosRequestConfig
-): Promise<T | null> {
+): Promise<SuccessData<T> | null> {
   try {
     const res = await instance.delete(
       `${instance.defaults.baseURL}${route}`,

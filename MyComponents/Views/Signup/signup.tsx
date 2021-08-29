@@ -1,252 +1,526 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Button, Input, Modal, Select } from "native-base";
+import Emoji from "react-native-emoji";
+import * as yup from "yup";
 import {
-    Input,
-    Icon,
-    Button
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { Formik } from "formik";
+import { Props } from "../../types";
+import { useAppDispatch } from "../../Redux/hooks";
+import { logIn } from "../../Redux/profileSlice";
+import { FirebaseAccessMethod, Role, Sex } from "../../../api/spec";
+import { Access } from "../../../api/interface";
+import { onAuthStateChanged, signupToFirebase } from "../../../api/utils";
+import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import DatePicker from "react-native-date-picker";
+import PhoneInput from "react-native-phone-number-input";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-} from "native-base";
-import Auth from '@react-native-firebase/auth';
-import Emoji from 'react-native-emoji';
-import * as yup from 'yup';
-import { View, Text, Alert, TouchableOpacity, ImageBackground, StyleSheet, TextInput, ScrollView, Dimensions } from "react-native";
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import { Formik, Field } from 'formik';
-import { Props } from '../../types';
-import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
-import { signOut, logIn } from '../../Redux/profileSlice';
-
-//import Axios from 'axios';
-const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const signupValidationSchema = yup.object().shape({
-    FirstName: yup
-        .string()
-        .min(2, "Too Short")
-        .max(15, "Too Long!")
-        .required('Your Name is required'),
-    LastName: yup
-        .string()
-        .required('Your Middle Name is required'),
-    Email: yup
-        .string()
-        .email("Please enter valid email"),
-    PhoneNumber: yup
-        .string()
-        .matches(/(01)(\d){8}\b/, 'Enter a valid phone number'),
-    Password: yup
-        .string()
-        .matches(/\w*[a-z]\w*/, "Password must have a small letter")
-        .matches(/\w*[A-Z]\w*/, "Password must have a capital letter")
-        .matches(/\d/, "Password must have a number")
-        .matches(/[!@#$%^&*()\-_"=+{}; :,<.>]/, "Password must have a special character")
-        .min(8, ({ min }) => `Password must be at least ${min} characters`)
-        .required('Password is required'),
-    DateOfBirth: yup
-        .string()
-        .required('Your Date of Birth is Neccesary'),
-    ConfirmPassword: yup
-        .string()
-        .oneOf([yup.ref('Password')], 'Passwords do not match')
-        .required('Confirm password is required'),
-})
+  firstName: yup
+    .string()
+    .min(2, "Too Short")
+    .max(15, "Too Long!")
+    .required("Your Name is required"),
+  lastName: yup.string().required("Your Middle Name is required"),
+  email: yup.string().email("Please enter valid email"),
+  phoneNumber: yup
+    .string()
+    .matches(/(\+251)(\d){9}\b/, "Enter a valid phone number"),
+  password: yup
+    .string()
+    .matches(/\w*[a-z]\w*/, "Password must have a small letter")
+    .matches(/\w*[A-Z]\w*/, "Password must have a capital letter")
+    .matches(/\d/, "Password must have a number")
+    .matches(
+      /[!@#$%^&*()\-_"=+{}; :,<.>]/,
+      "Password must have a special character"
+    )
+    .min(8, ({ min }) => `Password must be at least ${min} characters`)
+    .required("Password is required"),
+  dateOfBirth: yup.date().required("Your Date of Birth is Neccesary"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords do not match")
+    .required("Confirm password is required"),
+});
 
-const Signup = ({ navigation, route }: Props) => {
-    const initialValues = {
-        FirstName: "",
-        LastName: "",
-        Email: "",
-        PhoneNumber: "",
-        DateOfBirth: "",
-        Sex: "",
-        Role: "",
-        Password: "",
-        ConfirmPassword: ""
+const Signup = ({ navigation }: Props) => {
+  const initialValues = {
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    dateOfBirth: new Date(new Date().getMilliseconds() - 3.784e11),
+    sex: Sex.MALE,
+    role: Role.TRAINEE,
+    password: "",
+    confirmPassword: "",
+  };
+
+  const [pagePosition, setPagePosition] = useState(0);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const dispatch = useAppDispatch();
+
+  // function automaticSignup() {
+  //   void handleSubmit({
+  //     firstName: "Daniel",
+  //     middleName: "",
+  //     lastName: "Tsegaw",
+  //     email: "dullkingsman@gmail.com",
+  //     phoneNumber: "+251975250953",
+  //     dateOfBirth: "2021-08-25T14:33:09.429Z",
+  //     sex: Sex.MALE,
+  //     role: Role.TRAINEE,
+  //     password: "alabama",
+  //     confirmPassword: "alabama",
+  //   });
+  // }
+
+  useEffect(() => {
+    console.log(initialValues);
+  }, [initialValues]);
+
+  const handleSubmit = async (values: any) => {
+    console.log(pagePosition);
+    if (pagePosition < 2) {
+      handleNext();
+      return;
     }
-    const dispatch = useAppDispatch();
-    const HandleSubmit = async (values: any) => {
-        // Alert.alert(JSON.stringify(values))
+
+    const {
+      firstName,
+      middleName,
+      lastName,
+      email,
+      phoneNumber,
+      sex,
+      dateOfBirth,
+      role,
+      password,
+    } = values;
+
+    try {
+      const fireResult = await signupToFirebase(
+        FirebaseAccessMethod.EMAIL_AND_PASSWORD,
+        {
+          email,
+          password,
+        }
+      );
+
+      await onAuthStateChanged(
+        (fireResult as FirebaseAuthTypes.UserCredential).user
+      );
+
+      const result = await Access.signup({
+        firstName,
+        middleName,
+        lastName,
+        email,
+        phoneNumber,
+        sex,
+        dateOfBirth,
+        role,
+      });
+
+      if (result) {
+        await AsyncStorage.setItem(
+          "@profile",
+          JSON.stringify({ profile: result.data })
+        );
         await dispatch(logIn());
-        navigation.navigate("Profile")
-        // try {
-
-
-        //     let response = await Auth().createUserWithEmailAndPassword(values.Email, values.Password);
-        //     if (response && response.user) {
-        //         Alert.alert("success", "account succesfully create");
-        //     }
-
-        // } catch (e) {
-        //     Alert.alert("error ", e.message)
-        // }
+        navigation.navigate("Profile");
+      } else {
+        // TODO handle fitin signup failure
+      }
+    } catch (err) {
+      console.error(err);
+      // TODO handle firebase signup failure
     }
-    return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentcontainer}>
-            <View style={styles.logocontainer}>
-                <View style={{
-                    transform: [{ rotate: "45deg" }]
-                }}>
-                    <AntDesign name="closesquareo" color="white" size={60} />
+  };
+
+  function handleNext() {
+    setPagePosition(pagePosition + 1);
+  }
+
+  function handleBack() {
+    setPagePosition(pagePosition - 1);
+  }
+
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <View style={styles.logoContainer}>
+        <View
+          style={{
+            transform: [{ rotate: "45deg" }],
+          }}
+        >
+          <AntDesign name="closesquareo" color="white" size={60} />
+        </View>
+
+        <Text style={styles.logoText}>FIT IN </Text>
+      </View>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={signupValidationSchema}
+        onSubmit={handleSubmit}
+      >
+        {(formik) => {
+          const {
+            values,
+            handleChange,
+            handleSubmit,
+            errors,
+            touched,
+            handleBlur,
+            isValid,
+            dirty,
+          } = formik;
+          return (
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardHeaderText}>Sign Up</Text>
+              </View>
+              <View style={styles.form}>
+                {/* <Text style={{ borderBottomWidth: 1, fontSize: 18, marginVertical: 20 }}>  </Text> */}
+                <View
+                  style={{
+                    marginTop: 5,
+                    marginBottom: 25,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  {pagePosition !== 0 ? (
+                    <TouchableOpacity onPress={() => handleBack()}>
+                      <AntDesign name={"left"} size={22} />
+                    </TouchableOpacity>
+                  ) : null}
+                  <Text
+                    style={{
+                      borderBottomWidth: 1,
+                      fontSize: 18,
+                      marginLeft: pagePosition === 0 ? 0 : 10,
+                      color: "grey",
+                      fontWeight: "bold",
+                      borderColor: "lightgrey",
+                      width: pagePosition === 0 ? "100%" : "87%",
+                    }}
+                  >
+                    {pagePosition === 0
+                      ? "Who are you?"
+                      : pagePosition === 1
+                      ? "Getting to know you"
+                      : "Security"}
+                  </Text>
                 </View>
 
-                <Text style={styles.logotext}>FIT IN </Text>
+                {pagePosition === 0 ? (
+                  <>
+                    <Text style={styles.label}>First Name</Text>
+                    <Input
+                      p={2}
+                      placeholder=""
+                      variant="filled"
+                      isInvalid={!!(errors.firstName && touched.firstName)}
+                      value={values.firstName}
+                      onChangeText={handleChange("firstName")}
+                      onBlur={handleBlur("firstName")}
+                    />
+                    {errors.firstName && touched.firstName && (
+                      <Text style={styles.errorLabel}>{errors.firstName}</Text>
+                    )}
+                    <Text style={styles.label}>Last Name</Text>
+                    <Input
+                      p={2}
+                      placeholder=""
+                      variant="filled"
+                      isInvalid={!!(errors.lastName && touched.lastName)}
+                      value={values.lastName}
+                      onChangeText={handleChange("lastName")}
+                      onBlur={handleBlur("lastName")}
+                    />
+                    {errors.lastName && touched.lastName && (
+                      <Text style={styles.errorLabel}>{errors.lastName}</Text>
+                    )}
+                  </>
+                ) : pagePosition === 1 ? (
+                  <>
+                    <Text style={styles.label}>PhoneNumber</Text>
+                    <PhoneInput
+                      containerStyle={styles.phoneNumber}
+                      textContainerStyle={styles.phoneNumberInputContainer}
+                      defaultValue={values.phoneNumber}
+                      defaultCode="ET"
+                      layout="first"
+                      onChangeFormattedText={handleChange("phoneNumber")}
+                    />
+                    {errors.phoneNumber && touched.phoneNumber && (
+                      <Text style={styles.errorLabel}>
+                        {errors.phoneNumber}
+                      </Text>
+                    )}
+                    <Text style={styles.label}>Sex</Text>
+                    <Select
+                      selectedValue={values.sex}
+                      minWidth={200}
+                      accessibilityLabel={`Gender selector`}
+                      placeholder={`Choose your gender`}
+                      onValueChange={handleChange("sex")}
+                    >
+                      {Object.values(Sex).map((value) => (
+                        <Select.Item key={value} label={value} value={value} />
+                      ))}
+                    </Select>
+                    {errors.sex && touched.sex && (
+                      <Text style={styles.errorLabel}>{errors.sex}</Text>
+                    )}
+                    <Text style={styles.label}>Date of Birth</Text>
+                    <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                      <Input
+                        p={2}
+                        isDisabled={true}
+                        placeholder={new Date(
+                          values.dateOfBirth
+                        ).toDateString()}
+                        variant="filled"
+                        isInvalid={
+                          !!(errors.dateOfBirth && touched.dateOfBirth)
+                        }
+                        value={new Date(values.dateOfBirth).toDateString()}
+                      />
+                    </TouchableOpacity>
+
+                    <Modal
+                      isOpen={showDatePicker}
+                      onClose={() => {
+                        setShowDatePicker(false);
+                        setShowDatePicker(false);
+                      }}
+                    >
+                      <Modal.Content maxWidth="400px">
+                        <Modal.CloseButton />
+                        <Modal.Header>Choose date</Modal.Header>
+                        <Modal.Body>
+                          <DatePicker
+                            testID={"dateOfBirthPicker"}
+                            date={new Date(values.dateOfBirth)}
+                            mode={"date"}
+                            onDateChange={(date) =>
+                              handleChange("dateOfBirth")(date.toISOString())
+                            }
+                          />
+                        </Modal.Body>
+                      </Modal.Content>
+                    </Modal>
+
+                    {errors.dateOfBirth && touched.dateOfBirth && (
+                      <Text style={styles.errorLabel}>
+                        {errors.dateOfBirth}
+                      </Text>
+                    )}
+                    <Text style={styles.label}>Role</Text>
+                    <Select
+                      selectedValue={values.role}
+                      minWidth={200}
+                      accessibilityLabel={`Gender role`}
+                      placeholder={`Choose your role`}
+                      onValueChange={handleChange("role")}
+                    >
+                      {Object.values(Role).map((value) => (
+                        <Select.Item key={value} label={value} value={value} />
+                      ))}
+                    </Select>
+                    {errors.role && touched.role && (
+                      <Text style={styles.errorLabel}>{errors.role}</Text>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.label}>Email</Text>
+                    <Input
+                      p={2}
+                      placeholder=""
+                      variant="filled"
+                      isInvalid={!!(errors.email && touched.email)}
+                      value={values.email}
+                      onChangeText={handleChange("email")}
+                      onBlur={handleBlur("email")}
+                    />
+                    {errors.email && touched.email && (
+                      <Text style={styles.errorLabel}>{errors.email}</Text>
+                    )}
+                    <Text style={styles.label}>Password</Text>
+                    <Input
+                      p={2}
+                      type="password"
+                      placeholder=""
+                      variant="filled"
+                      isInvalid={!!(errors.password && touched.password)}
+                      value={values.password}
+                      onChangeText={handleChange("password")}
+                      onBlur={handleBlur("password")}
+                    />
+                    {errors.password && touched.password && (
+                      <Text style={styles.errorLabel}>{errors.password}</Text>
+                    )}
+                    <Text style={styles.label}>Confirm Password</Text>
+                    <Input
+                      p={2}
+                      type="password"
+                      placeholder=""
+                      variant="filled"
+                      isInvalid={
+                        !!(errors.confirmPassword && touched.confirmPassword)
+                      }
+                      value={values.confirmPassword}
+                      onChangeText={handleChange("confirmPassword")}
+                      onBlur={handleBlur("confirmPassword")}
+                    />
+                    {errors.confirmPassword && touched.confirmPassword && (
+                      <Text style={styles.errorLabel}>
+                        {errors.confirmPassword}
+                      </Text>
+                    )}
+                  </>
+                )}
+
+                {pagePosition === 2 ? (
+                  <Button
+                    // disabled={!(dirty && isValid)}
+                    onPress={handleSubmit}
+                    style={styles.button}
+                  >
+                    Sign Up
+                  </Button>
+                ) : (
+                  <Button
+                    // disabled={!(dirty && isValid)}
+                    onPress={handleNext}
+                    style={styles.nextButton}
+                  >
+                    Next
+                  </Button>
+                )}
+              </View>
             </View>
-            <Formik
-                initialValues={initialValues}
-                validationSchema={signupValidationSchema}
-                onSubmit={HandleSubmit}>
-                {(formik) => {
-                    const { values,
-                        handleChange,
-                        handleSubmit,
-                        errors,
-                        touched,
-                        handleBlur,
-                        isValid,
-                        dirty
-                    } = formik;
-                    return (
-                        <View style={styles.card}>
-                            <View style={styles.cardheader}>
-                                <Text style={styles.cardheadertext}>SignUP</Text>
-                            </View>
-                            <View style={styles.form}>
-                                {/* <Text style={{ borderBottomWidth: 1, fontSize: 18, marginVertical: 20 }}>  </Text> */}
-                                <Text style={styles.label}>First Name*</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.FirstName && touched.FirstName ? true : false} value={values.FirstName} onChangeText={handleChange('FirstName')} onBlur={handleBlur('FirstName')} />
-                                {errors.FirstName && touched.FirstName && (
-                                    <Text style={styles.errorlabel}>{errors.FirstName}</Text>
-                                )}
-                                <Text style={styles.label}>Last Name*</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.LastName && touched.LastName ? true : false} value={values.LastName} onChangeText={handleChange('LastName')} onBlur={handleBlur('LastName')} />
-                                {errors.LastName && touched.LastName && (
-                                    <Text style={styles.errorlabel}>{errors.LastName}</Text>
-                                )}
-                                <Text style={styles.label}>Email</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.Email && touched.Email ? true : false} value={values.Email} onChangeText={handleChange('Email')} onBlur={handleBlur('Email')} />
-                                {errors.Email && touched.Email && (
-                                    <Text style={styles.errorlabel}>{errors.Email}</Text>
-                                )}
-
-                                <Text style={{ borderBottomWidth: 1, fontSize: 18, marginVertical: 20, fontWeight: "bold" }}>   Getting to Know you </Text>
-
-                                <Text style={styles.label}>PhoneNumber</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.PhoneNumber && touched.PhoneNumber ? true : false} value={values.PhoneNumber} onChangeText={handleChange('PhoneNumber')} onBlur={handleBlur('PhoneNumber')} />
-                                {errors.PhoneNumber && touched.PhoneNumber && (
-                                    <Text style={styles.errorlabel}>{errors.PhoneNumber}</Text>
-                                )}
-                                <Text style={styles.label}>Sex</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.Sex && touched.Sex ? true : false} value={values.Sex} onChangeText={handleChange('Sex')} onBlur={handleBlur('Sex')} />
-                                {errors.Sex && touched.Sex && (
-                                    <Text style={styles.errorlabel}>{errors.Sex}</Text>
-                                )}
-                                <Text style={styles.label}>Date of Birth</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.DateOfBirth && touched.DateOfBirth ? true : false} value={values.DateOfBirth} onChangeText={handleChange('DateOfBirth')} onBlur={handleBlur('DateOfBirth')} />
-                                {errors.DateOfBirth && touched.DateOfBirth && (
-                                    <Text style={styles.errorlabel}>{errors.DateOfBirth}</Text>
-                                )}
-                                <Text style={styles.label}>Role</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.Role && touched.Role ? true : false} value={values.Role} onChangeText={handleChange('Role')} onBlur={handleBlur('Role')} />
-                                {errors.Role && touched.Role && (
-                                    <Text style={styles.errorlabel}>{errors.Role}</Text>
-                                )}
-
-                                <Text style={{ borderBottomWidth: 1, fontSize: 18, marginVertical: 20, fontWeight: "bold" }}>  Securtiy </Text>
-
-                                <Text style={styles.label}>PassWord</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.Password && touched.Password ? true : false} value={values.Password} onChangeText={handleChange('Password')} onBlur={handleBlur('Password')} />
-                                {errors.Password && touched.Password && (
-                                    <Text style={styles.errorlabel}>{errors.Password}</Text>
-                                )}
-                                <Text style={styles.label}>Confirm Password</Text>
-                                <Input p={2} placeholder="" variant="filled" isInvalid={errors.ConfirmPassword && touched.ConfirmPassword ? true : false} value={values.ConfirmPassword} onChangeText={handleChange('ConfirmPassword')} onBlur={handleBlur('ConfirmPassword')} />
-                                {errors.ConfirmPassword && touched.ConfirmPassword && (
-                                    <Text style={styles.errorlabel}>{errors.ConfirmPassword}</Text>
-                                )}
-                                <Button
-                                    //disabled={!(dirty && isValid) ? true : false} 
-                                    onPress={handleSubmit} style={styles.button}>
-                                    Sign Up
-                                </Button>
-                            </View>
-                        </View>)
-                }
-                }
-            </Formik>
-            <View style={styles.bottomtextcontainer}>
-                <Text style={styles.bottomtext}> Already Have an account?</Text>
-                <TouchableOpacity style={{}}><Text style={{ fontSize: 18, color: "white" }} onPress={() => navigation.navigate("Login")}>Log In <Emoji name="smiley" style={{ fontSize: 22 }} /></Text></TouchableOpacity>
-            </View>
-        </ScrollView>
-    )
-}
+          );
+        }}
+      </Formik>
+      <View style={styles.bottomTextContainer}>
+        <Text style={styles.bottomText}> Already Have an account?</Text>
+        <TouchableOpacity style={{}}>
+          <Text
+            style={{ fontSize: 18, color: "white" }}
+            onPress={() => {
+              setPagePosition(0);
+              navigation.navigate("Login");
+            }}
+          >
+            Login <Emoji name="smiley" style={{ fontSize: 22 }} />
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+};
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    contentcontainer: {
-        // flex: 1,
-        backgroundColor: "rgb(50,71,85)",
-        //backgroundColor: "rgb(241,243,245)",
-
-        alignItems: "center"
-
-    },
-    logocontainer: {
-        // position: "absolute",
-        // top: 25,
-        height: y * 0.2,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    logotext: {
-        fontSize: 40,
-        color: "white"
-    },
-    card: {
-        borderRadius: 40,
-        width: "90%",
-        shadowColor: "grey",
-        shadowOpacity: 0.5,
-        shadowRadius: 5.0,
-        elevation: 3,
-        backgroundColor: "white",
-        padding: 20
-    },
-    cardheader: {
-        borderBottomWidth: 1,
-        marginVertical: 20,
-        // alignItems: "center"
-    },
-    cardheadertext: {
-        padding: 20,
-        fontSize: 30
-        , fontWeight: "bold"
-    },
-    form: {
-        //  backgroundColor: "yellow"
-    },
-    label: {
-
-    },
-    errorlabel: {
-        color: "red",
-        fontSize: 14
-    },
-    button: {
-        backgroundColor: "rgb(217,125,84)",
-        marginVertical: 15
-    },
-    bottomtextcontainer: {
-        // position: "absolute",
-        // bottom: 25,
-        marginVertical: 20,
-        alignItems: "center"
-    },
-    bottomtext: {
-        color: "white",
-        fontSize: 14
-    },
-})
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    backgroundColor: "rgb(50,71,85)",
+    height: y,
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  logoContainer: {
+    // position: "absolute",
+    // top: 25,
+    height: y * 0.2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logoText: {
+    fontSize: 40,
+    color: "white",
+  },
+  card: {
+    borderRadius: 40,
+    width: "80%",
+    shadowColor: "grey",
+    shadowOpacity: 0.5,
+    shadowRadius: 5.0,
+    elevation: 3,
+    backgroundColor: "white",
+    padding: 20,
+  },
+  cardHeader: {
+    borderBottomWidth: 1,
+    marginVertical: 20,
+    // alignItems: "center"
+  },
+  cardHeaderText: {
+    padding: 20,
+    fontSize: 30,
+    fontWeight: "bold",
+  },
+  form: {
+    //  backgroundColor: "yellow"
+  },
+  label: {},
+  errorLabel: {
+    color: "red",
+    fontSize: 14,
+  },
+  phoneNumber: {
+    height: 50,
+    width: "100%",
+    borderColor: "lightgrey",
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  phoneNumberInputContainer: {
+    paddingVertical: 0,
+    marginVertical: 0,
+    height: "100%",
+    borderRadius: 5,
+  },
+  button: {
+    backgroundColor: "rgb(217,125,84)",
+    marginVertical: 15,
+  },
+  nextButtonText: {
+    color: "rgba(5,95,125,0)",
+  },
+  nextButton: {
+    marginVertical: 15,
+    backgroundColor: "black",
+  },
+  bottomTextContainer: {
+    // position: "absolute",
+    // bottom: 25,
+    marginVertical: 20,
+    alignItems: "center",
+  },
+  bottomText: {
+    color: "white",
+    fontSize: 14,
+  },
+});
 export default Signup;
-

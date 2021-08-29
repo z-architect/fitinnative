@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">endgame</string>
+    <string name="app_name">Fitin</string>
+    <string name="splash_logo_image">splash_logo_image</string>
 </resources>
