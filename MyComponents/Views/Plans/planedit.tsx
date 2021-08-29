@@ -9,6 +9,7 @@ import { Input, Checkbox, Switch, Radio } from 'native-base';
 import Axios from 'axios';
 import MyModal from './deletemodal';
 import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
+import { Difficulty } from '../../../api/spec';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
@@ -47,7 +48,6 @@ const Calander = (props: any) => {
     )
 }
 
-
 const myarray = new Array(30).fill(7);
 const SessionMeta = {
     name: "Plyometrics",
@@ -55,31 +55,21 @@ const SessionMeta = {
 };
 const PlanEdit = ({ navigation, route }: Props) => {
     let userId = 78;
-    // useAppSelector(state=>state.user.id)
-    // const [Plan, SetPlan] = useState({
-    //     type: "",
-    //     title: "",
-    //     description: "",
-    //     image: "",
-    //     category: "",
-    //     difficulty: "",
-    //     private: true
-    // });
 
-    const [Type, SetType] = useState("");
-    const [Description, SetDescription] = useState("");
     const [Image, SetImage] = useState("");
     const [Title, SetTitle] = useState("");
-    const [Private, SetPrivate] = useState(true);
+    const [Description, SetDescription] = useState("");
 
-    const [Value, SetValue] = useState("hard");
+    const [Type, SetType] = useState("");
+    const [Difficulty, SetDifficulty] = useState("hard");
     const [Category, SetCategory] = useState("");
+    const [Private, SetPrivate] = useState(true);
 
     const [Sessions, SetSessions] = useState([""])
     const [SelectedSession, SetSelectedSession] = useState("");
 
     const [Days, setDays] = useState(mydays);
-    const [DeleteModal, setDeleteModal] = useState(true);
+    const [DeleteModal, setDeleteModal] = useState(false);
 
     const setDay = (no: number, sessionId: string) => {
         if (!Days[no].isSet && sessionId === "") {
@@ -89,7 +79,6 @@ const PlanEdit = ({ navigation, route }: Props) => {
             if (Days[no].isSet) {
                 SetSelectedSession("")
             }
-
             setDays((Days) => {
                 let newdays = [...Days]
                 if (newdays[no].isSet) {
@@ -97,33 +86,18 @@ const PlanEdit = ({ navigation, route }: Props) => {
                         isSet: false,
                         filledBy: ""
                     }
-
-
                 }
                 else {
-
                     newdays[no] = {
                         isSet: true,
                         filledBy: sessionId
                     }
                 }
-
                 return [...newdays]
             });
-
         }
-
     }
-
     useEffect(() => {
-        // Axios.get('api/sessions')
-        //     .then(response => {
-        //         SetSessions(response.data)
-        //     })
-        //     .catch(e => {
-        //         Alert.alert("sorry papi api fetch failed for sessions")
-        //     })
-
         let dataz = new Array(30).fill(
             {
                 isSet: false,
@@ -165,23 +139,14 @@ const PlanEdit = ({ navigation, route }: Props) => {
         dataz[21]["isSet"] = true; dataz[21]["filledBy"] = "21";
         dataz[25]["isSet"] = true; dataz[25]["filledBy"] = "23";
         setDays(dataz);
-        SetType("Workout");
+
         SetImage("//lkjlk");
         SetTitle("My plan");
         SetDescription("a plan for all the athletes");
-        SetPrivate(false);
-        SetValue("easy");
-        SetCategory("Losing Weight");
-        //     const [Type, SetType] = useState();
-        // const [Description, SetDescription] = useState("");
-        // const [Image, SetImage] = useState("");
-        // const [Title, SetTitle] = useState("");
-        // const [Private, SetPrivate] = useState("");
 
-        // const [Value, SetValue] = useState("hard");
-        // const [Category, SetCategory] = useState([]);
-
-
+        SetType("Workout");
+        SetDifficulty("Easy");
+        SetCategory("Losing_Weight");
     }, [])
 
     const createPlan = () => {
@@ -193,29 +158,13 @@ const PlanEdit = ({ navigation, route }: Props) => {
             .catch(e => {
                 Alert.alert("Plan creation Api failed")
             })
-        /*
-        
-        */
     }
     const deletePlan = () => {
-
-
     }
     const deleteSession = (id: string) => {
         setDeleteModal(true);
-        // Axios.delete(`/api/session/:${id}`).then(response =>
-        //     // SetSessions(response.data)
-        //     Alert.alert("succesfuly deleted a session"))
-        //     .catch(e => {
-        //         Alert.alert("failed to delete the session, api failed")
-        //     })
     }
     const editSession = (id: string) => {
-        // navigation.navigate({
-        //     "Session",
-        //     {id:id}
-        // })
-        // navigation.navigate("session")
     }
     return (
         <>
@@ -227,16 +176,11 @@ const PlanEdit = ({ navigation, route }: Props) => {
                     }}>
                         <AntDesign name="check" size={32} color="rgb(50,71,85)" />
                     </TouchableOpacity>
-
-
-
                     <TouchableOpacity onPress={() => {
                         navigation.goBack();
                     }}>
                         <AntDesign name="close" size={32} color="red" />
                     </TouchableOpacity>
-
-
                 </View>
 
                 <View style={styles.planimage}>
@@ -264,31 +208,26 @@ const PlanEdit = ({ navigation, route }: Props) => {
                                     </View>
                                 </ImageBackground>
                             )
-
-
-
                     }
-
                 </View>
-
                 <View style={styles.planmetacontainer}>
                     <View>
                         <Text> Difficulty</Text>
                         <Radio.Group
                             name="myRadioGroup"
                             accessibilityLabel="favorite number"
-                            value={Value}
+                            value={Difficulty}
                             onChange={(nextValue) => {
-                                SetValue(nextValue)
+                                SetDifficulty(nextValue)
                             }}
                         >
-                            <Radio value="hard" my={1}>
+                            <Radio value="hard" my={1} accessibilityLabel="favorite number" >
                                 Hard
                             </Radio>
-                            <Radio value="medium" my={2}>
+                            <Radio value="medium" my={2} accessibilityLabel="favorite number" >
                                 Medium
                             </Radio>
-                            <Radio value="easy" my={2}>
+                            <Radio value="easy" my={2} accessibilityLabel="favorite number">
                                 Easy
                             </Radio>
                         </Radio.Group>
@@ -306,54 +245,22 @@ const PlanEdit = ({ navigation, route }: Props) => {
                             value={Category}
                             accessibilityLabel="choose numbers"
                         >
-
-
-                            <Radio
-                                value="Losing Weight"
-                                accessibilityLabel="This is a  checkbox"
-
-                            //colorScheme="orange"
-                            > Losing Weight </Radio>
-                            <Radio
-                                value="Bulking Up"
-                                accessibilityLabel="This is a  checkbox"
-
-                            > Bulking Up </Radio>
-                            <Radio
-                                value="Athleticism"
-                                accessibilityLabel="This is a  checkbox"
-
-                            > Athleticism </Radio>
-                            <Radio
-                                value="Maintenance"
-                                accessibilityLabel="This is a  checkbox"
-
-                            > Maintenance </Radio>
+                            <Radio accessibilityLabel="favorite number" value="Losing Weight"> Losing Weight </Radio>
+                            <Radio accessibilityLabel="favorite number" value="Bulking Up"> Bulking Up </Radio>
+                            <Radio accessibilityLabel="favorite number" value="Athleticism" > Athleticism </Radio>
+                            <Radio accessibilityLabel="favorite number" value="Maintenance" > Maintenance </Radio>
                         </Radio.Group>
                     </View>
-
-
                 </View>
-
-
                 <View style={styles.sessioncontainerheader}><Text style={{ fontSize: 26 }}>Plan Sessions</Text></View>
                 <View style={styles.sessioncontainerwindow}>
-
-
                     <ScrollView style={styles.sessioncontainer} contentContainerStyle={styles.sessioncontainerinner} nestedScrollEnabled={true}>
                         {
                             Sessions.length > 0 ?
                                 (<>{
-
                                     Sessions.map((data, i) =>
-                                        (<SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession(i.toString()) }} deleteSession={() => { deleteSession(i.toString()) }} />))
+                                        (<SessionCard key={i} sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession(i.toString()) }} deleteSession={() => { deleteSession(i.toString()) }} />))
                                 }
-                                    {/* <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
-                                <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} /> */}
                                     <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
                                     <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
                                     <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} editSession={() => { editSession("weyo") }} deleteSession={() => { deleteSession("99") }} />
@@ -368,8 +275,6 @@ const PlanEdit = ({ navigation, route }: Props) => {
                                     <SessionCard sessionMeta={SessionMeta} setSelected={SetSelectedSession} />
                                 </>)
                         }
-
-
                     </ScrollView>
                 </View>
                 <TouchableOpacity style={styles.sessionbutton} onPress={() => { navigation.navigate("Session") }}>
@@ -387,9 +292,6 @@ const PlanEdit = ({ navigation, route }: Props) => {
 }
 const styles = StyleSheet.create({
     main: {
-
-        // justifyContent:"space-between",
-
     },
     head: {
         height: y * 0.1,
@@ -403,14 +305,12 @@ const styles = StyleSheet.create({
         borderBottomColor: "grey"
     },
     container: {
-        // flex:1,
         backgroundColor: "rgb(242,243,244)",
         borderWidth: 2
 
     },
     planimage: {
         height: 300,
-        //backgroundColor:"yellow"
     },
     imagetext: {
         color: "white",
@@ -425,9 +325,7 @@ const styles = StyleSheet.create({
     image: {
         flex: 1,
         justifyContent: "flex-end",
-
     },
-
     sessioncontainer: {
         marginHorizontal: 20,
         paddingHorizontal: 10,
@@ -435,18 +333,10 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderBottomWidth: 1,
         borderBottomColor: "lightgrey"
-        // shadowColor: "black",
-        // shadowRadius: 3.0,
-        // shadowOpacity: 0.5,
-
-        // elevation: 3
-        // borderWidth:1
     },
     sessioncontainerinner: {
-        // backgroundColor:"pink"
     },
     sessioncontainerheader: {
-        // backgroundColor:"pink",
         padding: 10,
         margin: 10,
     },
@@ -454,9 +344,7 @@ const styles = StyleSheet.create({
         height: 400
     },
     calandertitle: {
-        //backgroundColor:"pink",
         padding: 10,
-
         margin: 10,
     },
     calanderheader: {
@@ -482,8 +370,6 @@ const styles = StyleSheet.create({
     },
     calander: {
         height: 420,
-
-
     },
     day: {
         height: 60,
@@ -508,23 +394,5 @@ const styles = StyleSheet.create({
         borderBottomColor: "white",
         fontSize: 22
     }
-
 });
 export default PlanEdit;
-
-
-/*
-<View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
-                    <TouchableOpacity onPress={() => {
-                        deletePlan();
-                    }}>
-                        <AntDesign name="delete" size={32} color="black" />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => {
-                        navigation.goBack();
-                    }}>
-                        <AntDesign name="close" size={32} color="red" />
-                    </TouchableOpacity>
-                </View>
-                */

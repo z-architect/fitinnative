@@ -85,12 +85,12 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Landing"
+        initialRouteName="Home"
         screenOptions={{
           headerShown: false,
         }}
       >
-        {!IsSignedIn ? (
+        {IsSignedIn ? (
           <>
             {!hasBeenOnboarded ? (
               <>

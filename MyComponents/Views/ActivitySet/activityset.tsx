@@ -119,8 +119,6 @@ const ActivitySet = ({ navigation, route }: Props) => {
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-
-
       <View style={styles.container}>
         <View style={styles.head}>
           <TouchableOpacity onPress={() => {
@@ -128,22 +126,13 @@ const ActivitySet = ({ navigation, route }: Props) => {
           }}>
             <AntDesign name="check" size={32} color="rgb(50,71,85)" />
           </TouchableOpacity>
-
-
-
           <TouchableOpacity onPress={() => {
             navigation.goBack();
           }}>
             <AntDesign name="close" size={32} color="red" />
           </TouchableOpacity>
-
-
         </View>
-
         <View style={styles.card}>
-
-
-
           <View style={styles.cardhead}>
             <View style={styles.gif}>
               <Text style={{ color: "rgb(217,125,84)" }}> GIF</Text>
@@ -204,19 +193,6 @@ const ActivitySet = ({ navigation, route }: Props) => {
               </View>
 
             </View>
-
-
-
-            {/* <View style={styles.plusminus}>
-            
-             
-
-            </View>
-            <View style={styles.switch}>
-              <View style={styles.duration}><Text>SOmething</Text></View>
-              <View style={styles.rest}><Text>Again</Text></View>
-            </View> */}
-
           </View>
 
           <View style={styles.foot}>

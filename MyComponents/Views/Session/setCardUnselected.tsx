@@ -7,27 +7,28 @@ const SetCard = (props: any) => {
     return (
         <View style={styles.SetCard} >
             <TouchableOpacity style={styles.SetCardData} onPress={() => {
+                props.onTouch();
                 //  props.setSelected(props.SetMeta.id) 
             }}>
 
                 <View style={styles.gif}>
 
                 </View>
-                <Text> Name of Set</Text>
+                <Text> {props.data.name}</Text>
                 <View >
-                    <Text>Intensity</Text>
+                    <Text>{props.data.duration}</Text>
                 </View>
 
             </TouchableOpacity>
             <View style={styles.SetCardIcons}>
                 <TouchableOpacity onPress={() => {
-                    // props.editSet()
+                    props.editSet()
                 }}>
 
                     <AntDesign name="edit" size={24} color="lightblue" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
-                    //  props.deleteSet() 
+                    props.deleteSet()
                 }}>
                     <AntDesign name="delete" size={24} color="orange" />
                 </TouchableOpacity>
