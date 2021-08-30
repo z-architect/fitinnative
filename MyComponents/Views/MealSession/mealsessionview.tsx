@@ -8,6 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Entypo from 'react-native-vector-icons/Entypo';
 import { Modal, Button, Switch } from 'native-base';
 import Constituentz from './constituentUnselected';
+import MyModal from '../Plans/deletemodal';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
@@ -15,130 +16,98 @@ const SessionView = ({ navigation, route }: Props) => {
     const [showModal, setShowModal] = useState(false);
 
     const [Type, SetType] = useState("Meal");
-    const [Image, SetImage] = useState("");
+    const [Image, SetImage] = useState("lkjh");
     const [Title, SetTitle] = useState("My session");
     const [Description, SetDescription] = useState("The best session one can ask for");
-    const [OrderTable, SetOrderTable] = useState([
+    const [CTB, SetCTB] = useState("897")
+    const [DeleteModal, setDeleteModal] = useState(false)
+    const [Sets, SetSets] = useState([
         {
-            sessionId: "34",
-            orderNumber: 1
-        }
+            id: "1",
+            name: "pushups",
+            duration: "4 min"
+        },
+        {
+            id: "2",
+            name: "Situps",
+            duration: "4 min"
+        },
+    ])
 
-    ]);
+
     useEffect(() => {
-        SetOrderTable([
-            { sessionId: "45", orderNumber: 1 },
-            { sessionId: "44", orderNumber: 2 },
-            { sessionId: "42", orderNumber: 3 },
-            { sessionId: "34", orderNumber: 4 },
-            { sessionId: "75", orderNumber: 5 },
-            { sessionId: "35", orderNumber: 6 },
-            { sessionId: "12", orderNumber: 7 }
-        ])
 
     }, [])
+
     return (
         <>
-            <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-                <Modal.Content maxWidth="400px">
-                    <Modal.CloseButton />
-                    <Modal.Header>Constituents</Modal.Header>
-                    <Modal.Body>
-                        <Constituentz />
-                        <Constituentz />
-                        <Constituentz />
-                        <Constituentz />
-                        <Constituentz />
-                        <Constituentz />
-                        <Constituentz />
-                        <Constituentz />
+            <MyModal DeleteModal={DeleteModal} setDeleteModal={setDeleteModal} />
 
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button.Group variant="ghost" space={2}>
-
-                            <Button
-                                onPress={() => {
-                                    navigation.navigate("Set")
-                                }}
-                            >
-                                + New Constituent
-                            </Button>
-                        </Button.Group>
-                    </Modal.Footer>
-                </Modal.Content>
-            </Modal>
             <View style={styles.container}>
-                {/* <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
-                    <View >
-                        <Text style={{ fontSize: 26, fontWeight: "bold", color: "black" }}> Pilipino Curry</Text>
-                        <Text> 380 Kcal</Text>
-                    </View>
-                </ImageBackground> */}
                 <View style={styles.head}>
                     <TouchableOpacity onPress={() => {
-
+                        navigation.goBack();
                     }}>
                         <AntDesign name="left" size={32} color="rgb(50,71,85)" />
                     </TouchableOpacity>
 
                     <View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
                         <TouchableOpacity onPress={() => {
-
+                            setDeleteModal(true);
                         }}>
                             <AntDesign name="delete" size={32} color="black" />
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={() => {
-                            navigation.navigate("PlanEdit");
+                            navigation.navigate("MealSessionEdit");
                         }}>
                             <AntDesign name="edit" size={32} color="rgb(217,125,84)" />
                         </TouchableOpacity>
                     </View>
                 </View>
-
                 <View style={styles.Sessionimage}>
                     {
                         (Image === "") ?
                             (
-                                <View style={[styles.image, { backgroundColor: "lightgrey", justifyContent: "flex-start", alignItems: "center" }]}>
-                                    <TouchableOpacity style={{ width: "100%", height: "60%", justifyContent: "center", alignItems: "center" }}>
+                                <View style={[styles.image, { backgroundColor: "lightgrey", justifyContent: "flex-end", alignItems: "center" }]}>
+                                    <TouchableOpacity style={{ width: "100%", height: "40%", justifyContent: "center", alignItems: "center" }}>
                                         <AntDesign name="picture" size={62} color="white" />
                                     </TouchableOpacity>
-                                    <View style={{ height: "40%", width: "100%" }}>
+                                    <View style={{ height: "60%", width: "100%" }}>
                                         <Text style={[styles.input, { fontWeight: "bold" }]}>{Title} </Text>
                                         <Text style={styles.input} > {Description}  </Text>
+                                        <Text style={styles.input} > {CTB}  </Text>
+
                                     </View>
                                 </View>
                             ) :
                             (
                                 <ImageBackground source={require("../../../MyAssets/runninman.jpg")} resizeMode="cover" style={styles.image}>
-                                    <Text style={styles.imagetext}>
-                                        {Title}
-                                    </Text>
+
+                                    <View style={{ height: "60%", width: "80%", marginLeft: 20, marginBottom: 20 }}>
+                                        <TextInput placeholder="Title" value={Title} onChangeText={(val) => { SetTitle(val) }} placeholderTextColor="white" style={[styles.input, { fontWeight: "bold" }]} />
+                                        <TextInput placeholder="Description" value={Description} onChangeText={(val) => { SetDescription(val) }} placeholderTextColor="white" style={styles.input} />
+                                        <TextInput placeholder="Calories to Burn" value={CTB} onChangeText={(val) => { SetCTB(val) }} placeholderTextColor="white" style={styles.input} />
+
+                                    </View>
                                 </ImageBackground>
                             )
                     }
-
                 </View>
-                <ScrollView style={styles.sessionContainer}>
-                    <ConstituentCardVarient no={1} setcolor="orange" />
-                    <ConstituentCardVarient no={2} setcolor="green" />
-                    <ConstituentCardVarient no={3} setcolor="red" />
-                    <ConstituentCardVarient no={4} setcolor="blue" />
-                    <ConstituentCardVarient no={5} setcolor="red" />
-                    <ConstituentCardVarient no={6} setcolor="orange" />
-                    <ConstituentCardVarient no={7} setcolor="purple" />
-                    <ConstituentCardVarient no={8} setcolor="yellow" />
-
+                <ScrollView style={styles.sessionContainer} contentContainerStyle={{ paddingBottom: 65 }}>
+                    {
+                        Sets.length === 0 ?
+                            (
+                                <Text>Sorry , you haven't added any sets yet</Text>
+                            )
+                            :
+                            (
+                                Sets.map((data, i) => (
+                                    <ConstituentCardVarient key={i} data={data} onSelect={() => { navigation.navigate("SetView") }} setcolor="orange" />
+                                ))
+                            )
+                    }
                 </ScrollView >
-                {/* <TouchableOpacity style={styles.addbutton} onPress={() => { setShowModal(true) }}>
-                    <View>
-                        <Text> Add Set</Text>
-                    </View>
-
-                </TouchableOpacity> */}
-
             </View >
         </>
     )
@@ -148,41 +117,33 @@ const styles = StyleSheet.create({
         flex: 1,
         position: "relative",
         height: "100%",
-
-        backgroundColor: "rgb(240,243,244)"
-
+        backgroundColor: "rgba(110,140,160,0.4)"
+        //"rgb(240,243,244)"
     },
     Sessionimage: {
         height: 300,
-        //backgroundColor:"yellow"
     },
     image: {
         width: "100%",
         height: y * 0.3,
-        backgroundColor: "yellow"
+        backgroundColor: "yellow",
+        justifyContent: "flex-end",
     },
     sessionContainer: {
-        // borderWidth: 1,
         margin: 20,
     },
-
     addbutton: {
         position: "absolute",
         justifyContent: "center",
         alignItems: "center",
-
         bottom: 30,
         width: "50%",
         height: 60,
         marginHorizontal: "25%",
         borderRadius: 32,
         backgroundColor: "rgb(110,140,160)"
-
-
     },
     input: {
-        // borderBottomWidth: 1,
-        // borderBottomColor: "white",
         color: "white",
         fontSize: 22
     },
@@ -202,6 +163,5 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "grey"
     },
-
 })
 export default SessionView;

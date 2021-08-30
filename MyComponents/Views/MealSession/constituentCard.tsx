@@ -9,20 +9,20 @@ const SetCard = (props: any) => {
             <TouchableOpacity style={styles.SetCardData} onPress={() => {
                 //  props.setSelected(props.SetMeta.id) 
             }}>
-                <Text style={{ fontWeight: "bold" }}> -{props.no}-</Text>
+                <Text style={{ fontWeight: "bold" }}> -{props.order}-</Text>
                 <View style={[styles.Setcardimage, { backgroundColor: props.setcolor }]}>
 
                 </View>
-                <Text> Name of Set</Text>
+                <Text>{props.data.name}</Text>
                 <View >
-                    <Text>Intensity</Text>
+                    <Text>{props.data.duration}</Text>
                 </View>
 
             </TouchableOpacity>
             <View style={styles.SetCardIcons}>
 
                 <TouchableOpacity onPress={() => {
-                    //  props.deleteSet() 
+                    props.deleteSet()
                 }}>
                     <AntDesign name="delete" size={24} color="red" />
                 </TouchableOpacity>

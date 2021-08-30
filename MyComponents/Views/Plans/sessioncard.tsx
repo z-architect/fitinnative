@@ -8,7 +8,7 @@ const SessionCard = (props: any) => {
         <View style={styles.SessionCard} >
             <TouchableOpacity style={styles.SessionCardData} onPress={() => {
                 props.setSelected(props.sessionMeta.id)
-                props.setTime(true)
+                //props.setTime(true)
             }}>
                 <View style={styles.sessioncardimage}>
 

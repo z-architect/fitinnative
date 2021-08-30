@@ -1,16 +1,26 @@
 import React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
-
-const Activity = () => {
+import AntDesign from 'react-native-vector-icons/AntDesign';
+const Activity = (props: any) => {
     return (
-        <TouchableOpacity style={styles.SessionCard}>
+        <TouchableOpacity style={styles.SessionCard} onPress={() => { props.onPress() }}>
             <View style={styles.gif}>
 
             </View>
-            <Text>ActivityName</Text>
+            <Text>{props.data.name}</Text>
             <View style={styles.sessioncardimage}>
-                <Text>Something</Text>
+                <Text>Custom</Text>
             </View>
+            {
+                // props.data?.custom === 
+                true ?
+                    (<TouchableOpacity onPress={() => { props.onDeleteButtonPress() }}>
+                        <AntDesign name="delete" size={32} color="red" />
+                    </TouchableOpacity>) :
+                    (<>
+
+                    </>)
+            }
 
         </TouchableOpacity >
 

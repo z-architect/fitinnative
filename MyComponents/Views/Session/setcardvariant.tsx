@@ -14,9 +14,9 @@ const SetCard = (props: any) => {
                 <View style={[styles.Setcardimage, { backgroundColor: props.setcolor }]}>
 
                 </View>
-                <Text> Name of Set</Text>
+                <Text> {props.data.name}</Text>
                 <View >
-                    <Text>Intensity</Text>
+                    <Text>{props.data.duration}</Text>
                 </View>
 
             </TouchableOpacity>

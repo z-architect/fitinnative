@@ -6,7 +6,9 @@ import { flexDirection } from 'styled-system';
 const SessionCard = (props: any) => {
     return (
         <View style={styles.SessionCard} >
-            <TouchableOpacity style={styles.SessionCardData} onPress={() => { props.setSelected(props.sessionMeta.id) }}>
+            <TouchableOpacity style={styles.SessionCardData} onPress={() => {
+                props.onSessionSelect(props.sessionMeta.id)
+            }}>
                 <View style={styles.sessioncardimage}>
 
                 </View>

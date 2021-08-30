@@ -20,6 +20,7 @@ import { Input, Checkbox, Switch, Radio, Modal } from "native-base";
 import Axios from "axios";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import MyModal from "./deletemodal";
+import { Difficulty } from "../../../api/spec";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -53,7 +54,9 @@ const Calander = (props: any) => {
               styles.day,
               { backgroundColor: props.Days[i].isSet ? "grey" : "white" },
             ]}
-            onPress={() => {}}
+            onPress={() => {
+              props.openDaySession(i);
+            }}
           >
             <View>
               <Text style={{ color: props.Days[i].isSet ? "white" : "black" }}>
@@ -74,67 +77,36 @@ const SessionMeta = {
 };
 const PlanView = ({ navigation, route }: Props) => {
   let userId = 78;
-  // useAppSelector(state=>state.user.id)
-  // const [Plan, SetPlan] = useState({
-  //     type: "",
-  //     title: "",
-  //     description: "",
-  //     image: "",
-  //     category: "",
-  //     difficulty: "",
-  //     private: true
-  // });
 
-  const [Type, SetType] = useState("");
-  const [Description, SetDescription] = useState("");
   const [Image, SetImage] = useState("");
   const [Title, SetTitle] = useState("");
-  const [Private, SetPrivate] = useState(true);
+  const [Description, SetDescription] = useState("");
 
-  const [Value, SetValue] = useState("hard");
-  const [Category, SetCategory] = useState([""]);
+  const [Type, SetType] = useState("");
+  const [Difficulty, SetDifficulty] = useState("");
+  const [Category, SetCategory] = useState("");
 
-  const [Sessions, SetSessions] = useState([""]);
-  const [SelectedSession, SetSelectedSession] = useState("");
+  const [Sessions, SetSessions] = useState([
+    {
+      name: "Hoping",
+      id: "21",
+    },
+    {
+      name: "Jumping",
+      id: "23",
+    },
+    {
+      name: "Running",
+      id: "7",
+    },
+  ]);
 
   const [Days, setDays] = useState(mydays);
   const [DeleteModal, setDeleteModal] = useState(false);
-  const setDay = (no: number, sessionId: string) => {
-    // if (!Days[no].isSet && sessionId === "") {
-    //     Alert.alert("sorry Fams, you have to select a session first")
-    // }
-    // else {
-    //     if (Days[no].isSet) {
-    //         SetSelectedSession("")
-    //     }
-    //     setDays((Days) => {
-    //         let newdays = [...Days]
-    //         if (newdays[no].isSet) {
-    //             newdays[no] = {
-    //                 isSet: false,
-    //                 filledBy: ""
-    //             }
-    //         }
-    //         else {
-    //             newdays[no] = {
-    //                 isSet: true,
-    //                 filledBy: sessionId
-    //             }
-    //         }
-    //         return [...newdays]
-    //     });
-    // }
-  };
-
+  const [DaySession, SetDaySession] = useState(false);
+  const [SelectedDay, SetSelectedDay] = useState<number>(-1);
+  const [SelectedDaySession, SetSelectedDaySession] = useState("");
   useEffect(() => {
-    // Axios.get('api/sessions')
-    //     .then(response => {
-    //         SetSessions(response.data)
-    //     })
-    //     .catch(e => {
-    //         Alert.alert("sorry papi api fetch failed for sessions")
-    //     })
-
     let dataz = new Array(30).fill({
       isSet: false,
       filledBy: "",
@@ -181,87 +153,66 @@ const PlanView = ({ navigation, route }: Props) => {
     dataz[25]["isSet"] = true;
     dataz[25]["filledBy"] = "23";
     setDays(dataz);
-    SetType("Workout");
+
     SetImage("//lkjlk");
     SetTitle("My plan");
     SetDescription("a plan for all the athletes");
-    SetPrivate(false);
-    SetValue("easy");
-    SetCategory(["LosingWeight", "", "Athleticism", ""]);
 
-    //     const [Type, SetType] = useState();
-    // const [Description, SetDescription] = useState("");
-    // const [Image, SetImage] = useState("");
-    // const [Title, SetTitle] = useState("");
-    // const [Private, SetPrivate] = useState("");
-
-    // const [Value, SetValue] = useState("hard");
-    // const [Category, SetCategory] = useState([]);
+    SetType("Workout");
+    SetDifficulty("Easy");
+    SetCategory("Losing_Weight");
   }, []);
 
-  const createPlan = () => {
-    // Axios.post('/api/plan/', {
-    //     createdBy: userId,
-    //     plan: "Plan"
-    // }).then(response => Alert.alert("plan succesfully created"))
-    //     .catch(e => {
-    //         Alert.alert("Plan creation Api failed")
-    //     })
-    // /*
-    // */
-  };
   const deletePlan = () => {};
-  const deleteSession = (id: string) => {
-    // Axios.delete(`/api/session/:${id}`).then(response =>
-    //     // SetSessions(response.data)
-    //     Alert.alert("succesfuly deleted a session"))
-    //     .catch(e => {
-    //         Alert.alert("failed to delete the session, api failed")
-    //     })
-  };
-  const editSession = (id: string) => {
-    // navigation.navigate({
-    //     "Session",
-    //     {id:id}
-    // })
-    // navigation.navigate("session")
+
+  const displaySession = (day: number) => {
+    if (Days[day].isSet) {
+      SetSelectedDay(day);
+      SetSelectedDaySession(Days[day].filledBy);
+      SetDaySession(true);
+    }
   };
   return (
     <>
       <MyModal DeleteModal={DeleteModal} setDeleteModal={setDeleteModal} />
-      {/* <Modal isOpen={DeleteModal} onClose={() => setDeleteModal(false)}>
-                <Modal.Content maxWidth="400px">
-                    <Modal.CloseButton />
-                    <View style={styles.modaltophalf}>
-
-                       <View style={styles.giantxcontainer}>
-                           <AntDesign name="close" size={78} color="black"/>
-                        </View> 
-                        <Text style={{fontSize:34,fontWeight:"bold"}}>
-                            Are you Sure?
-                        </Text>
-                    </View>
-                    <View style={styles.modalbottomhalf}>
-                        <View>
-                <Text> Do you really want to delete these records?</Text>
-                <Text>This action can not be undone!!!</Text>
-                        </View>
-        <View style={styles.modlabuttoncontainer}>
-                    <TouchableOpacity style={[styles.modalbutton,{backgroundColor:"rgb(110,140,160)"}]}>
-                <Text style={{color:"white",fontWeight:"bold"}}>Cancel</Text>
+      <Modal isOpen={DaySession} onClose={() => SetDaySession(false)}>
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text>Day {SelectedDay} of 30</Text>
+          </Modal.Header>
+          <Modal.Body style={{ alignItems: "center" }}>
+            {SelectedDay === -1 ? (
+              <Text>Tough luck ! somethign is wrong</Text>
+            ) : (
+              <SessionCard
+                sessionMeta={Sessions.find(
+                  (session, i) => session.id === SelectedDaySession
+                )}
+                onSessionSelect={() => {
+                  SetDaySession(false);
+                  navigation.navigate("SessionView");
+                }}
+              />
+            )}
+            <TouchableOpacity
+              style={styles.modalbutton}
+              onPress={() => {
+                SetDaySession(false);
+                SetSelectedDay(-1);
+              }}
+            >
+              <Text style={{ color: "white" }}>Close</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity style={[styles.modalbutton,{backgroundColor:"rgba(217,125,84,0.9)"}]}>
-                <Text style={{color:"white",fontWeight:"bold"}}>Delete</Text>
-            </TouchableOpacity>
-        </View>
-                    </View>
-                </Modal.Content>
-            </Modal> */}
-
-      <View style={styles.titleContainer}>
-        <Text style={{ ...styles.title }}>Plans</Text>
-      </View>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>
       <ScrollView style={styles.container}>
         <View style={styles.head}>
           <TouchableOpacity
@@ -271,7 +222,6 @@ const PlanView = ({ navigation, route }: Props) => {
           >
             <AntDesign name="left" size={32} color="rgb(50,71,85)" />
           </TouchableOpacity>
-
           <View
             style={{
               flexDirection: "row",
@@ -296,7 +246,6 @@ const PlanView = ({ navigation, route }: Props) => {
             </TouchableOpacity>
           </View>
         </View>
-
         <View style={styles.planimage}>
           {Image === "" ? (
             <View
@@ -374,7 +323,7 @@ const PlanView = ({ navigation, route }: Props) => {
                       fontWeight: "bold",
                     }}
                   >
-                    {"\u2B24"} Meal
+                    {"\u2B24"} {Type}
                   </Text>
                   <Text
                     style={{
@@ -384,7 +333,7 @@ const PlanView = ({ navigation, route }: Props) => {
                       fontWeight: "bold",
                     }}
                   >
-                    {"\u2B24"} Maintainance
+                    {"\u2B24"} {Category}
                   </Text>
                   <Text
                     style={{
@@ -394,14 +343,13 @@ const PlanView = ({ navigation, route }: Props) => {
                       fontWeight: "bold",
                     }}
                   >
-                    {"\u2B24"} Easy
+                    {"\u2B24"} {Difficulty}
                   </Text>
                 </View>
               </View>
             </ImageBackground>
           )}
         </View>
-
         <View style={styles.sessioncontainerheader}>
           <Text style={{ fontSize: 26 }}>Sessions in the Plan</Text>
         </View>
@@ -415,79 +363,32 @@ const PlanView = ({ navigation, route }: Props) => {
               <>
                 {Sessions.map((data, i) => (
                   <SessionCard
-                    sessionMeta={SessionMeta}
-                    setSelected={() => {
+                    key={i}
+                    sessionMeta={data}
+                    onSessionSelect={() => {
                       navigation.navigate("SessionView");
                     }}
                   />
                 ))}
-
-                <SessionCard
-                  sessionMeta={SessionMeta}
-                  setSelected={() => {
-                    navigation.navigate("SessionView");
-                  }}
-                />
-                <SessionCard
-                  sessionMeta={SessionMeta}
-                  setSelected={() => {
-                    navigation.navigate("SessionView");
-                  }}
-                />
-                <SessionCard
-                  sessionMeta={SessionMeta}
-                  setSelected={() => {
-                    navigation.navigate("SessionView");
-                  }}
-                />
-                <SessionCard
-                  sessionMeta={SessionMeta}
-                  setSelected={() => {
-                    navigation.navigate("SessionView");
-                  }}
-                />
-                <SessionCard
-                  sessionMeta={SessionMeta}
-                  setSelected={() => {
-                    navigation.navigate("SessionView");
-                  }}
-                />
               </>
             ) : (
               <>
                 <Text>There aren't any sessions created yet!!!</Text>
-                <SessionCard
-                  sessionMeta={SessionMeta}
-                  setSelected={SetSelectedSession}
-                />
               </>
             )}
           </ScrollView>
         </View>
-        {/*
-            <TouchableOpacity style={styles.sessionbutton} onPress={() => { navigation.navigate("Session") }}>
-                <View>
-                    <Text>Add session</Text>
-                </View>
-            </TouchableOpacity>
-*/}
+
         <View style={styles.calandertitle}>
           <Text style={{ fontSize: 26 }}>Plan Calander</Text>
         </View>
-        <Calander
-          Days={Days}
-          setDay={setDay}
-          Selected={SelectedSession}
-          setSelected={SetSelectedSession}
-        />
+        <Calander Days={Days} openDaySession={displaySession} />
       </ScrollView>
     </>
   );
 };
 const styles = StyleSheet.create({
-  main: {
-    // justifyContent:"space-between",
-  },
+  main: {},
   head: {
     height: y * 0.1,
     width: x,
@@ -500,13 +401,11 @@ const styles = StyleSheet.create({
     borderBottomColor: "grey",
   },
   container: {
-    // flex:1,
     backgroundColor: "rgb(242,243,244)",
     borderWidth: 2,
   },
   planimage: {
     height: 300,
-    //backgroundColor:"yellow"
   },
   imagetext: {
     color: "white",
@@ -601,88 +500,17 @@ const styles = StyleSheet.create({
     borderBottomColor: "white",
     fontSize: 22,
   },
-  // modaltophalf:{
-  //     height:y*0.25,
-  //     width:"100%",
-  //     alignItems:"center",
-  //     justifyContent:"flex-end"
-  // },
-  // modalbottomhalf:{
-  //     height:y*0.25,
-  //     width:"100%",
-  //     justifyContent:"space-around",
-  //     padding:20
-  // },
-  // giantxcontainer:{
-  //     justifyContent:"center",
-  //     alignItems:"center",
-  //     height:160,
-  //     width:160,
-  //     borderRadius:80,
-  //     borderWidth:1,
-  //     borderColor:"orange"
-  // },
-  // modlabuttoncontainer:{
-  //     flexDirection:"row",
-  //     width:"100%",
-  //     justifyContent:"space-evenly"
-  // },
-  // modalbutton:{
-  //     borderRadius:10,
-  //     height:50,
-  //     width:140,
-  //     justifyContent:"center",
-  //     alignItems:"center",
-
-  // }
+  modalbutton: {
+    width: "60%",
+    marginVertical: 20,
+    marginHorizontal: "20%",
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 32,
+    borderColor: "white",
+    borderWidth: 1,
+    backgroundColor: "rgb(110,140,160)",
+  },
 });
 export default PlanView;
-
-/*
-<View style={{ flexDirection: "row", justifyContent: "space-between", width: "30%" }}>
-                    <TouchableOpacity onPress={() => {
-                        deletePlan();
-                    }}>
-                        <AntDesign name="delete" size={32} color="black" />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => {
-                        navigation.goBack();
-                    }}>
-                        <AntDesign name="close" size={32} color="red" />
-                    </TouchableOpacity>
-                </View>
-                */
-
-/*
-                  <View style={styles.planmetacontainer}>
-                <View style={{ width: "50%" }}>
-
-                    <View >
-                        <Text style={{ fontWeight: "bold", fontSize: 24, marginVertical: 15 }}> Public</Text>
-                        {/* <Text>{Private ? "No" : "Yes"} </Text> 
-                 
-                        </View>
-
-                        <Text style={{ fontWeight: "bold", fontSize: 24, marginVertical: 15 }}> Easy</Text>
-                         <Text> {Value}</Text> 
-                    </View>
-                    <View style={{ width: "50%", alignItems: "baseline", paddingLeft: 20 }}>
-    
-    
-                        <Text style={{ fontWeight: "bold", fontSize: 24, marginVertical: 15 }}> Maintainance</Text>
-                         <Text>Maintainance</Text> 
-                         <Checkbox
-                            value="Maintenance"
-                            accessibilityLabel="This is a  checkbox"
-                            defaultIsChecked
-                            isDisabled={true}
-                        > Maintenance </Checkbox> 
-    
-                        <Text style={{ fontWeight: "bold", fontSize: 24, marginVertical: 15 }}> Meal</Text>
-                        <Text>Meal </Text> 
-                    </View>
-    
-    
-                </View>
-                */
