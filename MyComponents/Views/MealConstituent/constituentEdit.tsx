@@ -11,21 +11,84 @@ import Meal from './meal';
 import {
     GifSearch,
 } from 'react-native-gif-search';
+import { v4 as uuidv4 } from 'uuid';
+import "react-native-get-random-values";
 import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
-const MealConstituentEdit = ({ navigation, route }: Props) => {
+const ActivitySet = ({ navigation, route }: Props) => {
     const [showModal, setShowModal] = useState(false);
-    const [showMealModal, setShowMealModal] = useState(false);
+    const [showActivityModal, setShowActivityModal] = useState(false);
     const [showgifModal, SetShowgifModal] = useState(false);
     const [Visible, SetVisible] = useState(true);
     const [Description, SetDescription] = useState("this is a set intended to make you lots of pushups")
-    const [Meal, SetMeal] = useState("PushUps");
+    const [ActivityValue, SetActivityValue] = useState({
+        id: "10",
+        name: "running",
+        description: "fast paced activity of walking",
+        actiongif: "ljd"
+    });
+    const [NewActivityDescription, SetNewActivityDescription] = useState("");
+    const [NewActivityName, SetNewActivityName] = useState("");
     const [Repetition, SetRepitition] = useState(10);
     const [Duration, SetDuration] = useState(4);
     const [Tempo, SetTempo] = useState(false);
     const [Met, SetMet] = useState(18);
 
+    const [Activities, SetActivities] = useState([
+        {
+            id: "10",
+            name: "running",
+            description: "fast paced activity of walking",
+            actiongif: "ljd"
+        },
+        {
+            id: "11",
+            name: "Hopping",
+            description: "fast paced activity of walking",
+            actiongif: "ljl"
+        },
+        {
+            id: "12",
+            name: "Sitting",
+            description: "fast paced activity of walking",
+            actiongif: "llmj"
+        },
+        {
+            id: "13",
+            name: "running",
+            description: "fast paced activity of walking",
+            actiongif: "lwej"
+        },
+        {
+            id: "14",
+            name: "running",
+            description: "fast paced activity of walking",
+            actiongif: "ljrt"
+        },
+    ])
+    const [SelectedActivity, SetSelectedActivity] = useState("");
+
+    const deleteActivity = (id: string) => {
+        SetActivities((activity) => {
+            const list = activity.filter((act, i) => (act.id !== id));
+            return list;
+        })
+    }
+    const createActivity = () => {
+        let newActivity = {
+            id: uuidv4(),
+            name: NewActivityName,
+            description: NewActivityDescription,
+            actiongif: "kljl"
+        }
+        SetActivities((newactivities) => {
+            let tobeadded = newactivities.concat(newActivity);
+            return tobeadded;
+        })
+        SetNewActivityDescription("");
+        SetNewActivityName("");
+    }
     return (
         <>
             <Modal isOpen={showgifModal} onClose={() => { SetShowgifModal(false); SetVisible(false); }}>
@@ -62,19 +125,19 @@ const MealConstituentEdit = ({ navigation, route }: Props) => {
                 </Modal.Content>
             </Modal>
 
-            <Modal isOpen={showMealModal} onClose={() => setShowMealModal(false)}>
+            <Modal isOpen={showActivityModal} onClose={() => setShowActivityModal(false)}>
                 <Modal.Content maxWidth="400px">
                     <Modal.CloseButton />
                     <Modal.Header style={{ flexDirection: "row", alignItems: "center" }}>
                         <View style={[styles.gif, { marginRight: 15 }]}>
 
                         </View>
-                        Create Meal</Modal.Header>
+                        Create Activity</Modal.Header>
                     <Modal.Body>
 
-                        <TextInput placeholder="Meal name ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+                        <TextInput placeholder="Activity name ?" value={NewActivityName} placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} onChangeText={(val) => { SetNewActivityName(val) }} />
 
-                        <TextInput placeholder="Description ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+                        <TextInput placeholder="Description ?" value={NewActivityDescription} placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} onChangeText={(val) => { SetNewActivityDescription(val) }} />
 
                         <TouchableOpacity style={styles.button} onPress={() => { SetShowgifModal(true); SetVisible(true); }}  >
                             <Text style={{ color: "white" }}>Add a GIF</Text>
@@ -87,7 +150,8 @@ const MealConstituentEdit = ({ navigation, route }: Props) => {
 
                             <Button
                                 onPress={() => {
-                                    setShowMealModal(false)
+                                    createActivity();
+                                    setShowActivityModal(false)
                                 }}
                             >
                                 Create
@@ -102,14 +166,17 @@ const MealConstituentEdit = ({ navigation, route }: Props) => {
                     <Modal.CloseButton />
                     <Modal.Header>Activities</Modal.Header>
                     <Modal.Body>
-                        <Meal />
-                        <Meal />
-                        <Meal />
-                        <Meal />
-                        <Meal />
-                        <Meal />
-                        <Meal />
-                        <Meal />
+                        {
+                            Activities.map((activity, i) => (
+                                <Meal key={i} data={activity} onPress={() => {
+                                    SetActivityValue(activity);
+                                    setShowModal(false);
+                                }}
+                                    onDeleteButtonPress={() => {
+                                        deleteActivity(activity.id)
+                                    }} />
+                            ))
+                        }
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -117,10 +184,10 @@ const MealConstituentEdit = ({ navigation, route }: Props) => {
 
                             <Button
                                 onPress={() => {
-                                    setShowMealModal(true)
+                                    setShowActivityModal(true)
                                 }}
                             >
-                                + New Meal
+                                + New Activity
                             </Button>
                         </Button.Group>
                     </Modal.Footer>
@@ -156,8 +223,10 @@ const MealConstituentEdit = ({ navigation, route }: Props) => {
                             <Text style={{ color: "rgb(217,125,84)" }}> GIF</Text>
                         </View>
                         <View style={styles.input}>
-                            <TouchableOpacity onPress={() => { setShowModal(true) }}>
-                                <TextInput placeholder="select something" value={Meal} editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
+                            <TouchableOpacity onPress={() => {
+                                setShowModal(true)
+                            }}>
+                                <TextInput placeholder="select something" value={ActivityValue.name} editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -238,7 +307,7 @@ const MealConstituentEdit = ({ navigation, route }: Props) => {
 
                 </View>
 
-                <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Update </Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Update </Text></TouchableOpacity>
 
             </View>
         </>
@@ -252,7 +321,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between"
     },
     card: {
-        height: y * 0.5,
+        height: y * 0.55,
         width: "90%",
         backgroundColor: "white",
         borderRadius: 10,
@@ -376,4 +445,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default MealConstituentEdit;
+export default ActivitySet;

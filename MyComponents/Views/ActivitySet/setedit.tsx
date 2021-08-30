@@ -11,6 +11,8 @@ import Activity from './activity';
 import {
     GifSearch,
 } from 'react-native-gif-search';
+import { v4 as uuidv4 } from 'uuid';
+import "react-native-get-random-values";
 import { Props } from '../../types';
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -20,12 +22,73 @@ const ActivitySet = ({ navigation, route }: Props) => {
     const [showgifModal, SetShowgifModal] = useState(false);
     const [Visible, SetVisible] = useState(true);
     const [Description, SetDescription] = useState("this is a set intended to make you lots of pushups")
-    const [ActivityValue, SetActivity] = useState("PushUps");
+    const [ActivityValue, SetActivityValue] = useState({
+        id: "10",
+        name: "running",
+        description: "fast paced activity of walking",
+        actiongif: "ljd"
+    });
+    const [NewActivityDescription, SetNewActivityDescription] = useState("");
+    const [NewActivityName, SetNewActivityName] = useState("");
     const [Repetition, SetRepitition] = useState(10);
     const [Duration, SetDuration] = useState(4);
     const [Tempo, SetTempo] = useState(false);
     const [Met, SetMet] = useState(18);
 
+    const [Activities, SetActivities] = useState([
+        {
+            id: "10",
+            name: "running",
+            description: "fast paced activity of walking",
+            actiongif: "ljd"
+        },
+        {
+            id: "11",
+            name: "Hopping",
+            description: "fast paced activity of walking",
+            actiongif: "ljl"
+        },
+        {
+            id: "12",
+            name: "Sitting",
+            description: "fast paced activity of walking",
+            actiongif: "llmj"
+        },
+        {
+            id: "13",
+            name: "running",
+            description: "fast paced activity of walking",
+            actiongif: "lwej"
+        },
+        {
+            id: "14",
+            name: "running",
+            description: "fast paced activity of walking",
+            actiongif: "ljrt"
+        },
+    ])
+    const [SelectedActivity, SetSelectedActivity] = useState("");
+
+    const deleteActivity = (id: string) => {
+        SetActivities((activity) => {
+            const list = activity.filter((act, i) => (act.id !== id));
+            return list;
+        })
+    }
+    const createActivity = () => {
+        let newActivity = {
+            id: uuidv4(),
+            name: NewActivityName,
+            description: NewActivityDescription,
+            actiongif: "kljl"
+        }
+        SetActivities((newactivities) => {
+            let tobeadded = newactivities.concat(newActivity);
+            return tobeadded;
+        })
+        SetNewActivityDescription("");
+        SetNewActivityName("");
+    }
     return (
         <>
             <Modal isOpen={showgifModal} onClose={() => { SetShowgifModal(false); SetVisible(false); }}>
@@ -72,9 +135,9 @@ const ActivitySet = ({ navigation, route }: Props) => {
                         Create Activity</Modal.Header>
                     <Modal.Body>
 
-                        <TextInput placeholder="Activity name ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+                        <TextInput placeholder="Activity name ?" value={NewActivityName} placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} onChangeText={(val) => { SetNewActivityName(val) }} />
 
-                        <TextInput placeholder="Description ?" placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} />
+                        <TextInput placeholder="Description ?" value={NewActivityDescription} placeholderTextColor="black" style={{ color: "black", borderBottomWidth: 1, marginVertical: 10 }} onChangeText={(val) => { SetNewActivityDescription(val) }} />
 
                         <TouchableOpacity style={styles.button} onPress={() => { SetShowgifModal(true); SetVisible(true); }}  >
                             <Text style={{ color: "white" }}>Add a GIF</Text>
@@ -87,6 +150,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                             <Button
                                 onPress={() => {
+                                    createActivity();
                                     setShowActivityModal(false)
                                 }}
                             >
@@ -102,14 +166,17 @@ const ActivitySet = ({ navigation, route }: Props) => {
                     <Modal.CloseButton />
                     <Modal.Header>Activities</Modal.Header>
                     <Modal.Body>
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
-                        <Activity />
+                        {
+                            Activities.map((activity, i) => (
+                                <Activity key={i} data={activity} onPress={() => {
+                                    SetActivityValue(activity);
+                                    setShowModal(false);
+                                }}
+                                    onDeleteButtonPress={() => {
+                                        deleteActivity(activity.id)
+                                    }} />
+                            ))
+                        }
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -156,8 +223,10 @@ const ActivitySet = ({ navigation, route }: Props) => {
                             <Text style={{ color: "rgb(217,125,84)" }}> GIF</Text>
                         </View>
                         <View style={styles.input}>
-                            <TouchableOpacity onPress={() => { setShowModal(true) }}>
-                                <TextInput placeholder="select something" value={ActivityValue} editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
+                            <TouchableOpacity onPress={() => {
+                                setShowModal(true)
+                            }}>
+                                <TextInput placeholder="select something" value={ActivityValue.name} editable={false} placeholderTextColor="black" style={{ borderBottomWidth: 1, borderBottomColor: "lightgrey", color: "black" }} onChangeText={() => { }} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -238,7 +307,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
 
                 </View>
 
-                <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Update </Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.button}><Text style={{ fontSize: 28, color: "white" }}>Update </Text></TouchableOpacity>
 
             </View>
         </>

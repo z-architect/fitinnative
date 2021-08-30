@@ -32,9 +32,9 @@ import Search from "./MyComponents/Views/Plans/plansearch";
 import SessionCreation from "./MyComponents/Views/Session/session";
 import SessionView from "./MyComponents/Views/Session/sessionview";
 import SessionEdit from "./MyComponents/Views/Session/sessionedit";
-import MealSession from "./MyComponents/Views/MealSession/session";
-import MealSessionView from "./MyComponents/Views/MealSession/sessionview";
-import MealSessionEdit from "./MyComponents/Views/MealSession/sessionedit";
+import MealSession from "./MyComponents/Views/MealSession/mealsession";
+import MealSessionView from "./MyComponents/Views/MealSession/mealsessionview";
+import MealSessionEdit from "./MyComponents/Views/MealSession/mealsessionedit";
 
 import SetCreation from "./MyComponents/Views/ActivitySet/activityset";
 import SetEdit from "./MyComponents/Views/ActivitySet/setedit";
@@ -85,7 +85,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="SetEdit"
         screenOptions={{
           headerShown: false,
         }}
