@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Alert } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -49,6 +49,9 @@ import Meal from "./MyComponents/Views/Tracking/meal";
 import Vitals from "./MyComponents/Views/Tracking/vitals";
 import Exercise from "./MyComponents/Views/Tracking/exercise";
 import Current from "./MyComponents/Views/Plans/currentplan";
+import { refreshAuth, signoutOfFirebase } from "./api/utils";
+import DailyGoals from "./MyComponents/Views/DailyGoals/dailygoal";
+import Comp from "./MyComponents/Views/Monitoring/graphs";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -70,6 +73,10 @@ const App = () => {
       AsyncStorage.getItem("@profile").then((r) => {
         setProfile(JSON.parse(r as string)?.hasOnboarded);
       });
+      AsyncStorage.getItem("@token").then((r) => {
+        void refreshAuth(JSON.parse(r as string)?.token);
+        console.log(r);
+      });
     } catch (err) {
       Alert.alert(err.message); // TODO do something else
     }
@@ -85,13 +92,15 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Landing"
+        initialRouteName="Profile"
         screenOptions={{
           headerShown: false,
         }}
       >
-        {!IsSignedIn ? (
+        {IsSignedIn ? (
           <>
+            <Stack.Screen name="Home" component={Home} />
+
             {!hasBeenOnboarded ? (
               <>
                 <Stack.Screen name="Landing" component={Landingpage} />
@@ -104,8 +113,14 @@ const App = () => {
           </>
         ) : (
           <>
+            {/*<Stack.Screen name="Profile" component={Profile} />*/}
+            {/*<Stack.Screen name="Vitals" component={Vitals} />*/}
+            {/*<Stack.Screen name="Login" component={Login} />*/}
+            {/*<Stack.Screen name="Signup" component={Signup} />*/}
+
+            {/*<Stack.Screen name="Vitals" component={Vitals} />*/}
             <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Profile" component={Profile} />
+            {/*<Stack.Screen name="Profile" component={Profile} />*/}
             <Stack.Screen name="Goal" component={Goal} />
             <Stack.Screen name="Plan" component={PlanCreation} />
             <Stack.Screen name="MealPlan" component={MealPlan} />
@@ -129,11 +144,30 @@ const App = () => {
             <Stack.Screen name="Search" component={Search} />
             <Stack.Screen name="Current" component={Current} />
             <Stack.Screen name="Exercise" component={Exercise} />
+            <Stack.Screen name="DailyWaterIntakeGoal" component={DailyGoals} />
+            <Stack.Screen name="DailySleepGoal" component={DailyGoals} />
+            <Stack.Screen name="Engagements" component={Comp} />
+            <Stack.Screen name="Vitals" component={Vitals} />
           </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    width: "100%",
+    paddingHorizontal: 15,
+    alignItems: "center",
+    marginVertical: 13,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+  },
+});
 
 export default App;

@@ -23,6 +23,12 @@ export enum Goal {
   FITNESS_MAINTENANCE = "FITNESS_MAINTENANCE",
 }
 
+export enum ActivityLevel {
+  SEDENTARY = "SEDENTARY",
+  AVERAGE = "AVERAGE",
+  ACTIVE = "ACTIVE",
+}
+
 export interface SignupRequestSpec {
   firstName?: string;
   middleName?: string;
@@ -32,6 +38,7 @@ export interface SignupRequestSpec {
   sex: Sex;
   dateOfBirth: string | Date;
   role: Role;
+  currentGoal?: Goal | null;
 }
 
 export interface SignupResponseSpec {
@@ -45,6 +52,7 @@ export interface SignupResponseSpec {
   currentGoal?: Goal | null;
   dailyGlassesOfWater: number;
   dailyHoursOfSleep: number;
+  activityLevel: ActivityLevel;
 }
 
 export interface SigninResponseSpec {
@@ -64,6 +72,7 @@ export interface SigninResponseSpec {
   streak: number;
   isFollowingPlan: boolean;
   currentGoal?: Goal | null;
+  activityLevel: ActivityLevel;
   dailyGlassesOfWater: number;
   dailyHoursOfSleep: number;
 }

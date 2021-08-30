@@ -7,7 +7,7 @@ import GoogleServicesKey from "../android/app/google-services.json";
 
 // initialize axios
 export const instance = axios.create({
-  baseURL: "http://192.168.110.109:44032/v1",
+  baseURL: "http://192.168.1.12:44032/v1",
   headers: {
     common: {
       ["X-Instance-Id"]: getInstallationId(),

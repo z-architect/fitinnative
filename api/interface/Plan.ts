@@ -4,9 +4,15 @@ import {
   FetchPlanResponseSpec,
   FetchPlansRequestSpec,
   FetchPlansResponseSpec,
+  FetchPlanSubscriptionsResponseSpec,
+  FetchSessionIntervalsRequestSpec,
+  FetchSessionIntervalsResponseSpec,
   Paging,
+  RemovePlanRequestSpec,
   SubscribeToPlanRequestSpec,
+  UnsubscribeFromPlanRequestSpec,
   UpdatePlanRequestSpec,
+  UpdatePlanSubscriptionRequestSpec,
 } from "../spec";
 import {
   requestCreate,
@@ -20,8 +26,14 @@ export class Plan {
     return requestCreate<CreatePlanRequestSpec, string>("/plan", data);
   }
 
-  static async fetchPlans(params: FetchPlansRequestSpec[]) {
+  static async fetchPlans(params: FetchPlansRequestSpec) {
     return requestFetch<FetchPlansResponseSpec[]>("/plan", { params });
+  }
+
+  static async fetchSessionIntervals(params: FetchSessionIntervalsRequestSpec) {
+    return requestFetch<FetchSessionIntervalsResponseSpec>(
+      `/plan/${params.id}/intervals`
+    );
   }
 
   static async fetchPlan(params: FetchPlanRequestSpec) {
@@ -34,19 +46,29 @@ export class Plan {
     return requestUpdate<UpdatePlanRequestSpec>("/plan", data);
   }
 
-  static async removePlan(planID: string) {
-    return requestDelete("/plan", { params: { id: planID } });
+  static async removePlan(params: RemovePlanRequestSpec) {
+    return requestDelete("/plan", { params });
   }
 
   static async subscribeToPlan(data: SubscribeToPlanRequestSpec) {
     return requestCreate("/plan/subscription", data);
   }
 
-  static async getPlanSubscriptions(params: Paging) {
-    return requestFetch("/plan/subscription", { params });
+  static async fetchPlanSubscriptions(params: Paging) {
+    return requestFetch<FetchPlanSubscriptionsResponseSpec[]>(
+      "/plan/subscription",
+      { params }
+    );
   }
 
-  static async unsubscribeFromPlan(userPlanId: string) {
-    return requestDelete("/plan/subscription", { params: { id: userPlanId } });
+  static async updatePlanSubscription(data: UpdatePlanSubscriptionRequestSpec) {
+    return requestUpdate<UpdatePlanSubscriptionRequestSpec>(
+      "/plan/subscription",
+      data
+    );
+  }
+
+  static async unsubscribeFromPlan(params: UnsubscribeFromPlanRequestSpec) {
+    return requestDelete("/plan/subscription", { params });
   }
 }

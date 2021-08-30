@@ -77,7 +77,7 @@ const CurrentPlan = ({ navigation, route }: Props) => {
         </ScrollView>
       </View>
       <View>
-        <View style={styles.textcontainer}>
+        <View style={styles.textContainer}>
           <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
             Day 3 of 9
           </Text>
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     color: "white",
     marginBottom: 8,
   },
-  textcontainer: {
+  textContainer: {
     paddingHorizontal: 15,
     width: x,
     height: y * 0.05,

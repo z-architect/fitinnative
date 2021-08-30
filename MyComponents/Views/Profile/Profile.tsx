@@ -1,36 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  View,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  ImageBackground,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Dimensions,
+  View,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
-import Entypo from "react-native-vector-icons/Entypo";
-import { useAppSelector, useAppDispatch } from "../../Redux/hooks";
-import { signOut, logIn } from "../../Redux/profileSlice";
-import {
-  Input,
-  Icon,
-  Modal,
-  Image,
-  Select,
-  NumberInput,
-  NumberInputField,
-} from "native-base";
-
-import { NavigationContainer } from "@react-navigation/native";
+import { useAppDispatch } from "../../Redux/hooks";
+import { Image, Input, Modal, Select } from "native-base";
 import { Props } from "../../types";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import {
+  Asset,
+  launchCamera,
+  launchImageLibrary,
+} from "react-native-image-picker";
 import DatePicker from "react-native-date-picker";
-import { Goal, Sex } from "../../../api/spec";
+import {
+  ActivityLevel,
+  Goal,
+  Role,
+  Sex,
+  UploadEntity,
+} from "../../../api/spec";
 import NumericInput from "react-native-numeric-input";
 import DeleteModal from "../../Utils/DeleteModal";
+import { Access, Profile as _Profile, Upload } from "../../../api/interface";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -38,11 +35,17 @@ const y = Dimensions.get("window").height;
 // console.log(x,"X",y)
 const Profile = ({ navigation, route }: Props) => {
   const [showImagePickerModal, setShowImagePickerModal] = useState(false);
+  const [uploadedImageResource, setUploadedImageResource] = useState<any>(null);
   const [profileImageAsset, setProfileImageAsset] = useState<any>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [email, setEmail] = useState("dullkingsman@gmail.com");
+  const [role, setRole] = useState(Role.TRAINEE);
   const [editMode, setEditMode] = useState(false);
   const [firstTimeToProfile, setFirstTimeToProfile] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedActivityLevel, setSelectedActivityLevel] = useState(
+    ActivityLevel.ACTIVE
+  );
   const [firstName, setFirstName] = useState("Daniel");
   const [lastName, setLastName] = useState("Tsegaw");
   const [currentGoal, setCurrentGoal] = useState(Goal.FITNESS_MAINTENANCE);
@@ -56,13 +59,75 @@ const Profile = ({ navigation, route }: Props) => {
   );
 
   const dispatch = useAppDispatch();
+
+  async function getProfileAccessStatus() {
+    // try {
+    //   const profileAccessStatus = JSON.parse(
+    //     (await AsyncStorage.getItem("@firstTimeToProfile")) as string
+    //   );
+    //
+    //   if (profileAccessStatus === null) setFirstTimeToProfile(true);
+    //   else setFirstTimeToProfile(profileAccessStatus);
+    // } catch (err) {
+    //   setFirstTimeToProfile(true);
+    // }
+  }
+
+  async function handleProfileUpload(asset: Asset) {
+    asset.uri = asset.uri?.replace("file://", "");
+
+    const result = await Upload.uploadResource([asset], UploadEntity.CONSUMER);
+    if (result) setProfileImageAsset(asset);
+  }
+
+  useEffect(() => {
+    void getProfileAccessStatus();
+  }, []);
+
   // TODO first time profile access flag is needed
   // TODO prepare an edit mode flag with in component
   // TODO prepare a flag for profile image available with in component
 
-  function handleProfileDelete() {
-    //TODO handle profile delete
+  async function handleProfileDelete() {
+    await _Profile.removeProfile();
     setShowDeleteModal(false);
+    navigation.navigate("Login");
+  }
+
+  function getProfileObject() {
+    const _profile: any = {};
+
+    if (firstName) _profile.firstName = firstName;
+    if (lastName) _profile.lastName = lastName;
+    if (dateOfBirth) _profile.dateOfBirth = dateOfBirth;
+    if (sex) _profile.sex = sex;
+    if (currentGoal) _profile.currentGoal = currentGoal;
+    if (dailyWaterIntakeGoal)
+      _profile.dailyGlassesOfWater = dailyWaterIntakeGoal;
+    if (dailyHoursOfSleepGoal)
+      _profile.dailyHoursOfSleep = dailyHoursOfSleepGoal;
+    if (selectedActivityLevel) _profile.activityLevel = selectedActivityLevel;
+
+    return _profile;
+  }
+
+  async function updateProfile() {
+    const _profile = getProfileObject();
+    return await _Profile.updateProfile(_profile);
+  }
+
+  async function handleFirstTimeProfileSetting() {
+    const result = await updateProfile();
+
+    if (result) {
+      setFirstTimeToProfile(true);
+      navigation.navigate("Goal");
+    } else console.log({ result });
+  }
+
+  async function handleProfileUpdate() {
+    await updateProfile();
+    setEditMode(false);
   }
 
   return (
@@ -78,7 +143,7 @@ const Profile = ({ navigation, route }: Props) => {
                     <AntDesign color="red" size={32} name="close" />
                   </TouchableOpacity>
                   <View style={{ width: 30 }} />
-                  <TouchableOpacity onPress={() => setEditMode(false)}>
+                  <TouchableOpacity onPress={handleProfileUpdate}>
                     <AntDesign color="green" size={32} name="check" />
                   </TouchableOpacity>
                 </>
@@ -135,7 +200,7 @@ const Profile = ({ navigation, route }: Props) => {
                         if (response.didCancel || response.assets?.length !== 1)
                           return;
 
-                        setProfileImageAsset(response.assets[0]);
+                        void handleProfileUpload(response.assets[0]);
                       }
                     );
                   }}
@@ -147,12 +212,15 @@ const Profile = ({ navigation, route }: Props) => {
                   onPress={() => {
                     // TODO handle library
                     setShowImagePickerModal(false);
-                    launchImageLibrary({ mediaType: "photo" }, (response) => {
-                      if (response.didCancel || response.assets?.length !== 1)
-                        return;
+                    launchImageLibrary(
+                      { selectionLimit: 1, mediaType: "photo" },
+                      (response) => {
+                        if (response.didCancel || response.assets?.length !== 1)
+                          return;
 
-                      setProfileImageAsset(response.assets[0]);
-                    });
+                        void handleProfileUpload(response.assets[0]);
+                      }
+                    );
                   }}
                 >
                   <Text style={styles.signOutButtonText}>
@@ -164,17 +232,17 @@ const Profile = ({ navigation, route }: Props) => {
           </Modal>
         </View>
 
-        {!editMode ? (
+        {!editMode && !firstTimeToProfile ? (
           <View style={styles.profileContainerRight}>
             <View style={{ ...styles.inputLine, paddingVertical: 0 }}>
               <Text style={{ fontSize: 22, padding: 5, fontWeight: "bold" }}>
-                Daniel Tsegaw
+                {`${firstName} ${lastName}`}
                 {/* TODO handle value */}
               </Text>
             </View>
             <View style={{ ...styles.inputLine, paddingVertical: 0 }}>
               <Text style={{ fontSize: 16, padding: 5, fontStyle: "italic" }}>
-                dullkingsman@gmail.com
+                {email}
                 {/* TODO handle value */}
               </Text>
             </View>
@@ -187,20 +255,25 @@ const Profile = ({ navigation, route }: Props) => {
                   fontStyle: "italic",
                 }}
               >
-                Trainee
+                {role}
                 {/* TODO handle value */}
               </Text>
             </View>
             <View style={{ ...styles.inputLine, paddingVertical: 0 }}>
               <Text
                 style={{
-                  color: "darkgreen",
+                  color:
+                    selectedActivityLevel === ActivityLevel.SEDENTARY
+                      ? "saddlebrown"
+                      : selectedActivityLevel === ActivityLevel.AVERAGE
+                      ? "darkblue"
+                      : "darkgreen",
                   fontSize: 16,
                   padding: 5,
                   fontStyle: "italic",
                 }}
               >
-                Active
+                {selectedActivityLevel}
                 {/* TODO handle value */}
               </Text>
             </View>
@@ -244,7 +317,7 @@ const Profile = ({ navigation, route }: Props) => {
             >
               Date of birth
             </Text>
-            {editMode ? (
+            {editMode || firstTimeToProfile ? (
               <TouchableOpacity
                 style={{ width: editMode ? "70%" : "50%" }}
                 onPress={() => setShowDatePicker(true)}
@@ -292,7 +365,7 @@ const Profile = ({ navigation, route }: Props) => {
             >
               Sex
             </Text>
-            {editMode ? (
+            {editMode || firstTimeToProfile ? (
               <Select
                 selectedValue={sex}
                 width={editMode ? "70%" : "50%"}
@@ -370,7 +443,7 @@ const Profile = ({ navigation, route }: Props) => {
             >
               Goal
             </Text>
-            {editMode ? (
+            {editMode || firstTimeToProfile ? (
               <Select
                 selectedValue={currentGoal}
                 width={editMode ? "70%" : "50%"}
@@ -416,7 +489,7 @@ const Profile = ({ navigation, route }: Props) => {
               Hours of sleep
             </Text>
             <View style={{ width: editMode ? "70%" : "50%" }}>
-              {editMode ? (
+              {editMode || firstTimeToProfile ? (
                 <NumericInput
                   containerStyle={{ width: "100%" }}
                   value={dailyHoursOfSleepGoal}
@@ -440,7 +513,7 @@ const Profile = ({ navigation, route }: Props) => {
               Glasses of water
             </Text>
             <View style={{ width: editMode ? "70%" : "50%" }}>
-              {editMode ? (
+              {editMode || firstTimeToProfile ? (
                 <NumericInput
                   containerStyle={{ width: "100%" }}
                   value={dailyWaterIntakeGoal}
@@ -464,25 +537,82 @@ const Profile = ({ navigation, route }: Props) => {
             </Text>
           </View>
           <View style={styles.circlesContainer}>
-            <TouchableOpacity style={styles.activityBoxes}>
-              <View style={styles.circles}>
-                <FontAwesome name="couch" size={40} color="grey" />
+            <TouchableOpacity
+              style={styles.activityBoxes}
+              onPress={() => setSelectedActivityLevel(ActivityLevel.SEDENTARY)}
+            >
+              <View
+                style={{
+                  ...styles.circles,
+                  borderColor:
+                    selectedActivityLevel === ActivityLevel.SEDENTARY
+                      ? "rgb(100,71,85)"
+                      : "grey",
+                }}
+              >
+                <FontAwesome
+                  name="couch"
+                  size={40}
+                  color={
+                    selectedActivityLevel === ActivityLevel.SEDENTARY
+                      ? "rgb(100,71,85)"
+                      : "grey"
+                  }
+                />
               </View>
               <Text style={{ paddingBottom: 20, textAlign: "center" }}>
                 Sedentery
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.activityBoxes}>
-              <View style={styles.circles}>
-                <FontAwesome name="walking" size={40} color="grey" />
+            <TouchableOpacity
+              style={styles.activityBoxes}
+              onPress={() => setSelectedActivityLevel(ActivityLevel.AVERAGE)}
+            >
+              <View
+                style={{
+                  ...styles.circles,
+                  borderColor:
+                    selectedActivityLevel === ActivityLevel.AVERAGE
+                      ? "rgb(50,71,165)"
+                      : "grey",
+                }}
+              >
+                <FontAwesome
+                  name="walking"
+                  size={40}
+                  color={
+                    selectedActivityLevel === ActivityLevel.AVERAGE
+                      ? "rgb(50,71,165)"
+                      : "grey"
+                  }
+                />
               </View>
               <Text style={{ paddingBottom: 20, textAlign: "center" }}>
                 Average
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.activityBoxes}>
-              <View style={styles.circles}>
-                <FontAwesome name="running" size={40} color="grey" />
+            <TouchableOpacity
+              style={styles.activityBoxes}
+              onPress={() => setSelectedActivityLevel(ActivityLevel.ACTIVE)}
+            >
+              <View
+                style={{
+                  ...styles.circles,
+                  borderColor:
+                    selectedActivityLevel === ActivityLevel.ACTIVE
+                      ? "rgb(50, 141, 85)"
+                      : "grey",
+                }}
+              >
+                <FontAwesome
+                  name="running"
+                  size={40}
+                  color={
+                    selectedActivityLevel === ActivityLevel.ACTIVE
+                      ? "rgb(50, 141, 85)"
+                      : "grey"
+                  }
+                />
               </View>
               <Text style={{ paddingBottom: 20, textAlign: "center" }}>
                 Active
@@ -492,12 +622,13 @@ const Profile = ({ navigation, route }: Props) => {
         </View>
       ) : null}
 
-      {!editMode ? (
+      {!editMode && !firstTimeToProfile ? ( //TODO add !firstTimeToProfile
         <View style={styles.removeProfileButtonContainer}>
           <TouchableOpacity
             style={styles.signOutButton}
-            onPress={() => {
-              console.log("signout handled"); // TODO handle signout
+            onPress={async () => {
+              const result = await Access.signOut();
+              if (result) navigation.navigate("Login");
             }}
           >
             <Text style={styles.signOutButtonText}>Sign out</Text>
@@ -521,8 +652,7 @@ const Profile = ({ navigation, route }: Props) => {
         <TouchableOpacity
           style={styles.nextButton}
           onPress={() => {
-            setFirstTimeToProfile(true);
-            navigation.navigate("Goal");
+            void handleFirstTimeProfileSetting();
           }}
         >
           <Text style={{ color: "white", fontSize: 24 }}>Next</Text>

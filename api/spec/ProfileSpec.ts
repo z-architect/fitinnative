@@ -6,6 +6,12 @@ export enum Subscription {
   PREMIUM = "PREMIUM",
 }
 
+enum ActivityLevel {
+  SEDENTARY = "SEDENTARY",
+  AVERAGE = "AVERAGE",
+  ACTIVE = "ACTIVE",
+}
+
 export interface ProfilesGetResponseSpec {
   profilePicture?: string;
   firstName: string;
@@ -31,13 +37,16 @@ export interface ProfileGetOwnResponseSpec extends ProfileGetResponseSpec {
   currentGoal?: Goal | null;
   dailyGlassesOfWater: number;
   dailyHoursOfSleep: number;
+  activityLevel: ActivityLevel;
 }
 
 export interface ProfilesGetRequestSpec extends QueryFilter {
   ids?: string[];
 }
 
-export interface ProfileGetResponseSpec extends ProfilesGetResponseSpec {}
+export interface ProfileGetResponseSpec extends ProfilesGetResponseSpec {
+  activityLevel: ActivityLevel;
+}
 
 export interface ProfileUpdateRequestSpec {
   firstName?: string;
@@ -49,4 +58,5 @@ export interface ProfileUpdateRequestSpec {
   profilePicture?: string;
   dailyGlassesOfWater?: number;
   dailyHoursOfSleep?: number;
+  activityLevel: ActivityLevel;
 }

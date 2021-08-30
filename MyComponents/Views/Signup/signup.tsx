@@ -123,7 +123,12 @@ const Signup = ({ navigation }: Props) => {
       await onAuthStateChanged(
         (fireResult as FirebaseAuthTypes.UserCredential).user
       );
+    } catch (err) {
+      console.error(err);
+      // TODO handle firebase signup failure
+    }
 
+    try {
       const result = await Access.signup({
         firstName,
         middleName,
@@ -147,7 +152,6 @@ const Signup = ({ navigation }: Props) => {
       }
     } catch (err) {
       console.error(err);
-      // TODO handle firebase signup failure
     }
   };
 

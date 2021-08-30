@@ -33,7 +33,7 @@ export async function refreshAuth(token?: string) {
     instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     await AsyncStorage.setItem(
       "@token",
-      JSON.stringify({ token: `Bearer ${token}` })
+      JSON.stringify({ token: token.split("Bearer ")[1] })
     );
   }
 }

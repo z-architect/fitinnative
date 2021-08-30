@@ -16,6 +16,7 @@ export class Upload {
   ): Promise<SuccessData<UploadResourceResponseSpec> | null> {
     try {
       const formData = new FormData();
+
       formData.append("files", files);
       formData.append("for", _for);
 
