@@ -51,7 +51,10 @@ export class Plan {
   }
 
   static async subscribeToPlan(data: SubscribeToPlanRequestSpec) {
-    return requestCreate("/plan/subscription", data);
+    return requestCreate<SubscribeToPlanRequestSpec, string>(
+      "/plan/subscription",
+      data
+    );
   }
 
   static async fetchPlanSubscriptions(params: Paging) {

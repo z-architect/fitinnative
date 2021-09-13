@@ -17,8 +17,13 @@ export class Upload {
     try {
       const formData = new FormData();
 
-      formData.append("files", files);
-      formData.append("for", _for);
+      formData.append("for", {
+        ["string"]: _for,
+        type: "application/json",
+      });
+      files.forEach((file) => {
+        formData.append("files", { ...file, name: file.fileName || file.name });
+      });
 
       const res = await instance.post(
         `${instance.defaults.baseURL}/upload`,
@@ -40,6 +45,7 @@ export class Upload {
     try {
       const res = await instance.get(`${instance.defaults.baseURL}/upload`, {
         params,
+        responseType: "arraybuffer",
       });
 
       if (res.data && res.data.error) return null;
@@ -57,10 +63,10 @@ export class Upload {
   ): Promise<boolean> {
     try {
       const formData = new FormData();
-      formData.append("file", file);
       for (const param of Object.entries(params)) {
         formData.append(param[0], param[1]);
       }
+      formData.append("file", file);
 
       const res = await instance.put(
         `${instance.defaults.baseURL}/upload`,

@@ -141,6 +141,7 @@ export async function requestCreate<T, H>(
   config?: AxiosRequestConfig
 ): Promise<SuccessData<H> | null> {
   try {
+    auth().currentUser?.getIdToken();
     const res = await instance.post(
       `${instance.defaults.baseURL}${route}`,
       data,
@@ -164,6 +165,7 @@ export async function requestFetch<T>(
   config?: AxiosRequestConfig
 ): Promise<SuccessData<T> | null> {
   try {
+    auth().currentUser?.getIdToken();
     const res = await instance.get(
       `${instance.defaults.baseURL}${route}`,
       config
@@ -186,6 +188,7 @@ export async function requestUpdate<T>(
   config?: AxiosRequestConfig
 ): Promise<boolean> {
   try {
+    auth().currentUser?.getIdToken();
     const res = await instance.put(
       `${instance.defaults.baseURL}${route}`,
       data,
@@ -207,6 +210,7 @@ export async function requestUpdateWithReturn<T, H>(
   config?: AxiosRequestConfig
 ): Promise<SuccessData<H> | null> {
   try {
+    auth().currentUser?.getIdToken();
     const res = await instance.put(
       `${instance.defaults.baseURL}${route}`,
       data,
@@ -229,6 +233,7 @@ export async function requestDelete(
   config?: AxiosRequestConfig
 ): Promise<boolean> {
   try {
+    auth().currentUser?.getIdToken();
     const res = await instance.delete(
       `${instance.defaults.baseURL}${route}`,
       config
@@ -248,6 +253,7 @@ export async function requestDeleteWithReturn<T>(
   config?: AxiosRequestConfig
 ): Promise<SuccessData<T> | null> {
   try {
+    auth().currentUser?.getIdToken();
     const res = await instance.delete(
       `${instance.defaults.baseURL}${route}`,
       config

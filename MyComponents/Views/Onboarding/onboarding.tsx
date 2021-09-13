@@ -4,16 +4,23 @@ import { View, Image, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Props } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppDispatch } from "../../Redux/hooks";
+import { updateHasBeenOnboarded } from "../../Redux/globalsSlice";
 
 const OnBoarding = ({ navigation }: Props) => {
+  const dispatch = useAppDispatch();
+
   const completeOnBoarding = async () => {
     try {
-      await AsyncStorage.setItem(
-        "@hasOnboarded",
-        JSON.stringify({
-          hasOnboarded: true,
-        })
-      );
+      // TODO remove
+      // await AsyncStorage.setItem(
+      //   "@hasOnboarded",
+      //   JSON.stringify({
+      //     hasOnboarded: true,
+      //   })
+      // );
+
+      dispatch(updateHasBeenOnboarded());
     } catch (e) {
       Alert.alert(e.message); // TODO do something else
     }

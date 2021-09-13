@@ -16,68 +16,74 @@ import { SwipeRow } from "react-native-swipe-list-view";
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
-const SetCard = ({
-  set,
+const SessionCard = ({
+  session,
   onSelect,
   createMode,
+  onSheetOpen,
   editMode,
   setScrollEnabled,
   scrollEnabled,
   onEdit,
   onDelete,
+  setSelectedSession,
 }: any) => {
-  const [timed, setTimed] = useState(!set.duration);
+  const [timed, setTimed] = useState(!session.duration);
   const [_delete, setDelete] = useState(false);
   const swiper = useRef<SwipeRow<View>>(null);
 
   useEffect(() => {
-    if (_delete) setTimeout(() => onDelete(set.id), 500);
+    if (_delete) {
+      setTimeout(() => onDelete(session.id), 500);
+    }
   }, [_delete]);
 
   useEffect(() => {
-    console.log({ set });
+    console.log({ editMode });
   }, []);
 
   return (
     <SwipeRow
       ref={swiper}
       disableLeftSwipe={!(editMode || createMode)}
-      disableRightSwipe={true}
+      // disableRightSwipe={true}
       swipeGestureBegan={() => setScrollEnabled(false)}
       swipeGestureEnded={() => setScrollEnabled(true)}
       rightOpenValue={-(x * 0.3)}
       leftOpenValue={x * 0.3}
-      friction={10}
-      tension={60}
       stopRightSwipe={-(x * 0.45)}
       stopLeftSwipe={x * 0.45}
-      leftActionValue={x * 0.45}
-      rightActionValue={-(x * 0.45)}
+      leftActionValue={x * 0.4}
+      rightActionValue={-(x * 0.4)}
+      onRightAction={(rowKey) => {
+        console.log("right");
+      }}
     >
-      <View style={[styles.setCard, { flex: 1, padding: 0 }]}>
-        {/*<TouchableOpacity*/}
-        {/*  style={{*/}
-        {/*    flex: 1,*/}
-        {/*    height: "100%",*/}
-        {/*    alignItems: "flex-start",*/}
-        {/*    backgroundColor: "teal",*/}
-        {/*    borderTopStartRadius: 12,*/}
-        {/*    padding: 20,*/}
-        {/*    borderBottomStartRadius: 12,*/}
-        {/*    justifyContent: "center",*/}
-        {/*  }}*/}
-        {/*  onPress={onEdit}*/}
-        {/*>*/}
-        {/*  <MaterialIcons name={"edit"} size={32} color="white" />*/}
-        {/*</TouchableOpacity>*/}
+      <View style={[styles.sessionCard, { flex: 1, padding: 0 }]}>
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            height: "100%",
+            alignItems: "flex-start",
+            backgroundColor: "teal",
+            borderTopStartRadius: 12,
+            padding: 20,
+            borderBottomStartRadius: 12,
+            justifyContent: "center",
+          }}
+          onPress={() => {
+            swiper?.current?.closeRowWithoutAnimation();
+            onSheetOpen();
+          }}
+        >
+          <MaterialIcons name={"scatter-plot"} size={32} color="white" />
+        </TouchableOpacity>
         <TouchableOpacity
           style={{
             flex: 1,
             height: "100%",
             alignItems: "flex-end",
             backgroundColor: "red",
-            // borderTopEndRadius: 12,
-            // borderBottomEndRadius: 12,
             borderRadius: 12,
             padding: 20,
             justifyContent: "center",
@@ -91,51 +97,55 @@ const SetCard = ({
         </TouchableOpacity>
       </View>
       <View
-        style={[styles.setCard, { backgroundColor: _delete ? "red" : "white" }]}
+        style={[
+          styles.sessionCard,
+          { backgroundColor: _delete ? "red" : "white" },
+        ]}
       >
         <TouchableOpacity
-          style={styles.setCardContentContainer}
+          style={styles.sessionCardContentContainer}
           onPress={() => {
             onSelect();
           }}
         >
-          <View style={styles.setCardContent}>
+          <View style={styles.sessionCardContent}>
             <View
               style={[
-                styles.setGif,
+                styles.sessionImage,
                 {
-                  borderColor: !_delete ? "rgba(0,0,0,0.4)" : "white",
+                  borderColor: !_delete
+                    ? "rgba(0,0,0,0.05)"
+                    : "rgba(255,255,255,0.5)",
                 },
               ]}
             >
-              {set?.activity?.actionGif ? (
+              {session?.image ? (
                 <Image
                   height="100%"
                   width="100%"
                   alt="Action Gif"
                   resizeMode="cover"
-                  style={{ borderRadius: 75 }}
                   source={{
                     uri: `${instance.defaults.baseURL}/upload/${
-                      typeof set?.activity?.actionGif === "string"
-                        ? set?.activity?.actionGif
-                        : set?.activity?.actionGif.id
+                      typeof session?.image === "string"
+                        ? session?.image
+                        : session?.image.id
                     }`,
                   }}
                 />
               ) : null}
             </View>
-            <View style={styles.setDataContainer}>
+            <View style={styles.sessionDataContainer}>
               <Text
                 style={[
                   styles.activityName,
                   { color: !_delete ? "black" : "white" },
                 ]}
               >
-                {set?.activity?.name ?? "Exercise Name"}
+                {session?.name ?? "Exercise Name"}
               </Text>
-              <View style={styles.setInfo}>
-                <View style={styles.setDuration}>
+              <View style={styles.sessionInfo}>
+                <View style={styles.sessionDuration}>
                   <MaterialIcons
                     name={"av-timer"}
                     size={16}
@@ -143,9 +153,9 @@ const SetCard = ({
                   />
                   <Text
                     style={{ color: !_delete ? "rgba(0,0,0,0.7)" : "white" }}
-                  >{` ${set?.duration ?? 0} min`}</Text>
+                  >{` ${session?.duration ?? 0} min`}</Text>
                 </View>
-                <View style={styles.setCalBurn}>
+                <View style={styles.sessionCalBurn}>
                   <MaterialIcons
                     name="whatshot"
                     size={16}
@@ -153,17 +163,7 @@ const SetCard = ({
                   />
                   <Text
                     style={{ color: !_delete ? "rgba(0,0,0,0.7)" : "white" }}
-                  >{` ${set?.caloriesToBurn ?? 0} kcal`}</Text>
-                </View>
-                <View style={styles.setCalBurn}>
-                  <MaterialIcons
-                    name="repeat"
-                    size={16}
-                    color={!_delete ? "black" : "white"}
-                  />
-                  <Text
-                    style={{ color: !_delete ? "rgba(0,0,0,0.7)" : "white" }}
-                  >{` ${set?.reps ?? 0} reps`}</Text>
+                  >{` ${session?.caloriesToBurn ?? 0} kcal`}</Text>
                 </View>
               </View>
             </View>
@@ -174,12 +174,12 @@ const SetCard = ({
   );
 };
 const styles = StyleSheet.create({
-  setCard: {
+  sessionCard: {
+    overflow: "hidden",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     shadowColor: "grey",
-    padding: 20,
     shadowOpacity: 0.5,
     shadowRadius: 5.0,
     elevation: 3,
@@ -187,21 +187,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 4,
   },
-  setCardContentContainer: {
+  sessionCardContentContainer: {
     width: "100%",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
   },
 
-  setCardContent: {
+  sessionCardContent: {
     flexDirection: "row",
     alignItems: "center",
   },
 
-  setDataContainer: {
+  sessionDataContainer: {
     justifyContent: "center",
     marginLeft: 12,
+    padding: 20,
+    paddingLeft: 0,
   },
 
   activityName: {
@@ -210,27 +212,28 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
 
-  setInfo: {
+  sessionInfo: {
     flexDirection: "row",
     alignItems: "center",
   },
 
-  setDuration: {
+  sessionDuration: {
     flexDirection: "row",
     alignItems: "center",
   },
 
-  setCalBurn: {
+  sessionCalBurn: {
     marginLeft: 15,
     flexDirection: "row",
     alignItems: "center",
   },
 
-  setGif: {
-    width: 42,
-    height: 42,
-    borderRadius: 30,
-    borderWidth: 1,
+  sessionImage: {
+    maxWidth: 120,
+    maxHeight: 100,
+    width: 100,
+    height: 100,
+    borderRightWidth: 1,
     overflow: "hidden",
   },
   setCardIcons: {
@@ -240,4 +243,4 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
 });
-export default SetCard;
+export default SessionCard;

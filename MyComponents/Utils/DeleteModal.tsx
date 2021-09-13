@@ -23,7 +23,6 @@ const DeleteModal = (props: DeleteModalProps) => {
     <>
       <Modal isOpen={props.showModal} onClose={() => props.setShowModal(false)}>
         <Modal.Content maxWidth="400px">
-          <Modal.CloseButton />
           <View style={styles.modalTopHalf}>
             <View style={styles.giantXContainer}>
               <AntDesign name="close" size={78} color="black" />

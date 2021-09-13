@@ -233,6 +233,7 @@ const PlanView = ({ navigation, route }: Props) => {
               onPress={() => {
                 setDeleteModal(true);
               }}
+              handleCalendarPress
             >
               <AntDesign name="delete" size={32} color="black" />
             </TouchableOpacity>

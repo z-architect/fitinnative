@@ -1,67 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import {
-  View,
+  Dimensions,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  ImageBackground,
-  StyleSheet,
-  Switch,
-  TextInput,
-  ScrollView,
-  Dimensions,
+  View,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { Input } from "native-base";
+import Icon from "react-native-vector-icons/Ionicons";
+import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
+import {
+  AppTheme,
+  changeLanguage,
+  changeTheme,
+  Language,
+} from "../../Redux/profilesSlice";
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Settings = () => {
-  //const [SelectedValue, SetSelectedValue] = useState("Dark")
-  const [Val1, SetVal1] = useState(true);
-  const [Val2, SetVal2] = useState(false);
-  const [Val3, SetVal3] = useState(false);
+  const settings = useAppSelector(
+    (state) => state.profiles.profiles[state.profiles.activeProfile].settings
+  );
+  const dispatch = useAppDispatch();
 
-  const [ValSec1, SetValSec1] = useState(true);
-  const [ValSec2, SetValSec2] = useState(false);
-  const [ValSec3, SetValSec3] = useState(false);
-
-  const SetSelectedValue = (value: boolean, no: number, type: string) => {
-    if (type === "theme") {
-      if (value) {
-        if (no === 1) {
-          SetVal1(true);
-          SetVal2(false);
-          SetVal3(false);
-        } else if (no === 2) {
-          SetVal1(false);
-          SetVal2(true);
-          SetVal3(false);
-        } else if (no === 3) {
-          SetVal1(false);
-          SetVal2(false);
-          SetVal3(true);
-        }
-      } else if (!value) {
-      }
-    } else if (type === "lang") {
-      if (value) {
-        if (no === 1) {
-          SetValSec1(true);
-          SetValSec2(false);
-          SetValSec3(false);
-        } else if (no === 2) {
-          SetValSec1(false);
-          SetValSec2(true);
-          SetValSec3(false);
-        } else if (no === 3) {
-          SetValSec1(false);
-          SetValSec2(false);
-          SetValSec3(true);
-        }
-      } else if (!value) {
-      }
-    }
-  };
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Settings</Text>
@@ -69,68 +32,157 @@ const Settings = () => {
         <Text style={styles.cardHeaderText}>Theme</Text>
 
         <View style={styles.optionContainer}>
-          <Text style={styles.optionText}>Dark Mode</Text>
-          <Switch
-            onValueChange={(val) => {
-              SetSelectedValue(val, 1, "theme");
-            }}
-            value={Val1}
-          />
+          <TouchableOpacity
+            onPress={() => dispatch(changeTheme(AppTheme.LIGHT))}
+            style={styles.listItem}
+          >
+            <View style={styles.textWrapper}>
+              <Text
+                style={[
+                  styles.title,
+                  settings.theme === AppTheme.LIGHT && styles.active,
+                ]}
+              >
+                Light Mode
+              </Text>
+            </View>
+            {settings.theme === AppTheme.LIGHT && (
+              <Icon
+                style={styles.active}
+                name="ios-checkmark-circle-outline"
+                size={30}
+              />
+            )}
+          </TouchableOpacity>
         </View>
-
         <View style={styles.optionContainer}>
-          <Text style={styles.optionText}>Dimmed Mode</Text>
-          <Switch
-            onValueChange={(val) => {
-              SetSelectedValue(val, 2, "theme");
-            }}
-            value={Val2}
-          />
+          <TouchableOpacity
+            onPress={() => dispatch(changeTheme(AppTheme.DIMMED))}
+            style={styles.listItem}
+          >
+            <View style={styles.textWrapper}>
+              <Text
+                style={[
+                  styles.title,
+                  settings.theme === AppTheme.DIMMED && styles.active,
+                ]}
+              >
+                Dimmed Mode
+              </Text>
+            </View>
+            {settings.theme === AppTheme.DIMMED && (
+              <Icon
+                style={styles.active}
+                name="ios-checkmark-circle-outline"
+                size={30}
+              />
+            )}
+          </TouchableOpacity>
         </View>
-
         <View style={styles.optionContainer}>
-          <Text style={styles.optionText}>Light mode</Text>
-          <Switch
-            onValueChange={(val) => {
-              SetSelectedValue(val, 3, "theme");
-            }}
-            value={Val3}
-          />
+          <TouchableOpacity
+            onPress={() => dispatch(changeTheme(AppTheme.DARK))}
+            style={styles.listItem}
+          >
+            <View style={styles.textWrapper}>
+              <Text
+                style={[
+                  styles.title,
+                  settings.theme === AppTheme.DARK && styles.active,
+                ]}
+              >
+                Dark Mode
+              </Text>
+            </View>
+            {settings.theme === AppTheme.DARK && (
+              <Icon
+                style={styles.active}
+                name="ios-checkmark-circle-outline"
+                size={30}
+              />
+            )}
+          </TouchableOpacity>
         </View>
       </View>
       <View style={[styles.container2, styles.cardContainer]}>
         <Text style={styles.cardHeaderText}>Language</Text>
 
         <View style={styles.optionContainer}>
-          <Text style={styles.optionText}>English</Text>
-          <Switch
-            onValueChange={(val) => {
-              SetSelectedValue(val, 1, "lang");
-            }}
-            value={ValSec1}
-          />
+          <TouchableOpacity
+            onPress={() => dispatch(changeLanguage(Language.ENGLISH))}
+            style={styles.listItem}
+          >
+            <View style={styles.textWrapper}>
+              <Text
+                style={[
+                  styles.title,
+                  settings.language === Language.ENGLISH && styles.active,
+                ]}
+              >
+                English
+              </Text>
+            </View>
+            {settings.language === Language.ENGLISH && (
+              <Icon
+                style={styles.active}
+                name="ios-checkmark-circle-outline"
+                size={30}
+              />
+            )}
+          </TouchableOpacity>
         </View>
 
         <View style={styles.optionContainer}>
-          <Text style={styles.optionText}>Amharic</Text>
-          <Switch
-            onValueChange={(val) => {
-              SetSelectedValue(val, 2, "lang");
-            }}
-            value={ValSec2}
-          />
+          <TouchableOpacity
+            onPress={() => dispatch(changeLanguage(Language.AMHARIC))}
+            style={styles.listItem}
+          >
+            <View style={styles.textWrapper}>
+              <Text
+                style={[
+                  styles.title,
+                  settings.language === Language.AMHARIC && styles.active,
+                ]}
+              >
+                Amharic
+              </Text>
+            </View>
+            {settings.language === Language.AMHARIC && (
+              <Icon
+                style={styles.active}
+                name="ios-checkmark-circle-outline"
+                size={30}
+              />
+            )}
+          </TouchableOpacity>
         </View>
 
         <View style={styles.optionContainer}>
-          <Text style={styles.optionText}>French</Text>
-          <Switch
-            onValueChange={(val) => {
-              SetSelectedValue(val, 3, "lang");
-            }}
-            value={ValSec3}
-          />
+          <TouchableOpacity
+            onPress={() => dispatch(changeLanguage(Language.FRENCH))}
+            style={styles.listItem}
+          >
+            <View style={styles.textWrapper}>
+              <Text
+                style={[
+                  styles.title,
+                  settings.language === Language.FRENCH && styles.active,
+                ]}
+              >
+                French
+              </Text>
+            </View>
+            {settings.language === Language.FRENCH && (
+              <Icon
+                style={styles.active}
+                name="ios-checkmark-circle-outline"
+                size={30}
+              />
+            )}
+          </TouchableOpacity>
         </View>
       </View>
+
       <View style={[styles.container3]}>
         <View style={{ marginTop: 10 }}>
           <View
@@ -215,6 +267,24 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    paddingVertical: 10,
+  },
+  textWrapper: {
+    width: "90%",
+  },
+  title: {
+    fontSize: 18,
+    color: "#434343",
+  },
+  subtitle: {
+    color: "#AAAAAA",
+  },
+  active: {
+    color: "#03a87c",
   },
 });
 export default Settings;

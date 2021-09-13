@@ -15,16 +15,12 @@ import {
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Formik } from "formik";
 import { Props } from "../../types";
-import { useAppDispatch } from "../../Redux/hooks";
-import { logIn } from "../../Redux/profileSlice";
-import {
-  onAuthStateChanged,
-  signinToFirebase,
-  signupToFirebase,
-} from "../../../api/utils";
-import { FirebaseAccessMethod } from "../../../api/spec";
+import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
+import { logIn } from "../../Redux/profilesSlice";
+import { onAuthStateChanged, signinToFirebase } from "../../../api/utils";
+import { FirebaseAccessMethod, Subscription } from "../../../api/spec";
 import { Access } from "../../../api/interface";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RootState } from "../../Redux/store";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -36,14 +32,18 @@ const loginValidationSchema = yup.object().shape({
 });
 
 const Login = ({ navigation, route }: Props) => {
+  const profiles = useAppSelector((state: RootState) => state.profiles);
   const dispatch = useAppDispatch();
   const initialValues = {
     email: "",
     password: "",
     phoneNumber: "",
   };
-
   const [user, setUser] = useState<FirebaseAuthTypes.User>();
+
+  useEffect(() => {
+    console.log(profiles);
+  }, []);
 
   ////////////////////////////////
   //   PHone Auth
@@ -67,7 +67,6 @@ const Login = ({ navigation, route }: Props) => {
   }
 
   const HandleSubmit = async (values: any) => {
-    // Alert.alert(JSON.stringify(values))
     const { email, password, phoneNumber } = values;
 
     try {
@@ -86,11 +85,20 @@ const Login = ({ navigation, route }: Props) => {
       const result = await Access.signin();
 
       if (result) {
-        await AsyncStorage.setItem(
-          "@profile",
-          JSON.stringify({ profile: result.data })
+        // TODO remove
+        // await AsyncStorage.setItem(
+        //   "@profile",
+        //   JSON.stringify({ profile: result.data })
+        // );
+
+        await dispatch(
+          logIn({
+            user: {
+              ...result.data,
+              subscriptionPlan: Subscription.FREE, // TODO send back subscriptionPlan data
+            },
+          })
         );
-        await dispatch(logIn());
         navigation.navigate("Home");
       } else {
         // TODO handle fitin signup failure
@@ -99,16 +107,6 @@ const Login = ({ navigation, route }: Props) => {
       console.error(err);
       // TODO handle firebase signup failure
     }
-
-    // try {
-
-    //     let response = await Auth().signInWithEmailAndPassword(values.Email, values.Password);
-    //     if (response && response.user) {
-    //         Alert.alert("success", "account succesfully create");
-    //     }
-    // } catch (e) {
-    //     Alert.alert("error ", e.message)
-    // }
   };
 
   if (!user) {

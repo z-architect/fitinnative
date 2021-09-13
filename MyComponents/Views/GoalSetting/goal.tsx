@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -10,12 +10,30 @@ import {
 } from "react-native";
 import { Goal as _Goal } from "../../../api/spec/AccessSpec";
 import { Props } from "../../types";
+import {
+  updateFirstTimeToGoalSetting,
+  updateFirstTimeToProfile,
+  updateProfileState,
+} from "../../Redux/profilesSlice";
+import { Profile as _Profile } from "../../../api/interface";
+import { ProfileUpdateRequestSpec } from "../../../api/spec";
+import { useAppDispatch } from "../../Redux/hooks";
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Goal = ({ navigation, route }: Props) => {
-  function handleGoalSetting(goal: string) {
+  const dispatch = useAppDispatch();
+
+  async function handleGoalSetting(goal: _Goal) {
     //TODO handle goal setting
+    const result = await _Profile.updateProfile({ currentGoal: goal });
+
+    if (result) {
+      dispatch(updateProfileState({ currentGoal: goal }));
+      dispatch(updateFirstTimeToGoalSetting());
+      navigation.navigate("Vitals");
+    } else console.log({ result });
   }
 
   return (
@@ -32,7 +50,7 @@ const Goal = ({ navigation, route }: Props) => {
       <ScrollView>
         <TouchableOpacity
           style={styles.goalCard}
-          onPress={() => handleGoalSetting(_Goal.MASS_GAIN)}
+          onPress={() => void handleGoalSetting(_Goal.MASS_GAIN)}
         >
           <ImageBackground
             source={require("../../../MyAssets/bulkingup.jpg")}
@@ -50,7 +68,7 @@ const Goal = ({ navigation, route }: Props) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.goalCard}
-          onPress={() => handleGoalSetting(_Goal.WEIGHT_LOSS)}
+          onPress={() => void handleGoalSetting(_Goal.WEIGHT_LOSS)}
         >
           <ImageBackground
             source={require("../../../MyAssets/weighloss.jpg")}
@@ -68,7 +86,7 @@ const Goal = ({ navigation, route }: Props) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.goalCard}
-          onPress={() => handleGoalSetting(_Goal.FITNESS_MAINTENANCE)}
+          onPress={() => void handleGoalSetting(_Goal.FITNESS_MAINTENANCE)}
         >
           <ImageBackground
             source={require("../../../MyAssets/maintainance.jpg")}
@@ -86,7 +104,7 @@ const Goal = ({ navigation, route }: Props) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.goalCard}
-          onPress={() => handleGoalSetting(_Goal.ATHLETICISM_ENHANCEMENT)}
+          onPress={() => void handleGoalSetting(_Goal.ATHLETICISM_ENHANCEMENT)}
         >
           <ImageBackground
             source={require("../../../MyAssets/athleticism.jpg")}

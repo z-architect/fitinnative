@@ -1,52 +1,135 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
-  ImageBackground,
   StyleSheet,
-  TextInput,
   ScrollView,
   Dimensions,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import VitalsCard from "./Cards/VitalsCard";
 import { Props } from "../../types";
+import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
+import { updateFirstTimeToMeasurements } from "../../Redux/profilesSlice";
+import { updateMeasurements } from "../../Redux/measurementsSlice";
+import { v4 as uuidv4 } from "uuid";
+import { Measurement } from "../../../api/interface";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Vitals = ({ navigation }: Props) => {
-  const [firstTimeToVitals, setFirstTimeToVitals] = useState(false);
+  const profiles = useAppSelector((state) => state.profiles);
+  const measurements = useAppSelector((state) => state.measurements);
+  const dispatch = useAppDispatch();
+
+  const [firstTimeToMeasurements] = useState(
+    profiles.profiles[profiles.activeProfile].firstTimeToMeasurements
+  );
   const [editMode, setEditMode] = useState(
-    firstTimeToVitals ? firstTimeToVitals : false
+    firstTimeToMeasurements ? firstTimeToMeasurements : false
   );
 
-  const [height, setHeight] = useState("0");
-  const [mass, setMass] = useState("0");
-  const [bmi, setBMI] = useState("0");
-  const [heartRate, setHeartRate] = useState("0");
-  const [bloodPressure, setBloodPressure] = useState("0");
-  const [waistSize, setWaistSize] = useState("0");
-  const [hipSize, setHipSize] = useState("0");
-  const [shoulderSize, setShoulderSize] = useState("0");
-  const [armSize, setArmSize] = useState("0");
-  const [bloodGlucose, setBloodGlucose] = useState("0");
-  const [bodyFat, setBodyFat] = useState("0");
-  const [leanMass, setLeanMass] = useState("0");
-  const [bmr, setBMR] = useState("0");
-  const [tdee, setTDEE] = useState("0");
+  const [height, setHeight] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].height}`
+  );
+  const [mass, setMass] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].mass}`
+  );
+  const [bmi, setBMI] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].bmi}`
+  );
+  const [heartRate, setHeartRate] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].heartRate}`
+  );
+  const [bloodPressure, setBloodPressure] = useState(
+    `${
+      measurements.measurements[measurements.currentMeasurement].bloodPressure
+    }`
+  );
+  const [waistSize, setWaistSize] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].waistSize}`
+  );
+  const [hipSize, setHipSize] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].hipSize}`
+  );
+  const [shoulderSize, setShoulderSize] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].shoulderSize}`
+  );
+  const [armSize, setArmSize] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].armSize}`
+  );
+  const [bloodGlucose, setBloodGlucose] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].bloodGlucose}`
+  );
+  const [bodyFat, setBodyFat] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].bodyFat}`
+  );
+  const [leanMass, setLeanMass] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].leanMass}`
+  );
+  const [bmr, setBMR] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].bmr}`
+  );
+  const [tdee, setTDEE] = useState(
+    `${measurements.measurements[measurements.currentMeasurement].tdee}`
+  );
+
+  useEffect(() => {
+    calculateBMI();
+  }, [height, mass]);
+
+  function getVitalsData() {
+    return {
+      id: uuidv4(),
+      height: Number.parseFloat(height),
+      mass: Number.parseFloat(mass),
+      bmi: Number.parseFloat(bmi),
+      heartRate: Number.parseFloat(heartRate),
+      bloodPressure: Number.parseFloat(bloodPressure),
+      waistSize: Number.parseFloat(waistSize),
+      hipSize: Number.parseFloat(hipSize),
+      shoulderSize: Number.parseFloat(shoulderSize),
+      armSize: Number.parseFloat(armSize),
+      bloodGlucose: Number.parseFloat(bloodGlucose),
+      bodyFat: Number.parseFloat(bodyFat),
+      leanMass: Number.parseFloat(leanMass),
+      bmr: Number.parseFloat(bmr),
+      tdee: Number.parseFloat(tdee),
+      latest: true,
+      user: profiles.activeProfile,
+    };
+  }
+
+  async function updateVitals() {
+    const measurements = getVitalsData();
+    const result = await Measurement.recordMeasurement(getVitalsData());
+
+    if (!!result?.data) {
+      dispatch(updateMeasurements(measurements));
+      return true;
+    } else return false;
+  }
 
   async function handleVitalsUpdate() {
-    // TODO get elements
+    await updateVitals();
     setEditMode(false);
+  }
+
+  async function handleFirstTimeVitalsSetting() {
+    await updateVitals();
+    dispatch(updateFirstTimeToMeasurements());
+    navigation.navigate("Home");
   }
 
   function calculateBMI() {
     try {
       const _weight = Number.parseFloat(mass);
       const _height = Number.parseFloat(height);
-      setBMI((_weight / (_height * _height)).toPrecision(1));
+
+      if (isNaN(_height) || _height == 0) setBMI("0");
+      else setBMI((_weight / (_height * _height)).toFixed(2));
     } catch (e) {}
   }
 
@@ -55,9 +138,9 @@ const Vitals = ({ navigation }: Props) => {
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={{ ...styles.title }}>
-            {firstTimeToVitals ? "Body Metrics" : "Measurements"}
+            {firstTimeToMeasurements ? "Body Metrics" : "Measurements"}
           </Text>
-          {!firstTimeToVitals ? (
+          {!firstTimeToMeasurements ? (
             <>
               <TouchableOpacity
                 style={{ flexDirection: "row", alignItems: "center" }}
@@ -86,7 +169,6 @@ const Vitals = ({ navigation }: Props) => {
               <>
                 <TouchableOpacity
                   onPress={() => {
-                    // todo handle skip
                     navigation.navigate("Home");
                   }}
                 >
@@ -99,19 +181,21 @@ const Vitals = ({ navigation }: Props) => {
           )}
         </View>
         <ScrollView
-          scrollEnabled={!firstTimeToVitals}
+          scrollEnabled={!firstTimeToMeasurements}
           contentContainerStyle={styles.cardContainer}
         >
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              width: "100%",
-              paddingHorizontal: 20,
-            }}
-          >
-            Basic
-          </Text>
+          {!firstTimeToMeasurements ? (
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                width: "100%",
+                paddingHorizontal: 20,
+              }}
+            >
+              Basic
+            </Text>
+          ) : null}
 
           <VitalsCard
             measurement="Height"
@@ -122,7 +206,6 @@ const Vitals = ({ navigation }: Props) => {
             descriptor="Height"
             onRecord={(value) => {
               setHeight(value);
-              calculateBMI();
             }}
           >
             <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
@@ -136,7 +219,6 @@ const Vitals = ({ navigation }: Props) => {
             descriptor="Weight"
             onRecord={(value) => {
               setMass(value);
-              calculateBMI();
             }}
           >
             <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
@@ -156,7 +238,7 @@ const Vitals = ({ navigation }: Props) => {
             </VitalsCard>
           ) : null}
 
-          {!firstTimeToVitals ? (
+          {!firstTimeToMeasurements ? (
             <>
               <Text
                 style={{
@@ -324,13 +406,10 @@ const Vitals = ({ navigation }: Props) => {
             </>
           ) : null}
         </ScrollView>
-        {firstTimeToVitals ? (
+        {firstTimeToMeasurements ? (
           <TouchableOpacity
             style={styles.nextButton}
-            onPress={() => {
-              navigation.navigate("Home");
-              // todo handle
-            }}
+            onPress={handleFirstTimeVitalsSetting}
           >
             <Text style={{ color: "white", fontSize: 24 }}>Next</Text>
           </TouchableOpacity>
@@ -358,13 +437,14 @@ const styles = StyleSheet.create({
   titleContainer: {
     width: "100%",
     paddingHorizontal: 15,
+    backgroundColor: "white",
     alignItems: "center",
-    marginVertical: 13,
+    paddingVertical: 13,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "bold",
   },
   cardContainer: {

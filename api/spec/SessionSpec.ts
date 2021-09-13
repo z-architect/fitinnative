@@ -1,5 +1,6 @@
 import { QueryFilter } from "./CommonSpec";
 import { FetchActivitySetsResponseSpec } from "./ActivitySetSpec";
+import { ProfileGetResponseSpec } from "./ProfileSpec";
 
 export enum PlanType {
   MEAL = "MEAL",
@@ -37,6 +38,7 @@ export interface FetchSessionsResponseSpec {
   caloriesToBurn?: number;
   recommendedTimeOfDay: number;
   private?: boolean;
+  createdBy?: ProfileGetResponseSpec | string;
 }
 
 export interface FetchSetOrdersRequestSpec {

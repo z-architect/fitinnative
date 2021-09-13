@@ -1,5 +1,6 @@
 import {
   ProfileGetOwnResponseSpec,
+  ProfileGetResponseSpec,
   ProfilesGetRequestSpec,
   ProfilesGetResponseSpec,
   ProfileUpdateRequestSpec,
@@ -20,10 +21,10 @@ export class Profile {
   }
 
   static async getOwnProfile() {
-    return requestFetch("/profile/me");
+    return requestFetch<ProfileGetOwnResponseSpec>("/profile/me");
   }
 
   static async getProfile(profileID: string) {
-    return requestFetch<ProfileGetOwnResponseSpec>(`/profile/${profileID}`);
+    return requestFetch<ProfileGetResponseSpec>(`/profile/${profileID}`);
   }
 }

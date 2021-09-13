@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
-import { useAppDispatch } from "../../Redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import { Image, Input, Modal, Select } from "native-base";
 import { Props } from "../../types";
 import {
@@ -21,82 +21,97 @@ import DatePicker from "react-native-date-picker";
 import {
   ActivityLevel,
   Goal,
-  Role,
+  ProfileUpdateRequestSpec,
   Sex,
   UploadEntity,
 } from "../../../api/spec";
 import NumericInput from "react-native-numeric-input";
 import DeleteModal from "../../Utils/DeleteModal";
 import { Access, Profile as _Profile, Upload } from "../../../api/interface";
+import { instance } from "../../../api/config";
+import {
+  removeProfile,
+  signOut,
+  updateFirstTimeToProfile,
+  updateProfileState,
+} from "../../Redux/profilesSlice";
+import { useNetInfo } from "@react-native-community/netinfo";
 
-const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
-// console.log(x,"X",y)
-const Profile = ({ navigation, route }: Props) => {
-  const [showImagePickerModal, setShowImagePickerModal] = useState(false);
-  const [uploadedImageResource, setUploadedImageResource] = useState<any>(null);
-  const [profileImageAsset, setProfileImageAsset] = useState<any>(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [email, setEmail] = useState("dullkingsman@gmail.com");
-  const [role, setRole] = useState(Role.TRAINEE);
-  const [editMode, setEditMode] = useState(false);
-  const [firstTimeToProfile, setFirstTimeToProfile] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedActivityLevel, setSelectedActivityLevel] = useState(
-    ActivityLevel.ACTIVE
+const Profile = ({ navigation }: Props) => {
+  const profile = useAppSelector(
+    (state) => state.profiles.profiles[state.profiles.activeProfile]
   );
-  const [firstName, setFirstName] = useState("Daniel");
-  const [lastName, setLastName] = useState("Tsegaw");
-  const [currentGoal, setCurrentGoal] = useState(Goal.FITNESS_MAINTENANCE);
-  const [sex, setSex] = useState(Sex.MALE);
-  const [weight, setWeight] = useState("55");
-  const [height, setHeight] = useState("1.7");
-  const [dailyWaterIntakeGoal, setDailyWaterIntakeGoal] = useState(8);
-  const [dailyHoursOfSleepGoal, setDailyHoursOfSleepGoal] = useState(8);
-  const [dateOfBirth, setDateOfBirth] = useState(
-    new Date(new Date().getMilliseconds() - 3.784e11)
-  );
-
   const dispatch = useAppDispatch();
 
-  async function getProfileAccessStatus() {
-    // try {
-    //   const profileAccessStatus = JSON.parse(
-    //     (await AsyncStorage.getItem("@firstTimeToProfile")) as string
-    //   );
-    //
-    //   if (profileAccessStatus === null) setFirstTimeToProfile(true);
-    //   else setFirstTimeToProfile(profileAccessStatus);
-    // } catch (err) {
-    //   setFirstTimeToProfile(true);
-    // }
+  const [showImagePickerModal, setShowImagePickerModal] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [profileImageAsset, setProfileImageAsset] = useState<any>(
+    profile.user?.profilePicture
+      ? {
+          uri: `${instance.defaults.baseURL}/upload/${profile.user?.profilePicture}`,
+        }
+      : null
+  );
+  const [profilePicture, setProfilePicture] = useState<string | null>(
+    profile.user?.profilePicture
+  );
+  const [email] = useState(profile.user?.email);
+  const [role] = useState(profile.user?.role);
+  const [selectedActivityLevel, setSelectedActivityLevel] = useState(
+    profile.user?.activityLevel || ActivityLevel.AVERAGE
+  );
+  const [firstName, setFirstName] = useState(profile.user?.firstName);
+  const [lastName, setLastName] = useState(profile.user?.lastName);
+  const [currentGoal, setCurrentGoal] = useState(profile.user?.currentGoal);
+  const [sex, setSex] = useState(profile.user?.sex);
+  const [dailyWaterIntakeGoal, setDailyWaterIntakeGoal] = useState(
+    profile.user?.dailyGlassesOfWater
+  );
+  const [dailyHoursOfSleepGoal, setDailyHoursOfSleepGoal] = useState(
+    profile.user?.dailyHoursOfSleep
+  );
+  const [dateOfBirth, setDateOfBirth] = useState(
+    new Date(
+      profile.user?.dateOfBirth || new Date().getMilliseconds() - 3.784e11
+    )
+  );
+
+  useEffect(() => void fetchProfile(), []);
+
+  async function fetchProfile() {
+    const result = await _Profile.getOwnProfile();
+
+    if (result)
+      dispatch(updateProfileState(result.data as ProfileUpdateRequestSpec));
   }
 
   async function handleProfileUpload(asset: Asset) {
-    asset.uri = asset.uri?.replace("file://", "");
-
     const result = await Upload.uploadResource([asset], UploadEntity.CONSUMER);
-    if (result) setProfileImageAsset(asset);
+    if (result) {
+      setProfileImageAsset(asset);
+      setProfilePicture(result.data[0]);
+    }
   }
 
-  useEffect(() => {
-    void getProfileAccessStatus();
-  }, []);
-
-  // TODO first time profile access flag is needed
-  // TODO prepare an edit mode flag with in component
-  // TODO prepare a flag for profile image available with in component
-
   async function handleProfileDelete() {
-    await _Profile.removeProfile();
-    setShowDeleteModal(false);
-    navigation.navigate("Login");
+    const result = await _Profile.removeProfile();
+    if (result) {
+      dispatch(removeProfile());
+
+      setShowDeleteModal(false);
+      navigation.navigate("Login");
+    }
   }
 
   function getProfileObject() {
     const _profile: any = {};
 
+    if (profilePicture) _profile.profilePicture = profilePicture;
     if (firstName) _profile.firstName = firstName;
     if (lastName) _profile.lastName = lastName;
     if (dateOfBirth) _profile.dateOfBirth = dateOfBirth;
@@ -113,14 +128,18 @@ const Profile = ({ navigation, route }: Props) => {
 
   async function updateProfile() {
     const _profile = getProfileObject();
-    return await _Profile.updateProfile(_profile);
+    const result = await _Profile.updateProfile(_profile);
+
+    if (result)
+      dispatch(updateProfileState(_profile as ProfileUpdateRequestSpec));
+    return result;
   }
 
   async function handleFirstTimeProfileSetting() {
     const result = await updateProfile();
 
     if (result) {
-      setFirstTimeToProfile(true);
+      dispatch(updateFirstTimeToProfile());
       navigation.navigate("Goal");
     } else console.log({ result });
   }
@@ -130,10 +149,18 @@ const Profile = ({ navigation, route }: Props) => {
     setEditMode(false);
   }
 
+  async function handleSignOut() {
+    const result = await Access.signOut();
+    if (result) {
+      dispatch(signOut());
+      navigation.navigate("Login");
+    }
+  }
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{}}>
       <View style={styles.titleContainer}>
-        {!firstTimeToProfile ? (
+        {!profile.firstTimeToProfile ? (
           <>
             <Text style={{ ...styles.title }}>Profile</Text>
             <TouchableOpacity style={{ flexDirection: "row" }}>
@@ -162,9 +189,9 @@ const Profile = ({ navigation, route }: Props) => {
         <View style={styles.profileContainerLeft}>
           <TouchableOpacity
             style={styles.profileContainerCircle}
+            activeOpacity={editMode ? undefined : 1}
             onPress={() => {
-              // TODO handle pic select and storage
-              setShowImagePickerModal(true);
+              if (editMode) setShowImagePickerModal(true);
             }}
           >
             {!profileImageAsset ? (
@@ -176,7 +203,9 @@ const Profile = ({ navigation, route }: Props) => {
                 alt="Profile Picture"
                 resizeMode="cover"
                 style={{ borderRadius: 75 }}
-                source={profileImageAsset}
+                source={{
+                  uri: `${instance.defaults.baseURL}/upload/${profilePicture}`,
+                }}
               />
             )}
           </TouchableOpacity>
@@ -232,7 +261,7 @@ const Profile = ({ navigation, route }: Props) => {
           </Modal>
         </View>
 
-        {!editMode && !firstTimeToProfile ? (
+        {!editMode && !profile.firstTimeToProfile ? (
           <View style={styles.profileContainerRight}>
             <View style={{ ...styles.inputLine, paddingVertical: 0 }}>
               <Text style={{ fontSize: 22, padding: 5, fontWeight: "bold" }}>
@@ -317,7 +346,7 @@ const Profile = ({ navigation, route }: Props) => {
             >
               Date of birth
             </Text>
-            {editMode || firstTimeToProfile ? (
+            {editMode || profile.firstTimeToProfile ? (
               <TouchableOpacity
                 style={{ width: editMode ? "70%" : "50%" }}
                 onPress={() => setShowDatePicker(true)}
@@ -365,7 +394,7 @@ const Profile = ({ navigation, route }: Props) => {
             >
               Sex
             </Text>
-            {editMode || firstTimeToProfile ? (
+            {editMode || profile.firstTimeToProfile ? (
               <Select
                 selectedValue={sex}
                 width={editMode ? "70%" : "50%"}
@@ -383,86 +412,50 @@ const Profile = ({ navigation, route }: Props) => {
               </Text>
             )}
           </View>
-          {firstTimeToProfile ? (
-            <>
-              <View style={styles.inputLine}>
-                <Text
-                  style={{
-                    marginHorizontal: 5,
-                    fontSize: 18,
-                    width: editMode ? "30%" : "50%",
-                  }}
-                >
-                  Weight
-                </Text>
-                <View style={{ width: editMode ? "70%" : "50%" }}>
-                  <Input
-                    keyboardType="numeric"
-                    value={weight}
-                    onChangeText={setWeight}
-                  />
-                </View>
-              </View>
-              <View style={styles.inputLine}>
-                <Text
-                  style={{
-                    marginHorizontal: 5,
-                    fontSize: 18,
-                    width: editMode ? "30%" : "50%",
-                  }}
-                >
-                  Height
-                </Text>
-                <View style={{ width: editMode ? "70%" : "50%" }}>
-                  <Input
-                    keyboardType="numeric"
-                    value={height}
-                    onChangeText={setHeight}
-                  />
-                </View>
-              </View>
-            </>
-          ) : null}
         </View>
       </View>
 
-      <View style={styles.dataContainer}>
-        <View style={{ ...styles.inputLine, marginBottom: 10 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-            Long term goal
-          </Text>
-        </View>
-        <View style={styles.dataContainerInside}>
-          <View style={styles.inputLine}>
-            <Text
-              style={{
-                marginHorizontal: 5,
-                fontSize: 18,
-                width: editMode ? "30%" : "50%",
-              }}
-            >
-              Goal
+      {!profile.firstTimeToProfile ? (
+        <View style={styles.dataContainer}>
+          <View style={{ ...styles.inputLine, marginBottom: 10 }}>
+            <Text style={{ fontWeight: "bold", fontSize: 18 }}>
+              Long term goal
             </Text>
-            {editMode || firstTimeToProfile ? (
-              <Select
-                selectedValue={currentGoal}
-                width={editMode ? "70%" : "50%"}
-                accessibilityLabel={`Gender selector`}
-                placeholder={`Choose your gender`}
-                onValueChange={(value) => setCurrentGoal(value as Goal)}
+          </View>
+          <View style={styles.dataContainerInside}>
+            <View style={styles.inputLine}>
+              <Text
+                style={{
+                  marginHorizontal: 5,
+                  fontSize: 18,
+                  width: editMode ? "30%" : "50%",
+                }}
               >
-                {Object.values(Goal).map((value) => (
-                  <Select.Item key={value} label={value} value={value} />
-                ))}
-              </Select>
-            ) : (
-              <Text style={{ fontSize: 18, fontWeight: "bold", width: "50%" }}>
-                {currentGoal}
+                Goal
               </Text>
-            )}
+              {editMode ? (
+                <Select
+                  selectedValue={currentGoal}
+                  width={editMode ? "70%" : "50%"}
+                  accessibilityLabel={`Gender selector`}
+                  placeholder={`Choose your gender`}
+                  onValueChange={(value) => setCurrentGoal(value as Goal)}
+                >
+                  {Object.values(Goal).map((value) => (
+                    <Select.Item key={value} label={value} value={value} />
+                  ))}
+                </Select>
+              ) : (
+                <Text
+                  style={{ fontSize: 18, fontWeight: "bold", width: "50%" }}
+                >
+                  {currentGoal}
+                </Text>
+              )}
+            </View>
           </View>
         </View>
-      </View>
+      ) : null}
 
       <View style={styles.dataContainer}>
         <View style={{ ...styles.inputLine, marginBottom: 10 }}>
@@ -489,7 +482,7 @@ const Profile = ({ navigation, route }: Props) => {
               Hours of sleep
             </Text>
             <View style={{ width: editMode ? "70%" : "50%" }}>
-              {editMode || firstTimeToProfile ? (
+              {editMode || profile.firstTimeToProfile ? (
                 <NumericInput
                   containerStyle={{ width: "100%" }}
                   value={dailyHoursOfSleepGoal}
@@ -513,7 +506,7 @@ const Profile = ({ navigation, route }: Props) => {
               Glasses of water
             </Text>
             <View style={{ width: editMode ? "70%" : "50%" }}>
-              {editMode || firstTimeToProfile ? (
+              {editMode || profile.firstTimeToProfile ? (
                 <NumericInput
                   containerStyle={{ width: "100%" }}
                   value={dailyWaterIntakeGoal}
@@ -529,7 +522,7 @@ const Profile = ({ navigation, route }: Props) => {
         </View>
       </View>
 
-      {firstTimeToProfile ? (
+      {profile.firstTimeToProfile ? (
         <View style={styles.activityContainer}>
           <View style={{ ...styles.inputLine, marginBottom: 10 }}>
             <Text style={{ fontWeight: "bold", fontSize: 18 }}>
@@ -622,14 +615,11 @@ const Profile = ({ navigation, route }: Props) => {
         </View>
       ) : null}
 
-      {!editMode && !firstTimeToProfile ? ( //TODO add !firstTimeToProfile
+      {!editMode && !profile.firstTimeToProfile ? ( //TODO add !firstTimeToProfile
         <View style={styles.removeProfileButtonContainer}>
           <TouchableOpacity
             style={styles.signOutButton}
-            onPress={async () => {
-              const result = await Access.signOut();
-              if (result) navigation.navigate("Login");
-            }}
+            onPress={handleSignOut}
           >
             <Text style={styles.signOutButtonText}>Sign out</Text>
           </TouchableOpacity>
@@ -648,7 +638,7 @@ const Profile = ({ navigation, route }: Props) => {
         </View>
       ) : null}
 
-      {firstTimeToProfile ? (
+      {profile.firstTimeToProfile ? (
         <TouchableOpacity
           style={styles.nextButton}
           onPress={() => {

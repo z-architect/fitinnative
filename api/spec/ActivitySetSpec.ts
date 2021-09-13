@@ -12,6 +12,7 @@ export interface CreateActivitySetRequestSpec {
   duration?: number;
   reps?: number;
   activity?: string;
+  forReps: boolean;
 }
 
 export interface FetchActivitySetsResponseSpec {
@@ -19,6 +20,7 @@ export interface FetchActivitySetsResponseSpec {
   met: number;
   duration?: number;
   reps?: number;
+  forReps: boolean;
   activity: ActivitySpec;
 }
 
@@ -27,6 +29,7 @@ export interface UpdateActivitySetRequestSpec {
   met?: number;
   duration?: number;
   reps?: number;
+  forReps?: boolean;
   activity?: string;
 }
 

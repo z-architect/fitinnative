@@ -70,9 +70,10 @@ const styles = StyleSheet.create({
   card: {
     width: x * 0.9,
     flexDirection: "row",
-    backgroundColor: "white",
+    backgroundColor: "rgba(255,255,255, 0.6)",
     marginVertical: 7.5,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 40,
     justifyContent: "space-between",
     alignItems: "center",
     borderRadius: 20,

@@ -17,79 +17,81 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Entypo from "react-native-vector-icons/Entypo";
 import { Modal, Button, Switch } from "native-base";
 import Setz from "./setCardUnselected";
+import { ActivityStateStructure } from "../Activity/Activity";
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
+
 const Session = ({ navigation, route }: Props) => {
   const [showModal, setShowModal] = useState(false);
-
 
   const [Type, SetType] = useState("");
   const [Image, SetImage] = useState("kljh");
   const [Title, SetTitle] = useState("");
   const [Description, SetDescription] = useState("");
-  const [CTB, SetCTB] = useState("")
+  const [CTB, SetCTB] = useState("");
   const [Sets, SetSets] = useState([
     {
       id: "1",
       order: 1,
       name: "pushups",
-      duration: "4 min"
+      duration: "4 min",
     },
     {
       id: "2",
       order: 2,
       name: "Situps",
-      duration: "4 min"
+      duration: "4 min",
     },
-  ])
+  ]);
   const [UnselectedSets, SetUnselectedSets] = useState([
     {
       id: "1",
       name: "pushups",
-      duration: "4 min"
+      duration: "4 min",
     },
     {
       id: "2",
       name: "Situps",
-      duration: "4 min"
+      duration: "4 min",
     },
     {
       id: "22",
       name: "Chinups",
-      duration: "2 min"
+      duration: "2 min",
     },
     {
       id: "3",
       name: "Standups",
-      duration: "8 min"
+      duration: "8 min",
     },
     {
       id: "12",
       name: "Runups",
-      duration: "10 min"
+      duration: "10 min",
     },
-  ])
-  const createSet = () => {
-
-  }
+  ]);
+  const createSet = () => {};
   const addSet = (set: any) => {
     SetSets((Sets) => {
       let mySets = Sets.concat({ ...set, order: Sets.length + 1 });
       return mySets;
     });
-  }
+  };
   const removeSet = (id: string, order: number) => {
     SetSets((sets) => {
-      const list = sets.filter((item, j) => (item.id !== id || item.order !== order))
+      const list = sets.filter(
+        (item, j) => item.id !== id || item.order !== order
+      );
       return list;
-    })
-  }
+    });
+  };
   const deleteUnselectedSet = (id: string) => {
     SetUnselectedSets((sets) => {
-      const list = sets.filter((item, j) => (item.id !== id))
+      const list = sets.filter((item, j) => item.id !== id);
       return list;
-    })
-  }
+    });
+  };
 
   return (
     <>
@@ -98,11 +100,22 @@ const Session = ({ navigation, route }: Props) => {
           <Modal.CloseButton />
           <Modal.Header>Sets</Modal.Header>
           <Modal.Body>
-            {
-              UnselectedSets.map((data, i) => (
-                <Setz key={i} data={data} onTouch={() => { addSet(data) }} deleteSet={() => { deleteUnselectedSet(data.id) }} editSet={() => { setShowModal(false); navigation.navigate("SetEdit") }} />
-              ))
-            }
+            {UnselectedSets.map((data, i) => (
+              <Setz
+                key={i}
+                data={data}
+                onTouch={() => {
+                  addSet(data);
+                }}
+                deleteSet={() => {
+                  deleteUnselectedSet(data.id);
+                }}
+                editSet={() => {
+                  setShowModal(false);
+                  navigation.navigate("SetEdit");
+                }}
+              />
+            ))}
           </Modal.Body>
           <Modal.Footer>
             <Button.Group variant="ghost" space={2}>
@@ -125,10 +138,18 @@ const Session = ({ navigation, route }: Props) => {
                     </View>
                 </ImageBackground> */}
         <View style={styles.head}>
-          <TouchableOpacity onPress={() => { createSet() }}>
+          <TouchableOpacity
+            onPress={() => {
+              createSet();
+            }}
+          >
             <AntDesign name="check" size={32} color="rgb(50,71,85)" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { navigation.goBack(); }}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+          >
             <AntDesign name="close" size={32} color="red" />
           </TouchableOpacity>
         </View>
@@ -142,7 +163,6 @@ const Session = ({ navigation, route }: Props) => {
                   backgroundColor: "lightgrey",
                   justifyContent: "flex-end",
                   alignItems: "center",
-
                 },
               ]}
             >
@@ -167,8 +187,15 @@ const Session = ({ navigation, route }: Props) => {
                   placeholderTextColor="white"
                   style={styles.input}
                 />
-                <TextInput placeholder="Calories to Burn" value={CTB} onChangeText={(val) => { SetCTB(val) }} placeholderTextColor="white" style={styles.input} />
-
+                <TextInput
+                  placeholder="Calories to Burn"
+                  value={CTB}
+                  onChangeText={(val) => {
+                    SetCTB(val);
+                  }}
+                  placeholderTextColor="white"
+                  style={styles.input}
+                />
               </View>
             </View>
           ) : (
@@ -178,32 +205,68 @@ const Session = ({ navigation, route }: Props) => {
               style={styles.image}
             >
               {/* <Text style={styles.imagetext}>Cardio</Text> */}
-              <View style={{ height: "60%", width: "80%", marginLeft: 20, marginBottom: 20 }}>
-                <TextInput placeholder="Title" value={Title} onChangeText={(val) => { SetTitle(val) }} placeholderTextColor="white" style={[styles.input, { fontWeight: "bold" }]} />
-                <TextInput placeholder="Description" value={Description} onChangeText={(val) => { SetDescription(val) }} placeholderTextColor="white" style={styles.input} />
+              <View
+                style={{
+                  height: "60%",
+                  width: "80%",
+                  marginLeft: 20,
+                  marginBottom: 20,
+                }}
+              >
+                <TextInput
+                  placeholder="Title"
+                  value={Title}
+                  onChangeText={(val) => {
+                    SetTitle(val);
+                  }}
+                  placeholderTextColor="white"
+                  style={[styles.input, { fontWeight: "bold" }]}
+                />
+                <TextInput
+                  placeholder="Description"
+                  value={Description}
+                  onChangeText={(val) => {
+                    SetDescription(val);
+                  }}
+                  placeholderTextColor="white"
+                  style={styles.input}
+                />
 
-                <TextInput placeholder="Calories to Burn" value={CTB} onChangeText={(val) => { SetCTB(val) }} placeholderTextColor="white" style={styles.input} />
+                <TextInput
+                  placeholder="Calories to Burn"
+                  value={CTB}
+                  onChangeText={(val) => {
+                    SetCTB(val);
+                  }}
+                  placeholderTextColor="white"
+                  style={styles.input}
+                />
               </View>
             </ImageBackground>
           )}
         </View>
-        <ScrollView style={styles.sessionContainer} contentContainerStyle={{ paddingBottom: 65 }}>
-          {
-            Sets.length === 0 ?
-              (
-                <Text>Sorry , you haven't added any sets yet</Text>
-              )
-              :
-              (
-                Sets.map((data, i) => (
-                  <SetCard key={i} order={data.order} data={data} setcolor="green" deleteSet={() => { removeSet(data.id, data.order) }} />
-                ))
-              )
-          }
-
+        <ScrollView
+          style={styles.sessionContainer}
+          contentContainerStyle={{ paddingBottom: 65 }}
+        >
+          {Sets.length === 0 ? (
+            <Text>Sorry , you haven't added any sets yet</Text>
+          ) : (
+            Sets.map((data, i) => (
+              <SetCard
+                key={i}
+                order={data.order}
+                data={data}
+                setcolor="green"
+                deleteSet={() => {
+                  removeSet(data.id, data.order);
+                }}
+              />
+            ))
+          )}
         </ScrollView>
         <TouchableOpacity
-          style={styles.addbutton}
+          style={styles.addButton}
           onPress={() => {
             setShowModal(true);
           }}
@@ -221,7 +284,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: "relative",
     height: "100%",
-    backgroundColor: "rgba(110,140,160,0.4)"
+    backgroundColor: "rgba(110,140,160,0.4)",
     //backgroundColor: "rgb(240,243,244)",
   },
   Sessionimage: {
@@ -232,14 +295,14 @@ const styles = StyleSheet.create({
     width: "100%",
     height: y * 0.3,
     backgroundColor: "yellow",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   sessionContainer: {
     // borderWidth: 1,
     margin: 20,
   },
 
-  addbutton: {
+  addButton: {
     position: "absolute",
     justifyContent: "center",
     alignItems: "center",

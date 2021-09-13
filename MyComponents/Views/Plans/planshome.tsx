@@ -1,232 +1,486 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  View,
+  Dimensions,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  ImageBackground,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Dimensions,
+  View,
 } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import { Input } from "native-base";
+import { Button, Image } from "native-base";
+import { Badge } from "react-native-elements";
 
 import { Props } from "../../types";
-import VitalsCard from "../Tracking/Cards/VitalsCard";
-import FontAwesome1 from "react-native-vector-icons/FontAwesome";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Logo from "../../../MyAssets/splash_logo.svg";
+import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
+import { FetchPlansResponseSpec, PlanType } from "../../../api/spec";
+import { changePlanType } from "../../Redux/globalsSlice";
+import { Plan as _Plan } from "../../../api/interface";
+import { instance } from "../../../api/config";
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
-const Plans = ({ navigation, route }: Props) => {
-  const [Meal, setMeal] = useState(true);
+const Plans = ({ navigation }: Props) => {
+  const chosenPlanType = useAppSelector(
+    (state) => state.globals.chosenPlanType
+  );
+  const dispatch = useAppDispatch();
+
+  const [meal, setMeal] = useState(false);
+  const currentGoal = useAppSelector(
+    (state) =>
+      state.profiles.profiles[state.profiles.activeProfile]?.user?.currentGoal
+  );
+  const subscribedPlans = useAppSelector(
+    (state) =>
+      state.profiles.profiles[state.profiles.activeProfile]?.user
+        ?.subscribedPlans
+  );
+  const [featuredPlans, setFeaturedPlans] = useState<FetchPlansResponseSpec[]>(
+    []
+  );
+  const [myPlans, setMyPlans] = useState([]);
+  const [savedPlans, setSavedPlans] = useState([]);
+  const [currentPlans, setCurrentPlans] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+
+  async function fetchPlans() {
+    const result = await _Plan.fetchPlans({
+      category: currentGoal,
+      type: meal ? PlanType.MEAL : PlanType.WORKOUT,
+      private: false,
+      limit: 7,
+    });
+
+    if (!!result) {
+      setFeaturedPlans(result.data);
+    } else setFeaturedPlans([]);
+  }
+
+  async function fetchCurrentPlans() {
+    const result = await _Plan.fetchPlanSubscriptions({});
+    const temp = currentPlans ?? { activity: {}, meal: {} };
+
+    if (!!result?.data) {
+      result.data.forEach((sub) => {
+        if (sub.plan.type === PlanType.WORKOUT) temp.activity = sub.plan;
+        else temp.meal = sub.plan;
+      });
+    }
+
+    setCurrentPlans(temp);
+  }
+
+  useEffect(() => {
+    setMeal(chosenPlanType !== PlanType.WORKOUT);
+  }, [chosenPlanType]);
+
+  useEffect(() => {
+    void fetchPlans();
+  }, [meal]);
+
+  useEffect(() => {
+    void fetchCurrentPlans();
+  }, [subscribedPlans]);
+
   return (
-    <>
-      <View style={styles.titleContainer}>
-        <Text style={{ ...styles.title }}>Plans</Text>
-        <TouchableOpacity
-          style={{ flexDirection: "row", alignItems: "center" }}
+    <View style={styles.container}>
+      <View style={styles.head}>
+        <View
+          style={{
+            alignItems: "flex-start",
+            justifyContent: "center",
+            flex: 1,
+          }}
         >
-          <TouchableOpacity onPress={() => navigation.navigate("Plan")}>
-            <AntDesign name={"plus"} size={32} color={"grey"} />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.toggleDrawer();
+            }}
+          >
+            <MaterialIcons name="menu" size={32} color="black" />
           </TouchableOpacity>
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            paddingTop: 17,
+          }}
+        >
+          <Logo width={80} />
+        </View>
+
+        <View
+          style={{ alignItems: "flex-end", justifyContent: "center", flex: 1 }}
+        >
+          <TouchableOpacity onPress={() => {}}>
+            <MaterialIcons name="notifications" size={28} color="black" />
+            {!notifications.length ? null : (
+              <Badge
+                badgeStyle={{
+                  borderRadius: 9,
+                  height: 10,
+                  minWidth: 0,
+                  width: 10,
+                }}
+                textStyle={{ fontSize: 10, paddingHorizontal: 0 }}
+                // value={notifications.length}
+                status="error"
+                containerStyle={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                }}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={[
+            styles.activityButton,
+            {
+              backgroundColor: meal ? "rgba(0,0,0,0.0)" : "white",
+              borderBottomColor: meal ? "rgba(0,0,0,0.1)" : "rgb(217,125,84)",
+              // width: Meal ? "45%" : "55%",
+              flex: 1,
+            },
+          ]}
+          onPress={() => {
+            dispatch(changePlanType(PlanType.WORKOUT));
+          }}
+        >
+          <Text style={[styles.buttonText, { color: meal ? "grey" : "black" }]}>
+            Activities
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.mealButton,
+            {
+              backgroundColor: meal ? "white" : "rgba(0,0,0,0.0)",
+              borderBottomColor: meal ? "rgb(217,125,84)" : "rgba(0,0,0,0.1)",
+              // width: Meal ? "55%" : "45%",
+              flex: 1,
+            },
+          ]}
+          onPress={() => {
+            dispatch(changePlanType(PlanType.MEAL));
+          }}
+        >
+          <Text style={[styles.buttonText, { color: meal ? "black" : "grey" }]}>
+            Nutrition
+          </Text>
         </TouchableOpacity>
       </View>
       <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         style={styles.container}
-        contentContainerStyle={styles.containerinner}
+        contentContainerStyle={styles.containerInner}
       >
-        <View style={styles.buttonscontainer}>
-          <TouchableOpacity
-            style={[
-              styles.mealbutton,
-              {
-                borderBottomColor: Meal ? "rgb(217,125,84)" : "transparent",
-                width: Meal ? "55%" : "45%",
-              },
-            ]}
-            onPress={() => {
-              setMeal(true);
-            }}
-          >
-            <Text style={styles.buttontext}>Meal</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.activitybutton,
-              {
-                borderBottomColor: Meal ? "transparent" : "rgb(217,125,84)",
-                width: Meal ? "45%" : "55%",
-              },
-            ]}
-            onPress={() => {
-              setMeal(false);
-            }}
-          >
-            <Text style={styles.buttontext}>Activity</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.textcontainer}>
-          <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
-            Featured Plans
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Search");
-            }}
-          >
-            <Text>
-              See All Plans <AntDesign name="right" color="grey" size={28} />
+        <View
+          style={{ width: "100%", backgroundColor: "rgba(190,210,240,0.1)" }}
+        >
+          <View style={styles.textContainer}>
+            <Text
+              style={{
+                paddingHorizontal: 10,
+                fontSize: 20,
+                color: "black",
+              }}
+            >
+              Featured Plans
             </Text>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("Search");
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: "teal" }}>See All Plans</Text>
+                <MaterialIcons name="chevron-right" color="teal" size={24} />
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {featuredPlans.length ? (
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              style={{
+                width: "100%",
+              }}
+              contentContainerStyle={{ alignItems: "center" }}
+              horizontal={true}
+            >
+              <View style={{ width: 20 }} />
+              {featuredPlans.map((plan, index) => (
+                <View key={index} style={{ paddingHorizontal: 10 }}>
+                  <TouchableOpacity
+                    style={styles.cardsFeatured}
+                    onPress={() => {
+                      navigation.navigate("PlanView", { plan });
+                    }}
+                  >
+                    <Image
+                      alt={"."}
+                      source={{
+                        uri: `${instance.defaults.baseURL}/upload/${plan?.image}`,
+                      }}
+                      style={styles.cardsFeaturedImage}
+                    />
+
+                    <View style={styles.featuredText}>
+                      <Text
+                        style={{ fontSize: 18, textAlign: "center" }}
+                      >{`${plan?.title}`}</Text>
+                      <Text
+                        style={{
+                          color: "grey",
+                          letterSpacing: 1,
+                          textAlign: "center",
+                        }}
+                      >
+                        {`${plan?.createdBy?.firstName} ${plan?.createdBy?.lastName}`.toUpperCase()}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              ))}
+              <View style={{ width: 20 }} />
+            </ScrollView>
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                height: 150,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ fontSize: 16 }}>The are no featured plans.</Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.textContainer}>
+          <Text
+            style={{
+              paddingHorizontal: 10,
+              fontSize: 20,
+              color: "black",
+            }}
+          >
+            Current Plans
+          </Text>
+        </View>
+
+        {!!currentPlans?.meal || !!currentPlans?.activity ? (
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            style={{
+              flex: 1,
+              width: "100%",
+            }}
+            contentContainerStyle={{ justifyContent: "center" }}
+            horizontal={true}
+          >
+            <View style={{ width: 30 }} />
+            {!!currentPlans?.activity ? (
+              <TouchableOpacity
+                style={styles.cardsPlanContainer}
+                onPress={() => {
+                  navigation.navigate("Current");
+                }}
+              >
+                <ImageBackground
+                  source={
+                    !!currentPlans.activity.image
+                      ? {
+                          uri: `${instance.defaults.baseURL}/upload/${currentPlans.activity.image}`,
+                        }
+                      : require("../../../MyAssets/weighloss.jpg")
+                  }
+                  style={styles.cardsPlan}
+                >
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: "flex-end",
+                      backgroundColor: "rgba(0,0,0,0.2)",
+                    }}
+                  >
+                    <View style={styles.cardsPlanText}>
+                      <Text
+                        style={{
+                          fontSize: 32,
+                          color: "white",
+                        }}
+                      >
+                        {currentPlans.activity.title}
+                      </Text>
+                      <Text style={{ color: "white" }}>
+                        {currentPlans.activity.difficulty}
+                      </Text>
+                    </View>
+                  </View>
+                </ImageBackground>
+              </TouchableOpacity>
+            ) : null}
+            {!!currentPlans?.meal ? (
+              <TouchableOpacity
+                style={styles.cardsPlanContainer}
+                onPress={() => {
+                  navigation.navigate("Current");
+                }}
+              >
+                <ImageBackground
+                  source={
+                    !!currentPlans.meal.image
+                      ? {
+                          uri: `${instance.defaults.baseURL}/upload/${currentPlans.meal.image}`,
+                        }
+                      : require("../../../MyAssets/backgroundimage.png")
+                  }
+                  style={styles.cardsPlan}
+                >
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: "flex-end",
+                      backgroundColor: "rgba(0,0,0,0.2)",
+                    }}
+                  >
+                    <View style={styles.cardsPlanText}>
+                      <Text
+                        style={{
+                          fontSize: 32,
+                          color: "white",
+                        }}
+                      >
+                        {currentPlans.meal.title}
+                      </Text>
+                      <Text style={{ color: "white" }}>
+                        {currentPlans.meal.description}
+                      </Text>
+                    </View>
+                  </View>
+                </ImageBackground>
+              </TouchableOpacity>
+            ) : null}
+          </ScrollView>
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              height: 200,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 16 }}>
+              You are not following any plans.
+            </Text>
+            <Button.Group variant="unstyled">
+              <Button
+                onPress={() => {
+                  navigation.navigate("Search");
+                }}
+              >
+                <Text style={{ color: "teal", fontSize: 18 }}>Find Plans</Text>
+              </Button>
+            </Button.Group>
+          </View>
+        )}
+
+        <View style={{ width: "100%", paddingTop: 10 }}>
+          <TouchableOpacity style={{ flex: 1, flexDirection: "row" }}>
+            <View
+              style={{
+                paddingHorizontal: 17,
+                width: "100%",
+                paddingVertical: 10,
+                backgroundColor: "rgba(255,255,255, 0.4)",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  paddingHorizontal: 10,
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: "black",
+                }}
+              >
+                Saved Plans
+              </Text>
+              <MaterialIcons name={"chevron-right"} size={38} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ flex: 1, flexDirection: "row" }}>
+            <View
+              style={{
+                paddingHorizontal: 17,
+                width: "100%",
+                paddingVertical: 10,
+                marginTop: 5,
+                backgroundColor: "rgba(255,255,255, 0.4)",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  paddingHorizontal: 10,
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: "black",
+                }}
+              >
+                My Plans
+              </Text>
+              <MaterialIcons name={"chevron-right"} size={38} />
+            </View>
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={{ width: x, height: 330 }} horizontal={true}>
-          <TouchableOpacity
-            style={styles.cardsfeatured}
-            onPress={() => {
-              navigation.navigate("PlanView");
-            }}
-          >
-            <ImageBackground
-              source={require("../../../MyAssets/undraw.png")}
-              style={styles.cardsfeaturedimage}
-              imageStyle={{ borderRadius: 20 }}
-            ></ImageBackground>
-
-            <View style={styles.featuredText}>
-              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                {" "}
-                Pilipino Curry
-              </Text>
-              <Text> 380 Kcal</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.cardsfeatured}
-            onPress={() => {
-              navigation.navigate("PlanView");
-            }}
-          >
-            <ImageBackground
-              source={require("../../../MyAssets/undraw.png")}
-              style={styles.cardsfeaturedimage}
-              imageStyle={{ borderRadius: 20 }}
-            ></ImageBackground>
-
-            <View style={styles.featuredText}>
-              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                {" "}
-                Pilipino Curry
-              </Text>
-              <Text> 380 Kcal</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.cardsfeatured}
-            onPress={() => {
-              navigation.navigate("PlanView");
-            }}
-          >
-            <ImageBackground
-              source={require("../../../MyAssets/undraw.png")}
-              style={styles.cardsfeaturedimage}
-              imageStyle={{ borderRadius: 20 }}
-            ></ImageBackground>
-
-            <View style={styles.featuredText}>
-              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                {" "}
-                Pilipino Curry
-              </Text>
-              <Text> 380 Kcal</Text>
-            </View>
-          </TouchableOpacity>
-        </ScrollView>
-
-        <Text style={styles.textheader}>Current Plan</Text>
-        <TouchableOpacity
-          style={styles.cardsplancontainer}
-          onPress={() => {
-            navigation.navigate("Current");
-          }}
-        >
-          <ImageBackground
-            source={require("../../../MyAssets/undraw.png")}
-            style={styles.cardsplan}
-            imageStyle={styles.cardimage}
-          >
-            <View style={styles.cardsplantext}>
-              <Text
-                style={{ fontSize: 26, fontWeight: "bold", color: "black" }}
-              >
-                {" "}
-                Pilipino Curry
-              </Text>
-              <Text> 380 Kcal</Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.createbutton}
-          onPress={() => {
-            navigation.navigate("Plan");
-          }}
-        >
-          <AntDesign name="plus" size={24} color="white" />
-          <Text style={{ color: "white", fontSize: 18 }}>
-            Creat your own plan
-          </Text>
-        </TouchableOpacity>
-        <Text style={styles.textheader}>Saved Plans</Text>
-
-        <TouchableOpacity style={styles.cardsplancontainer}>
-          <ImageBackground
-            source={require("../../../MyAssets/undraw.png")}
-            style={styles.cardsplan}
-            imageStyle={styles.cardimage}
-          >
-            <View style={styles.cardsplantext}>
-              <Text
-                style={{ fontSize: 26, fontWeight: "bold", color: "black" }}
-              >
-                {" "}
-                Pilipino Curry
-              </Text>
-              <Text> 380 Kcal</Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
-
-        <Text style={styles.textheader}>My Plans</Text>
-        <TouchableOpacity
-          style={[
-            styles.createbutton,
-            { backgroundColor: "rgb(217,125,84)", marginBottom: 60 },
-          ]}
-          onPress={() => {
-            navigation.navigate("MyPlans");
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 18 }}>My Plans</Text>
-        </TouchableOpacity>
-
-        {/**
-         * Do not touch the following empty view or you will be fired
-         */}
-        <View style={{ height: 55 }} />
+        <View style={{ height: 110 }} />
       </ScrollView>
-    </>
+    </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
-    width: x,
-    height: y,
+    flex: 1,
+    height: "100%",
+    backgroundColor: "rgba(190,210,240,0.05)",
+  },
+
+  head: {
+    height: y * 0.085,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingRight: 20,
+    elevation: 5,
   },
   titleContainer: {
     width: "100%",
@@ -240,17 +494,18 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
   },
-  containerinner: {
+  containerInner: {
     // justifyContent: "center",
     alignItems: "center",
   },
-  buttonscontainer: {
+  buttonsContainer: {
     flexDirection: "row",
-    marginBottom: 10,
   },
-  textcontainer: {
-    width: x,
-    height: y * 0.05,
+  textContainer: {
+    paddingTop: 20,
+    paddingHorizontal: 17,
+    width: "100%",
+    paddingVertical: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -272,65 +527,69 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  buttontext: {
+  buttonText: {
     color: "black",
     fontSize: 20,
-    fontWeight: "bold",
   },
-  mealbutton: {
-    paddingVertical: 10,
+  mealButton: {
+    paddingVertical: 15,
     justifyContent: "center",
     alignItems: "center",
     borderBottomWidth: 3,
   },
-  activitybutton: {
-    paddingVertical: 10,
+  activityButton: {
+    paddingVertical: 15,
     justifyContent: "center",
     alignItems: "center",
     borderBottomWidth: 3,
   },
-  cardsplan: {
-    width: x * 0.8,
-    height: 250,
+  cardsPlan: {
+    width: "100%",
+    height: "100%",
     justifyContent: "flex-end",
+    backgroundColor: "white",
   },
-  cardsplancontainer: {
-    width: x * 0.8,
-    height: 250,
-    margin: 20,
+  cardsPlanContainer: {
+    overflow: "hidden",
+    width: x * 0.9,
+    height: 230,
+    marginRight: 20,
+    marginBottom: 30,
+    marginTop: 0,
     shadowColor: "black",
     shadowRadius: 5.0,
-    shadowOpacity: 0.5,
-    elevation: 6,
-    borderRadius: 30,
+    shadowOpacity: 0.1,
+    elevation: 10,
+    borderRadius: 10,
   },
 
-  cardsplantext: {
-    margin: 70,
+  cardsPlanText: {
+    marginVertical: 55,
+    marginHorizontal: 30,
   },
-  cardsfeatured: {
-    width: x * 0.4,
-    height: 250,
-    margin: 20,
+  cardsFeatured: {
+    overflow: "hidden",
+    width: 154.5,
+    height: 210,
+    marginBottom: 20,
     shadowColor: "black",
-    shadowRadius: 5.0,
-    shadowOpacity: 0.5,
-    elevation: 6,
+    elevation: 15,
     backgroundColor: "white",
-    borderRadius: 30,
+    borderRadius: 20,
+    // borderBottomEndRadius: 20,
+    // borderBottomStartRadius: 20,
     justifyContent: "space-between",
   },
-  cardsfeaturedimage: {
-    width: x * 0.4,
-    height: 130,
-    borderRadius: 30,
+  cardsFeaturedImage: {
+    width: "100%",
+    height: "57%",
   },
-  cardimage: { borderRadius: 30 },
   featuredText: {
+    paddingVertical: 15,
     width: "100%",
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     // backgroundColor: "yellow"
   },
 });

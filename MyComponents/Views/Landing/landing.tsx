@@ -14,7 +14,7 @@ import { Access } from "../../../api/interface";
 
 const LandingPage = ({ navigation }: Props) => {
   const getData = async () => {
-    try {
+    /*try {
       const { hasOnboarded } = JSON.parse(
         (await AsyncStorage.getItem("@hasOnboarded")) as string
       );
@@ -24,7 +24,8 @@ const LandingPage = ({ navigation }: Props) => {
     } catch (err) {
       // TODO do something
       navigation.navigate("Onboarding");
-    }
+    }*/
+    navigation.navigate("Onboarding");
   };
 
   return (

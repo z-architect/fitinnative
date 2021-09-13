@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Alert, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-
+import { persistStore } from "redux-persist";
 import { RootStackParamList } from "./MyComponents/types";
-import { useAppSelector } from "./MyComponents/Redux/hooks";
+import { useAppDispatch, useAppSelector } from "./MyComponents/Redux/hooks";
 import SplashScreen from "react-native-splash-screen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Landingpage from "./MyComponents/Views/Landing/landing";
 import OnBoarding from "./MyComponents/Views/Onboarding/onboarding";
@@ -49,59 +47,69 @@ import Meal from "./MyComponents/Views/Tracking/meal";
 import Vitals from "./MyComponents/Views/Tracking/vitals";
 import Exercise from "./MyComponents/Views/Tracking/exercise";
 import Current from "./MyComponents/Views/Plans/currentplan";
-import { refreshAuth, signoutOfFirebase } from "./api/utils";
+import {
+  onAuthStateChanged,
+  refreshAuth,
+  signoutOfFirebase,
+} from "./api/utils";
 import DailyGoals from "./MyComponents/Views/DailyGoals/dailygoal";
 import Comp from "./MyComponents/Views/Monitoring/graphs";
+import Auth from "@react-native-firebase/auth";
+import auth from "@react-native-firebase/auth";
+import { persistConfig, persistor, store } from "./MyComponents/Redux/store";
+import { signOut } from "./MyComponents/Redux/profilesSlice";
+import { updateHasBeenOnboarded } from "./MyComponents/Redux/globalsSlice";
+import ActivitySet from "./MyComponents/Views/ActivitySet/setedit";
+import Plan from "./MyComponents/Views/Plans/Plan";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
-  const [hasBeenOnboarded, setHasBeenOnboarded] = useState(null);
-  const [profile, setProfile] = useState(null);
-
-  const IsSignedIn = useAppSelector((state) => state.profile.signedIn);
+  const profiles = useAppSelector((state) => state.profiles);
+  const globals = useAppSelector((state) => state.globals);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 1000);
-
-    try {
-      AsyncStorage.getItem("@hasOnboarded").then((r) => {
-        setHasBeenOnboarded(JSON.parse(r as string)?.hasOnboarded);
-      });
-      AsyncStorage.getItem("@profile").then((r) => {
-        setProfile(JSON.parse(r as string)?.hasOnboarded);
-      });
-      AsyncStorage.getItem("@token").then((r) => {
-        void refreshAuth(JSON.parse(r as string)?.token);
-        console.log(r);
-      });
-    } catch (err) {
-      Alert.alert(err.message); // TODO do something else
-    }
   }, []);
 
   useEffect(() => {
+    return Auth().onAuthStateChanged(onAuthStateChanged);
+  }, []);
+
+  useEffect(() => {
+    console.log(profiles.profiles[profiles.activeProfile].user);
     NetInfo.addEventListener((networkState) => {
       console.log("Connection type - ", networkState.type);
-      console.log("Is connected? - ", networkState.isConnected);
+      console.log("Is connected? - ", networkState.isInternetReachable);
     });
   }, []);
 
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Profile"
+        initialRouteName={
+          !globals.hasBeenOnboarded
+            ? "Landing"
+            : !profiles.profiles[profiles.activeProfile].signedIn
+            ? "Auth"
+            : profiles.profiles[profiles.activeProfile].firstTimeToProfile
+            ? "Profile"
+            : profiles.profiles[profiles.activeProfile].firstTimeToGoalSetting
+            ? "Goal"
+            : profiles.profiles[profiles.activeProfile].firstTimeToMeasurements
+            ? "Vitals"
+            : "Home"
+        }
         screenOptions={{
           headerShown: false,
         }}
       >
-        {IsSignedIn ? (
+        {!profiles.profiles[profiles.activeProfile].signedIn ? (
           <>
-            <Stack.Screen name="Home" component={Home} />
-
-            {!hasBeenOnboarded ? (
+            {!globals.hasBeenOnboarded ? (
               <>
                 <Stack.Screen name="Landing" component={Landingpage} />
                 <Stack.Screen name="Onboarding" component={OnBoarding} />
@@ -113,21 +121,19 @@ const App = () => {
           </>
         ) : (
           <>
-            {/*<Stack.Screen name="Profile" component={Profile} />*/}
-            {/*<Stack.Screen name="Vitals" component={Vitals} />*/}
-            {/*<Stack.Screen name="Login" component={Login} />*/}
-            {/*<Stack.Screen name="Signup" component={Signup} />*/}
-
-            {/*<Stack.Screen name="Vitals" component={Vitals} />*/}
+            <Stack.Screen name="Profile" component={Profile} />
+            {profiles.profiles[profiles.activeProfile]
+              .firstTimeToGoalSetting ? (
+              <Stack.Screen name="Goal" component={Goal} />
+            ) : null}
+            <Stack.Screen name="Vitals" component={Vitals} />
             <Stack.Screen name="Home" component={Home} />
-            {/*<Stack.Screen name="Profile" component={Profile} />*/}
-            <Stack.Screen name="Goal" component={Goal} />
             <Stack.Screen name="Plan" component={PlanCreation} />
             <Stack.Screen name="MealPlan" component={MealPlan} />
             <Stack.Screen name="MealEdit" component={MealEdit} />
             <Stack.Screen name="MealView" component={MealView} />
             <Stack.Screen name="PlanEdit" component={PlanEdit} />
-            <Stack.Screen name="PlanView" component={PlanView} />
+            <Stack.Screen name="PlanView" component={Plan} />
             <Stack.Screen name="MyPlans" component={MyPlans} />
             <Stack.Screen name="Session" component={SessionCreation} />
             <Stack.Screen name="SessionView" component={SessionView} />
@@ -138,7 +144,7 @@ const App = () => {
             <Stack.Screen name="Constituent" component={Constituent} />
             <Stack.Screen name="ConstituentEdit" component={ConstituentEdit} />
             <Stack.Screen name="ConstituentView" component={ConstituentView} />
-            <Stack.Screen name="Set" component={SetCreation} />
+            <Stack.Screen name="Set" component={ActivitySet} />
             <Stack.Screen name="SetEdit" component={SetEdit} />
             <Stack.Screen name="SetView" component={SetView} />
             <Stack.Screen name="Search" component={Search} />
@@ -147,27 +153,11 @@ const App = () => {
             <Stack.Screen name="DailyWaterIntakeGoal" component={DailyGoals} />
             <Stack.Screen name="DailySleepGoal" component={DailyGoals} />
             <Stack.Screen name="Engagements" component={Comp} />
-            <Stack.Screen name="Vitals" component={Vitals} />
           </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    width: "100%",
-    paddingHorizontal: 15,
-    alignItems: "center",
-    marginVertical: 13,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-  },
-});
 
 export default App;

@@ -17,7 +17,7 @@ export class Activity {
     return requestCreate<CreateActivityRequestSpec, string>("/activity", data);
   }
 
-  static async fetchActivities(params: FetchActivitiesRequestSpec) {
+  static async fetchActivities(params?: FetchActivitiesRequestSpec) {
     return requestFetch<FetchActivitiesResponseSpec[]>("/activity", { params });
   }
 

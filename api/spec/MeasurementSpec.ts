@@ -5,6 +5,7 @@ export interface RecordMeasurementRequestSpec {
   restingHeartRate?: number;
   height?: number;
   mass?: number;
+  heartRate?: number;
   waistSize?: number;
   hipSize?: number;
   shoulderSize?: number;
@@ -18,9 +19,12 @@ export interface RecordMeasurementRequestSpec {
 }
 
 export interface FetchMeasurementsResponseSpec
-  extends RecordMeasurementRequestSpec {}
+  extends RecordMeasurementRequestSpec {
+  latest: boolean;
+  id: string;
+}
 
 export interface FetchMeasurementHistoryRequestSpec extends Paging {}
 
 export interface FetchMeasurementHistoryResponseSpec
-  extends RecordMeasurementRequestSpec {}
+  extends FetchMeasurementsResponseSpec {}

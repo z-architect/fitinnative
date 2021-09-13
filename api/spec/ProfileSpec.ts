@@ -37,7 +37,6 @@ export interface ProfileGetOwnResponseSpec extends ProfileGetResponseSpec {
   currentGoal?: Goal | null;
   dailyGlassesOfWater: number;
   dailyHoursOfSleep: number;
-  activityLevel: ActivityLevel;
 }
 
 export interface ProfilesGetRequestSpec extends QueryFilter {
@@ -58,5 +57,5 @@ export interface ProfileUpdateRequestSpec {
   profilePicture?: string;
   dailyGlassesOfWater?: number;
   dailyHoursOfSleep?: number;
-  activityLevel: ActivityLevel;
+  activityLevel?: ActivityLevel;
 }

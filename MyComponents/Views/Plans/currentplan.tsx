@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "white",
   },
-  imagetext: {},
+  imageText: {},
   image: {
     height: y * 0.35,
     // backgroundColor: "pink"

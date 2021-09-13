@@ -12,7 +12,7 @@ import {
   requestUpdate,
 } from "../utils";
 
-export class Activity {
+export class FoodItem {
   static async createActivity(data: CreateFoodItemRequestSpec) {
     return requestCreate<CreateFoodItemRequestSpec, string>("/food-item", data);
   }

@@ -13,15 +13,20 @@ import {
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Formik } from "formik";
 import { Props } from "../../types";
-import { useAppDispatch } from "../../Redux/hooks";
-import { logIn } from "../../Redux/profileSlice";
-import { FirebaseAccessMethod, Role, Sex } from "../../../api/spec";
+import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
+import { register } from "../../Redux/profilesSlice";
+import {
+  FirebaseAccessMethod,
+  Role,
+  Sex,
+  Subscription,
+} from "../../../api/spec";
 import { Access } from "../../../api/interface";
 import { onAuthStateChanged, signupToFirebase } from "../../../api/utils";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import DatePicker from "react-native-date-picker";
 import PhoneInput from "react-native-phone-number-input";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RootState } from "../../Redux/store";
 
 const y = Dimensions.get("window").height;
 
@@ -55,6 +60,8 @@ const signupValidationSchema = yup.object().shape({
 });
 
 const Signup = ({ navigation }: Props) => {
+  const profiles = useAppSelector((state: RootState) => state.profiles);
+  const dispatch = useAppDispatch();
   const initialValues = {
     firstName: "",
     middleName: "",
@@ -67,33 +74,14 @@ const Signup = ({ navigation }: Props) => {
     password: "",
     confirmPassword: "",
   };
-
   const [pagePosition, setPagePosition] = useState(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const dispatch = useAppDispatch();
-
-  // function automaticSignup() {
-  //   void handleSubmit({
-  //     firstName: "Daniel",
-  //     middleName: "",
-  //     lastName: "Tsegaw",
-  //     email: "dullkingsman@gmail.com",
-  //     phoneNumber: "+251975250953",
-  //     dateOfBirth: "2021-08-25T14:33:09.429Z",
-  //     sex: Sex.MALE,
-  //     role: Role.TRAINEE,
-  //     password: "alabama",
-  //     confirmPassword: "alabama",
-  //   });
-  // }
-
   useEffect(() => {
-    console.log(initialValues);
-  }, [initialValues]);
+    console.log(profiles);
+  }, [pagePosition]);
 
   const handleSubmit = async (values: any) => {
-    console.log(pagePosition);
     if (pagePosition < 2) {
       handleNext();
       return;
@@ -129,7 +117,7 @@ const Signup = ({ navigation }: Props) => {
     }
 
     try {
-      const result = await Access.signup({
+      const signupData = {
         firstName,
         middleName,
         lastName,
@@ -138,14 +126,27 @@ const Signup = ({ navigation }: Props) => {
         sex,
         dateOfBirth,
         role,
-      });
+      };
+
+      const result = await Access.signup(signupData);
 
       if (result) {
-        await AsyncStorage.setItem(
-          "@profile",
-          JSON.stringify({ profile: result.data })
+        // TODO remove
+        // await AsyncStorage.setItem(
+        //   "@profile",
+        //   JSON.stringify({ profile: result.data })
+        // );
+
+        dispatch(
+          register({
+            user: {
+              ...signupData,
+              ...result.data,
+              subscriptionPlan: Subscription.FREE,
+              dateOfBirth: `${signupData.dateOfBirth}`,
+            },
+          })
         );
-        await dispatch(logIn());
         navigation.navigate("Profile");
       } else {
         // TODO handle fitin signup failure
