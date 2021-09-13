@@ -142,7 +142,7 @@ const SessionCard = ({
                   { color: !_delete ? "black" : "white" },
                 ]}
               >
-                {session?.name ?? "Exercise Name"}
+                {session?.name ?? "Exercise Name "}
               </Text>
               <View style={styles.sessionInfo}>
                 <View style={styles.sessionDuration}>
