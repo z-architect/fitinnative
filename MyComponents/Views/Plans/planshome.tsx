@@ -15,15 +15,22 @@ import { Props } from "../../types";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Logo from "../../../MyAssets/splash_logo.svg";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
-import { FetchPlansResponseSpec, PlanType } from "../../../api/spec";
+import {
+  FetchPlansResponseSpec,
+  PlanType,
+  ProfileUpdateRequestSpec,
+} from "../../../api/spec";
 import { changePlanType } from "../../Redux/globalsSlice";
 import { Plan as _Plan } from "../../../api/interface";
 import { instance } from "../../../api/config";
+import { useIsFocused } from "@react-navigation/native";
+import PlanCard from "./PlanCard";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Plans = ({ navigation }: Props) => {
+  const focusIsHere = useIsFocused();
   const chosenPlanType = useAppSelector(
     (state) => state.globals.chosenPlanType
   );
@@ -39,9 +46,10 @@ const Plans = ({ navigation }: Props) => {
       state.profiles.profiles[state.profiles.activeProfile]?.user
         ?.subscribedPlans
   );
-  const [featuredPlans, setFeaturedPlans] = useState<FetchPlansResponseSpec[]>(
-    []
-  );
+  const [featuredPlans, setFeaturedPlans] = useState({
+    activity: [] as FetchPlansResponseSpec[],
+    meal: [] as FetchPlansResponseSpec[],
+  });
   const [myPlans, setMyPlans] = useState([]);
   const [savedPlans, setSavedPlans] = useState([]);
   const [currentPlans, setCurrentPlans] = useState(null);
@@ -56,13 +64,21 @@ const Plans = ({ navigation }: Props) => {
     });
 
     if (!!result) {
-      setFeaturedPlans(result.data);
-    } else setFeaturedPlans([]);
+      if (meal)
+        setFeaturedPlans({
+          meal: result.data,
+          activity: featuredPlans.activity,
+        });
+      else
+        setFeaturedPlans({ meal: featuredPlans.meal, activity: result.data });
+    }
   }
 
   async function fetchCurrentPlans() {
     const result = await _Plan.fetchPlanSubscriptions({});
-    const temp = currentPlans ?? { activity: {}, meal: {} };
+    const temp = !!currentPlans
+      ? { ...currentPlans }
+      : { activity: null, meal: null };
 
     if (!!result?.data) {
       result.data.forEach((sub) => {
@@ -80,11 +96,11 @@ const Plans = ({ navigation }: Props) => {
 
   useEffect(() => {
     void fetchPlans();
-  }, [meal]);
+  }, [subscribedPlans, meal, focusIsHere]);
 
   useEffect(() => {
     void fetchCurrentPlans();
-  }, [subscribedPlans]);
+  }, [subscribedPlans, meal, focusIsHere]);
 
   return (
     <View style={styles.container}>
@@ -188,7 +204,7 @@ const Plans = ({ navigation }: Props) => {
         <View
           style={{ width: "100%", backgroundColor: "rgba(190,210,240,0.1)" }}
         >
-          <View style={styles.textContainer}>
+          <View style={[styles.textContainer, { paddingVertical: 0 }]}>
             <Text
               style={{
                 paddingHorizontal: 10,
@@ -215,7 +231,8 @@ const Plans = ({ navigation }: Props) => {
             </TouchableOpacity>
           </View>
 
-          {featuredPlans.length ? (
+          {(meal && !!featuredPlans.meal.length) ||
+          (!meal && !!featuredPlans.activity.length) ? (
             <ScrollView
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
@@ -226,39 +243,49 @@ const Plans = ({ navigation }: Props) => {
               horizontal={true}
             >
               <View style={{ width: 20 }} />
-              {featuredPlans.map((plan, index) => (
-                <View key={index} style={{ paddingHorizontal: 10 }}>
-                  <TouchableOpacity
-                    style={styles.cardsFeatured}
-                    onPress={() => {
-                      navigation.navigate("PlanView", { plan });
-                    }}
-                  >
-                    <Image
-                      alt={"."}
-                      source={{
-                        uri: `${instance.defaults.baseURL}/upload/${plan?.image}`,
+              {(meal ? featuredPlans.meal : featuredPlans.activity).map(
+                (plan, index) => (
+                  <View key={index} style={{ paddingHorizontal: 10 }}>
+                    <TouchableOpacity
+                      style={styles.cardsFeatured}
+                      onPress={() => {
+                        navigation.navigate("Plan", { plan });
                       }}
-                      style={styles.cardsFeaturedImage}
-                    />
+                    >
+                      <Image
+                        alt={"."}
+                        source={
+                          plan?.image
+                            ? {
+                                uri: `${instance.defaults.baseURL}/upload/${
+                                  typeof plan?.image === "string"
+                                    ? plan?.image
+                                    : plan?.image?.id
+                                }`,
+                              }
+                            : require("../../../MyAssets/weighloss.jpg")
+                        }
+                        style={styles.cardsFeaturedImage}
+                      />
 
-                    <View style={styles.featuredText}>
-                      <Text
-                        style={{ fontSize: 18, textAlign: "center" }}
-                      >{`${plan?.title}`}</Text>
-                      <Text
-                        style={{
-                          color: "grey",
-                          letterSpacing: 1,
-                          textAlign: "center",
-                        }}
-                      >
-                        {`${plan?.createdBy?.firstName} ${plan?.createdBy?.lastName}`.toUpperCase()}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              ))}
+                      <View style={styles.featuredText}>
+                        <Text
+                          style={{ fontSize: 18, textAlign: "center" }}
+                        >{`${plan?.title}`}</Text>
+                        <Text
+                          style={{
+                            color: "grey",
+                            letterSpacing: 1,
+                            textAlign: "center",
+                          }}
+                        >
+                          {`${plan?.createdBy?.firstName} ${plan?.createdBy?.lastName}`.toUpperCase()}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                )
+              )}
               <View style={{ width: 20 }} />
             </ScrollView>
           ) : (
@@ -283,105 +310,18 @@ const Plans = ({ navigation }: Props) => {
               color: "black",
             }}
           >
-            Current Plans
+            Current Plan
           </Text>
         </View>
 
-        {!!currentPlans?.meal || !!currentPlans?.activity ? (
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            style={{
-              flex: 1,
-              width: "100%",
+        {(meal && !currentPlans?.meal) ||
+        (!meal && !!currentPlans?.activity) ? (
+          <PlanCard
+            plan={!meal ? currentPlans?.meal : currentPlans?.activity}
+            onPress={(plan) => {
+              navigation.navigate("Plan", { plan });
             }}
-            contentContainerStyle={{ justifyContent: "center" }}
-            horizontal={true}
-          >
-            <View style={{ width: 30 }} />
-            {!!currentPlans?.activity ? (
-              <TouchableOpacity
-                style={styles.cardsPlanContainer}
-                onPress={() => {
-                  navigation.navigate("Current");
-                }}
-              >
-                <ImageBackground
-                  source={
-                    !!currentPlans.activity.image
-                      ? {
-                          uri: `${instance.defaults.baseURL}/upload/${currentPlans.activity.image}`,
-                        }
-                      : require("../../../MyAssets/weighloss.jpg")
-                  }
-                  style={styles.cardsPlan}
-                >
-                  <View
-                    style={{
-                      flex: 1,
-                      justifyContent: "flex-end",
-                      backgroundColor: "rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    <View style={styles.cardsPlanText}>
-                      <Text
-                        style={{
-                          fontSize: 32,
-                          color: "white",
-                        }}
-                      >
-                        {currentPlans.activity.title}
-                      </Text>
-                      <Text style={{ color: "white" }}>
-                        {currentPlans.activity.difficulty}
-                      </Text>
-                    </View>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
-            ) : null}
-            {!!currentPlans?.meal ? (
-              <TouchableOpacity
-                style={styles.cardsPlanContainer}
-                onPress={() => {
-                  navigation.navigate("Current");
-                }}
-              >
-                <ImageBackground
-                  source={
-                    !!currentPlans.meal.image
-                      ? {
-                          uri: `${instance.defaults.baseURL}/upload/${currentPlans.meal.image}`,
-                        }
-                      : require("../../../MyAssets/backgroundimage.png")
-                  }
-                  style={styles.cardsPlan}
-                >
-                  <View
-                    style={{
-                      flex: 1,
-                      justifyContent: "flex-end",
-                      backgroundColor: "rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    <View style={styles.cardsPlanText}>
-                      <Text
-                        style={{
-                          fontSize: 32,
-                          color: "white",
-                        }}
-                      >
-                        {currentPlans.meal.title}
-                      </Text>
-                      <Text style={{ color: "white" }}>
-                        {currentPlans.meal.description}
-                      </Text>
-                    </View>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
-            ) : null}
-          </ScrollView>
+          />
         ) : (
           <View
             style={{
@@ -407,32 +347,10 @@ const Plans = ({ navigation }: Props) => {
         )}
 
         <View style={{ width: "100%", paddingTop: 10 }}>
-          <TouchableOpacity style={{ flex: 1, flexDirection: "row" }}>
-            <View
-              style={{
-                paddingHorizontal: 17,
-                width: "100%",
-                paddingVertical: 10,
-                backgroundColor: "rgba(255,255,255, 0.4)",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Text
-                style={{
-                  paddingHorizontal: 10,
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  color: "black",
-                }}
-              >
-                Saved Plans
-              </Text>
-              <MaterialIcons name={"chevron-right"} size={38} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1, flexDirection: "row" }}>
+          <TouchableOpacity
+            style={{ flex: 1, flexDirection: "row" }}
+            onPress={() => navigation.navigate("MyPlans")}
+          >
             <View
               style={{
                 paddingHorizontal: 17,
@@ -454,6 +372,34 @@ const Plans = ({ navigation }: Props) => {
                 }}
               >
                 My Plans
+              </Text>
+              <MaterialIcons name={"chevron-right"} size={38} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ flex: 1, flexDirection: "row" }}
+            onPress={() => navigation.navigate("SavedPlans")}
+          >
+            <View
+              style={{
+                paddingHorizontal: 17,
+                width: "100%",
+                paddingVertical: 10,
+                backgroundColor: "rgba(255,255,255, 0.4)",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  paddingHorizontal: 10,
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: "black",
+                }}
+              >
+                Saved Plans
               </Text>
               <MaterialIcons name={"chevron-right"} size={38} />
             </View>
@@ -553,7 +499,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     width: x * 0.9,
     height: 230,
-    marginRight: 20,
+    marginHorizontal: 20,
     marginBottom: 30,
     marginTop: 0,
     shadowColor: "black",
@@ -572,6 +518,7 @@ const styles = StyleSheet.create({
     width: 154.5,
     height: 210,
     marginBottom: 20,
+    marginTop: 10,
     shadowColor: "black",
     elevation: 15,
     backgroundColor: "white",

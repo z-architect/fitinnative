@@ -13,6 +13,7 @@ enum ActivityLevel {
 }
 
 export interface ProfilesGetResponseSpec {
+  isVerifiedProfessional: boolean;
   profilePicture?: string;
   firstName: string;
   middleName?: string;

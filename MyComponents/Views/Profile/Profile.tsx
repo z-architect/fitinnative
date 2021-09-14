@@ -437,8 +437,8 @@ const Profile = ({ navigation }: Props) => {
                 <Select
                   selectedValue={currentGoal}
                   width={editMode ? "70%" : "50%"}
-                  accessibilityLabel={`Gender selector`}
-                  placeholder={`Choose your gender`}
+                  accessibilityLabel={`Goal selector`}
+                  placeholder={`Choose your goal`}
                   onValueChange={(value) => setCurrentGoal(value as Goal)}
                 >
                   {Object.values(Goal).map((value) => (

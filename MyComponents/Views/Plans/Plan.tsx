@@ -1,19 +1,13 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
   Dimensions,
   ImageBackground,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Props } from "../../types";
 import SessionCard from "./SessionCard";
@@ -21,23 +15,25 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Asset, launchImageLibrary } from "react-native-image-picker";
 import DeleteModal from "../../Utils/DeleteModal";
 import { BlurView } from "@react-native-community/blur";
-import { useAppSelector } from "../../Redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import { v4 as uuidv4 } from "uuid";
-import { Difficulty, Goal, PlanType, Subscription } from "../../../api/spec";
+import { Difficulty, Goal, PlanType, UploadEntity } from "../../../api/spec";
 import RBSheet from "react-native-raw-bottom-sheet";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Entypo from "react-native-vector-icons/Entypo";
 import PlanCalendar, { IntervalsStateStructure } from "./PlanCalendar";
 import { FetchSessionsResponseSpec } from "../../../api/spec/SessionSpec";
-import { Plan as _Plan } from "../../../api/interface";
-import meal from "../MealConstituent/meal";
+import { Plan as _Plan, Upload } from "../../../api/interface";
+import { Select, Switch } from "native-base";
+import DifficultySelector from "./DifficultySelector";
+import SessionList from "./SessionList";
+import { instance } from "../../../api/config";
+import { changePlanType } from "../../Redux/globalsSlice";
 
 const y = Dimensions.get("window").height;
 
 const Plan = ({ navigation, route }: Props) => {
   const bottomSheet = useRef<RBSheet>(null);
   const snapPoints = useMemo(() => ["25%", "50%"], []);
+  const dispatch = useAppDispatch();
 
   const subscribedPlans = useAppSelector(
     (state) =>
@@ -51,6 +47,11 @@ const Plan = ({ navigation, route }: Props) => {
     (state) =>
       state.profiles.profiles[state.profiles.activeProfile].user.savedPlans ??
       []
+  );
+  const verifiedProfessional = useAppSelector(
+    (state) =>
+      state.profiles.profiles[state.profiles.activeProfile].user
+        .isVerifiedProfessional || false
   );
 
   const [days, setDays] = useState(
@@ -83,18 +84,16 @@ const Plan = ({ navigation, route }: Props) => {
     (route.params as any)?.plan?.category ?? Goal.MASS_GAIN
   );
   const [difficulty, setDifficulty] = useState(
-    (route.params as any)?.plan.difficulty ?? Difficulty.MEDIUM
+    (route.params as any)?.plan?.difficulty ?? Difficulty.MEDIUM
   );
-  const [image, setImage] = useState<Asset>(
+  const [title, setTitle] = useState((route.params as any)?.plan?.title ?? "");
+  const [description, setDescription] = useState(
+    (route.params as any)?.plan?.description ?? ""
+  );
+  const [image, setImage] = useState(
     (route.params as any)?.plan?.image ?? null
   );
-  const [title, setTitle] = useState(
-    (route.params as any)?.plan?.title ?? "Calisthenics"
-  );
-  const [description, setDescription] = useState(
-    (route.params as any)?.plan?.description ??
-      "An intense training for overall body development."
-  );
+  const [imageAsset, setImageAsset] = useState<Asset | null>(null);
 
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -115,79 +114,8 @@ const Plan = ({ navigation, route }: Props) => {
     { interval: 23, set: { id: "5" } },
     { interval: 29, set: { id: "2" } },
   ]);
-  const [sessions, setSessions] = useState([
-    {
-      id: "1",
-      title: "karate",
-      description: "fancy",
-      duration: 4,
-      caloriesToBurn: 1,
-      createdBy: "",
-    },
-    {
-      id: "2",
-      title: "karate",
-      description: "fancy",
-      duration: 4,
-      caloriesToBurn: 1,
-      createdBy: "",
-    },
-    {
-      id: "3",
-      title: "karate",
-      description: "fancy",
-      duration: 4,
-      caloriesToBurn: 1,
-      createdBy: "",
-    },
-    {
-      id: "4",
-      title: "karate",
-      description: "fancy",
-      duration: 3,
-      caloriesToBurn: 1,
-      createdBy: "",
-    },
-    {
-      id: "5",
-      title: "karate",
-      description: "fancy",
-      duration: 4,
-      caloriesToBurn: 1,
-      createdBy: "",
-    },
-    {
-      id: "6",
-      title: "karate",
-      description: "fancy",
-      duration: 4,
-      caloriesToBurn: 1,
-      createdBy: "",
-    },
-  ]);
+  const [sessions, setSessions] = useState([]);
   const [scrollEnabled, setScrollEnabled] = useState(true);
-
-  // useEffect(() => {
-  //   let totalTime = 0;
-  //   let totalCalories = 0;
-  //
-  //   for (const set of sessions) {
-  //     console.log({ met: set.met });
-  //
-  //     totalTime += set.duration;
-  //     totalCalories += getCaloriesFromMet(set.met || 0);
-  //   }
-  //
-  //   setTotalSessionTime({
-  //     min: totalTime < 60 ? 0 : Math.floor(totalTime / 60),
-  //     sec: totalTime < 60 ? totalTime : totalTime % 60,
-  //   });
-  //   setTotalCaloriesToBurn(totalCalories);
-  // }, [sessions]);
-
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
 
   const removeSession = (id: string) => {
     setSessions((sets) => {
@@ -195,35 +123,55 @@ const Plan = ({ navigation, route }: Props) => {
     });
   };
 
-  // const handleCalendarPress = (day: number) => {
-  //   if ((sessionIntervals[day] as any)?.id === selectedSession?.id) {
-  //     console.log("here");
-  //     setSessionIntervals(
-  //       sessionIntervals.filter((value: any, index: number) => index === day)
-  //     );
-  //   } else {
-  //     console.log("lther");
-  //
-  //     setSessionIntervals(
-  //       (sessionIntervals as any).map((value: any, index: number) => {
-  //         if (index === day) return { isSet: true, filledBy: "" };
-  //         else return { isSet: true, filledBy: "" };
-  //       }) ?? [{ isSet: true, filledBy: "" }]
-  //     );
-  //   }
-  //   // if (days[day].isSet) {
-  //   //   setSelectedDay(day);
-  //   //   setSelectedDaySession(days[day].filledBy);
-  //   //   setDaySession(true);
-  //   // }
-  // };
-
   async function handleSubscribeToPlan() {
     const result = await _Plan.subscribeToPlan({ id });
 
+    console.log({ subscribed: result });
+
     if (!!result?.data) {
-      console.log({ subscribed: true });
+      // TODO
     }
+  }
+
+  async function handleUnsubscribeFromPlan() {
+    const result = await _Plan.unsubscribeFromPlan({ id });
+
+    console.log({ unsubscribed: result });
+
+    if (result) {
+      // TODO
+    }
+  }
+
+  async function handleImageUpload(asset: Asset) {
+    // setImageAsset(asset);
+
+    const result = await Upload.uploadResource([asset], UploadEntity.PLAN);
+    if (result) setImage(result.data[0]);
+  }
+
+  async function handleCreatePlan() {
+    const planData: any = {
+      id,
+      description,
+      category,
+      difficulty,
+      sessionIntervals,
+      private: _private,
+      title,
+      type,
+    };
+
+    if (!!image) {
+      planData.image = typeof image === "string" ? image : image.id;
+    }
+
+    const result = await _Plan.createPlan(planData);
+    if (!!result?.data) {
+      console.log("SUCCESS");
+    }
+
+    navigation.goBack();
   }
 
   useEffect(() => {
@@ -232,6 +180,12 @@ const Plan = ({ navigation, route }: Props) => {
       bottomSheet?.current?.close();
     }
   }, [showBottomSheet]);
+
+  useEffect(() => {
+    if (!!(route.params as any)?.plan?.type) {
+      dispatch(changePlanType((route.params as any)?.plan?.type));
+    }
+  }, []);
 
   return (
     <>
@@ -243,10 +197,19 @@ const Plan = ({ navigation, route }: Props) => {
         }}
         prompt={"Do you really want to delete this session?"}
       />
-
+      {showModal ? (
+        <SessionList
+          showModal={showModal}
+          setShowModal={setShowModal}
+          navigation={navigation}
+          route={route}
+          selectedSessions={sessions}
+          setSelectedSessions={setSessions}
+        />
+      ) : null}
       <View style={styles.container}>
         <View style={styles.head}>
-          {!editMode ? (
+          {!editMode && !createMode ? (
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
@@ -266,8 +229,7 @@ const Plan = ({ navigation, route }: Props) => {
           ) : (
             <TouchableOpacity
               onPress={() => {
-                // TODO
-                navigation.goBack();
+                void handleCreatePlan();
               }}
             >
               <Text style={{ fontSize: 20, color: "green" }}>Create</Text>
@@ -281,7 +243,7 @@ const Plan = ({ navigation, route }: Props) => {
             }}
           >
             {!editMode && !createMode ? (
-              !plans.map((v: any) => v.id).includes(id) ? (
+              plans.map((v: any) => v.id).includes(id) ? (
                 <>
                   <TouchableOpacity
                     onPress={() => {
@@ -348,19 +310,24 @@ const Plan = ({ navigation, route }: Props) => {
           <View style={styles.planImage}>
             <ImageBackground
               source={
-                !!image ? image : require("../../../MyAssets/runninman.jpg")
+                !!image
+                  ? {
+                      uri: `${instance.defaults.baseURL}/upload/${
+                        typeof image === "string" ? image : image.id
+                      }`,
+                    }
+                  : { uri: "nothing" }
               }
               resizeMode="cover"
               style={[
                 styles.image,
                 {
-                  backgroundColor: "lightgrey",
                   justifyContent: "flex-end",
                   alignItems: "center",
                 },
               ]}
             >
-              {editMode || createMode ? (
+              {editMode ? (
                 <BlurView
                   style={{
                     position: "absolute",
@@ -409,8 +376,7 @@ const Plan = ({ navigation, route }: Props) => {
                               response.assets?.length !== 1
                             )
                               return;
-
-                            setImage(response.assets[0]);
+                            void handleImageUpload(response.assets[0]);
                           }
                         );
                       }}
@@ -461,14 +427,16 @@ const Plan = ({ navigation, route }: Props) => {
                   ) : (
                     <>
                       <TextInput
-                        // autoFocus={true}
+                        // autoFocus={!!createMode} TODO
                         style={{
                           color: "white",
+                          minWidth: "30%",
                           fontWeight: "bold",
                           fontSize: 32,
                           borderBottomWidth: 1,
                           borderColor: "white",
                         }}
+                        placeholder={"Title"}
                         value={title}
                         onChangeText={(value) => setTitle(value)}
                       />
@@ -476,6 +444,7 @@ const Plan = ({ navigation, route }: Props) => {
                         style={[
                           styles.input,
                           {
+                            minWidth: "65%",
                             borderBottomWidth: 1,
                             borderColor: "white",
                             paddingTop: 20,
@@ -492,12 +461,106 @@ const Plan = ({ navigation, route }: Props) => {
             </ImageBackground>
           </View>
 
+          {editMode || createMode ? (
+            <View
+              style={{
+                paddingTop: 30,
+                paddingBottom: 20,
+                paddingHorizontal: 20,
+                flexDirection: verifiedProfessional ? "row" : "column",
+              }}
+            >
+              <View style={{ marginLeft: verifiedProfessional ? 20 : 0 }}>
+                <View style={{ paddingBottom: 20, flex: 1 }}>
+                  <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                    Difficulty
+                  </Text>
+                </View>
+                <DifficultySelector
+                  horizontal={!verifiedProfessional}
+                  difficulty={difficulty}
+                  setDifficulty={setDifficulty}
+                />
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginLeft: verifiedProfessional ? 20 : 0,
+                  paddingTop: !verifiedProfessional ? 50 : 0,
+                  paddingLeft: !verifiedProfessional ? 0 : 20,
+                  borderLeftWidth: !verifiedProfessional ? 0 : 1,
+                  borderColor: "rgba(0,0,0,0.05)",
+                }}
+              >
+                <View style={{ width: "100%" }}>
+                  <View style={{ paddingBottom: 10 }}>
+                    <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                      Category
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      borderColor: "rgba(0,0,0,0.1)",
+                      borderWidth: 1,
+                      borderRadius: 5,
+                    }}
+                  >
+                    <Select
+                      style={{ width: "100%" }}
+                      selectedValue={category}
+                      accessibilityLabel={`Category selector`}
+                      placeholder={`Choose plan category`}
+                      onValueChange={(value) => setCategory(value as Goal)}
+                    >
+                      {Object.values(Goal).map((value) => (
+                        <Select.Item key={value} label={value} value={value} />
+                      ))}
+                    </Select>
+                  </View>
+                </View>
+                {verifiedProfessional ? (
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                      {`Public `}
+                    </Text>
+                    <Switch
+                      isChecked={!_private}
+                      onToggle={() => setPrivate(!_private)}
+                    />
+                  </View>
+                ) : null}
+              </View>
+            </View>
+          ) : null}
+
           <ScrollView
             style={[styles.sessionContainer]}
             nestedScrollEnabled={true}
           >
-            {sessions.length === 0 ? (
-              <Text>Sorry , you haven't added any sets yet</Text>
+            {!sessions.length ? (
+              <>
+                {!editMode && !createMode ? (
+                  <View
+                    style={{
+                      flex: 1,
+                      height: 350,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ fontSize: 16 }}>No exercises</Text>
+                  </View>
+                ) : null}
+              </>
             ) : (
               sessions.map((data) => (
                 <SessionCard
@@ -540,6 +603,8 @@ const Plan = ({ navigation, route }: Props) => {
             disabled={!(editMode || createMode) && !sessions.length}
             onPress={() => {
               if (editMode || createMode) setShowModal(true);
+              else if (subscribedPlans.includes(id))
+                navigation.navigate("Exercise");
               else void handleSubscribeToPlan();
             }}
             style={[
@@ -562,12 +627,10 @@ const Plan = ({ navigation, route }: Props) => {
               }}
             >
               {createMode || editMode
-                ? "+ Add Session"
+                ? "+ Add Exercise"
                 : subscribedPlans.includes(id)
                 ? "Start Session"
-                : subscribedPlans.length !== 2
-                ? "Follow"
-                : "Stop Following"}
+                : "Follow"}
             </Text>
           </TouchableOpacity>
         </View>

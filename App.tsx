@@ -24,8 +24,8 @@ import PlanCreation from "./MyComponents/Views/Plans/plancreation";
 import PlanEdit from "./MyComponents/Views/Plans/planedit";
 import PlanView from "./MyComponents/Views/Plans/planview";
 
-import MyPlans from "./MyComponents/Views/Plans/myplans";
-import Search from "./MyComponents/Views/Plans/plansearch";
+import MyPlans from "./MyComponents/Views/Plans/MyPlans";
+import PlanSearch from "./MyComponents/Views/Plans/PlanSearch";
 
 import SessionCreation from "./MyComponents/Views/Session/session";
 import SessionView from "./MyComponents/Views/Session/sessionview";
@@ -57,10 +57,16 @@ import Comp from "./MyComponents/Views/Monitoring/graphs";
 import Auth from "@react-native-firebase/auth";
 import auth from "@react-native-firebase/auth";
 import { persistConfig, persistor, store } from "./MyComponents/Redux/store";
-import { signOut } from "./MyComponents/Redux/profilesSlice";
+import {
+  signOut,
+  updateProfileState,
+} from "./MyComponents/Redux/profilesSlice";
 import { updateHasBeenOnboarded } from "./MyComponents/Redux/globalsSlice";
 import ActivitySet from "./MyComponents/Views/ActivitySet/setedit";
 import Plan from "./MyComponents/Views/Plans/Plan";
+import { Profile as _Profile } from "./api/interface";
+import { ProfileUpdateRequestSpec } from "./api/spec";
+import SavedPlans from "./MyComponents/Views/Plans/SavedPlans";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -86,6 +92,16 @@ const App = () => {
       console.log("Is connected? - ", networkState.isInternetReachable);
     });
   }, []);
+
+  useEffect(() => void fetchProfile(), []);
+
+  async function fetchProfile() {
+    await refreshAuth(await Auth().currentUser?.getIdToken());
+    const result = await _Profile.getOwnProfile();
+
+    if (result)
+      dispatch(updateProfileState(result.data as ProfileUpdateRequestSpec));
+  }
 
   return (
     <NavigationContainer>
@@ -128,15 +144,16 @@ const App = () => {
             ) : null}
             <Stack.Screen name="Vitals" component={Vitals} />
             <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Plan" component={PlanCreation} />
+            <Stack.Screen name="Plan" component={Plan} />
             <Stack.Screen name="MealPlan" component={MealPlan} />
             <Stack.Screen name="MealEdit" component={MealEdit} />
             <Stack.Screen name="MealView" component={MealView} />
             <Stack.Screen name="PlanEdit" component={PlanEdit} />
-            <Stack.Screen name="PlanView" component={Plan} />
+            <Stack.Screen name="PlanView" component={PlanCreation} />
             <Stack.Screen name="MyPlans" component={MyPlans} />
-            <Stack.Screen name="Session" component={SessionCreation} />
-            <Stack.Screen name="SessionView" component={SessionView} />
+            <Stack.Screen name="SavedPlans" component={SavedPlans} />
+            <Stack.Screen name="Session" component={SessionView} />
+            <Stack.Screen name="SessionView" component={SessionCreation} />
             <Stack.Screen name="SessionEdit" component={SessionEdit} />
             <Stack.Screen name="MealSession" component={MealSession} />
             <Stack.Screen name="MealSessionView" component={MealSessionView} />
@@ -147,7 +164,7 @@ const App = () => {
             <Stack.Screen name="Set" component={ActivitySet} />
             <Stack.Screen name="SetEdit" component={SetEdit} />
             <Stack.Screen name="SetView" component={SetView} />
-            <Stack.Screen name="Search" component={Search} />
+            <Stack.Screen name="Search" component={PlanSearch} />
             <Stack.Screen name="Current" component={Current} />
             <Stack.Screen name="Exercise" component={Exercise} />
             <Stack.Screen name="DailyWaterIntakeGoal" component={DailyGoals} />

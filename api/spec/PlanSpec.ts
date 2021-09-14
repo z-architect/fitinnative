@@ -5,6 +5,7 @@ import {
   FetchSessionsResponseSpec,
   FetchSetOrdersRequestSpec,
 } from "./SessionSpec";
+import { ProfileGetResponseSpec } from "./ProfileSpec";
 
 export enum PlanType {
   MEAL = "MEAL",
@@ -30,6 +31,7 @@ export interface CreatePlanRequestSpec {
 
 export interface FetchPlansRequestSpec extends QueryFilter {
   private?: boolean;
+  mine?: boolean;
   type?: PlanType;
   category?: Goal;
   difficulty?: Difficulty;
@@ -44,7 +46,7 @@ export interface FetchPlansResponseSpec {
   title: string;
   description: string;
   private: boolean;
-  createdBy?: boolean;
+  createdBy?: ProfileGetResponseSpec;
 }
 
 export interface FetchSessionIntervalsRequestSpec {

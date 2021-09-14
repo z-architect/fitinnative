@@ -34,7 +34,7 @@ const y = Dimensions.get("window").height;
 
 const SessionView = ({ navigation, route }: Props) => {
   const [editMode, setEditMode] = useState(false);
-  const [createMode, setCreateMode] = useState(false);
+  const [createMode, setCreateMode] = useState((route.params as any) ?? false);
   const [showModal, setShowModal] = useState(false);
 
   const [type] = useState("Meal");
@@ -403,7 +403,7 @@ const SessionView = ({ navigation, route }: Props) => {
                     />
                   </View>
                 </>*/}
-              {editMode || createMode ? (
+              {editMode ? (
                 <BlurView
                   style={{
                     position: "absolute",

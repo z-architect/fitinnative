@@ -39,6 +39,7 @@ export type RootStackParamList = {
   DailySleepGoal: undefined;
   Vitals: undefined;
   Engagements: undefined;
+  SavedPlans: undefined;
 };
 
 export type LandingScreenNavigationProp = StackNavigationProp<
