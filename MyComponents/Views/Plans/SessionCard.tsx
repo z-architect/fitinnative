@@ -31,6 +31,14 @@ const SessionCard = ({
   const [timed, setTimed] = useState(!session.duration);
   const [_delete, setDelete] = useState(false);
   const swiper = useRef<SwipeRow<View>>(null);
+  const [duration, setDuration] = useState({ min: 0, sec: 0 });
+
+  function getSeparateTimeUnits(duration: number) {
+    return {
+      min: duration < 60 ? 0 : Math.floor(duration / 60),
+      sec: duration < 60 ? duration : duration % 60,
+    };
+  }
 
   useEffect(() => {
     if (_delete) {
@@ -39,8 +47,8 @@ const SessionCard = ({
   }, [_delete]);
 
   useEffect(() => {
-    console.log({ editMode });
-  }, []);
+    setDuration(getSeparateTimeUnits(session?.duration ?? 0));
+  }, [session]);
 
   return (
     <SwipeRow
@@ -153,7 +161,15 @@ const SessionCard = ({
                   />
                   <Text
                     style={{ color: !_delete ? "rgba(0,0,0,0.7)" : "white" }}
-                  >{` ${session?.duration ?? 0} min`}</Text>
+                  >
+                    {duration.min > 0 || duration.sec > 0
+                      ? `${
+                          duration.min > 0
+                            ? ` ${duration.min > 0 ? duration.min : 0} min`
+                            : ``
+                        }${duration.sec > 0 ? ` ${duration.sec} sec` : ``}`
+                      : ` 0 min`}
+                  </Text>
                 </View>
                 <View style={styles.sessionCalBurn}>
                   <MaterialIcons

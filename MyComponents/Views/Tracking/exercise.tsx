@@ -20,11 +20,14 @@ import setIntervalWithTimeout, {
 } from "../../Utils/TimeoutHandler";
 import ProgressTimer from "./ProgressTimer";
 import TimerComponent from "./TimerComponent";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { Tracking } from "../../../api/interface/Tracking";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Exercise = ({ navigation, route }: Props) => {
+  const [exerciseCompleted, setExerciseCompleted] = useState(false);
   const [exerciseName] = useState(
     (route.params as any)?.session.name ?? "Exercise"
   );
@@ -37,9 +40,9 @@ const Exercise = ({ navigation, route }: Props) => {
     sets[0] ?? null
   );
   const [upcomingSets, setUpcomingSets] = useState<SetStateStructure[]>([]);
-  const [currentSetDuration, setCurrentSetDuration] = useState(
-    currentSet?.duration
-  );
+  const [currentSetDuration, setCurrentSetDuration] = useState({
+    wrapper: currentSet?.duration,
+  });
   const [sessionDuration] = useState(
     (route.params as any).session.totalSessionTime ?? { min: 0, sec: 0 }
   );
@@ -57,7 +60,7 @@ const Exercise = ({ navigation, route }: Props) => {
   }, [sets]);
 
   useEffect(() => {
-    setCurrentSetDuration(currentSet?.duration);
+    setCurrentSetDuration({ wrapper: currentSet?.duration });
   }, [currentSet]);
 
   function getSeparateTimeUnits(duration: number) {
@@ -68,7 +71,7 @@ const Exercise = ({ navigation, route }: Props) => {
   }
 
   useEffect(() => {
-    setSetTimer(getSeparateTimeUnits(currentSetDuration));
+    setSetTimer(getSeparateTimeUnits(currentSetDuration.wrapper));
 
     // if (currentSetDuration <= 0) {
     //   console.log({ tickerInRemove: ticker });
@@ -113,6 +116,10 @@ const Exercise = ({ navigation, route }: Props) => {
     setUpcomingSets(_upcomingSets);
   }
 
+  async function handleTrack() {
+    // await Tracking.recordEngagement({  })
+  }
+
   useEffect(() => {
     calculateUpcoming();
   }, [currentSet]);
@@ -150,159 +157,205 @@ const Exercise = ({ navigation, route }: Props) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialIcons name="navigate-before" size={40} color="white" />
         </TouchableOpacity>
+        {!exerciseCompleted && (
+          <Text style={{ color: "white", fontSize: 16 }}>{exerciseName}</Text>
+        )}
 
-        <Text style={{ color: "white", fontSize: 16 }}>{exerciseName}</Text>
-
-        <TouchableOpacity>
-          <MaterialIcons name="info-outline" size={32} color="white" />
+        <TouchableOpacity disabled={true}>
+          <MaterialIcons name="info-outline" size={32} color="transparent" />
         </TouchableOpacity>
       </View>
-      <View style={styles.contentContainer}>
-        <View style={styles.gifCircle}>
-          <Image
-            height="100%"
-            width="100%"
-            alt="GIF"
-            resizeMode="cover"
-            style={{ borderRadius: 75 }}
-            source={{
-              uri: !!currentSet?.activity
-                ? `${instance.defaults.baseURL}/upload/${
-                    typeof currentSet?.activity?.actionGif === "string"
-                      ? currentSet?.activity?.actionGif
-                      : (currentSet?.activity?.actionGif as any)?.id
-                  }`
-                : "no-image",
-            }}
-          />
-        </View>
 
-        <View style={styles.sessionNameContainer}>
-          <Text style={styles.sessionName}>{currentSet?.activity?.name}</Text>
-        </View>
-
-        <ProgressTimer
-          ref={sessionTimerIndicator}
-          duration={sessionDuration}
-          tintColor={"orange"}
-          containerStyle={styles.outerCircle}
-          innerStyle={{
-            position: "absolute",
-            transform: [{ rotate: "-90deg" }],
-          }}
-          onPlayerToggle={(value) => {
-            setPaused(value);
-          }}
-          backgroundColor={"rgba(0,0,0,0.0)"}
-          size={260}
-          width={8}
-          fill={99.9}
-          children={
-            <ProgressTimer
-              ref={setTimerIndicator}
-              duration={getSeparateTimeUnits(currentSetDuration)}
-              tintColor={"white"}
-              containerStyle={styles.innerCircle}
-              innerStyle={{
-                position: "absolute",
-                transform: [{ rotate: "-90deg" }],
-              }}
-              onFinish={(value) => {
-                setPaused(value);
-              }}
-              backgroundColor={"rgba(0,0,0,0.0)"}
-              size={225}
-              width={8}
-              fill={99.9}
-              children={
-                <TimerComponent
-                  onFinish={() => {
-                    setSets(
-                      sets.filter((set, index) => {
-                        const isCurrentSet = set.id === currentSet.id;
-
-                        if (isCurrentSet) {
-                          if (index < sets.length)
-                            setCurrentSet(sets[index + 1]);
-                        }
-
-                        return !isCurrentSet;
-                      })
-                    );
-                  }}
-                  setTimer={setTimer}
-                  ref={timer}
-                />
-              }
-            />
-          }
-        />
-
-        <View style={styles.upcomingContainer}>
-          <Text
+      {exerciseCompleted && (
+        <>
+          <View
             style={{
-              color: "white",
-              marginVertical: 5,
-              marginBottom: 10,
-              fontSize: 18,
+              flex: 1,
+              width: "100%",
+              height: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "absolute",
             }}
           >
-            {!!upcomingSets?.length ? "UP COMING" : ""}
-          </Text>
-          {upcomingSets.map((set) => (
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <AntDesign
+                name={"checkcircleo"}
+                size={150}
+                color={"lightgreen"}
+              />
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 46,
+                  textAlign: "center",
+                  marginTop: 20,
+                }}
+              >
+                Workout Completed!
+              </Text>
+            </View>
+          </View>
+        </>
+      )}
+
+      {!exerciseCompleted && (
+        <View style={styles.contentContainer}>
+          {!!sets.length && (
+            <>
+              <View style={[styles.gifCircle]}>
+                <Image
+                  height="100%"
+                  width="100%"
+                  alt="GIF"
+                  resizeMode="cover"
+                  style={{ borderRadius: 75 }}
+                  source={{
+                    uri: !!currentSet?.activity
+                      ? `${instance.defaults.baseURL}/upload/${
+                          typeof currentSet?.activity?.actionGif === "string"
+                            ? currentSet?.activity?.actionGif
+                            : (currentSet?.activity?.actionGif as any)?.id
+                        }`
+                      : "no-image",
+                  }}
+                />
+              </View>
+              <View style={styles.sessionNameContainer}>
+                <Text style={styles.sessionName}>
+                  {currentSet?.activity?.name}
+                </Text>
+              </View>
+            </>
+          )}
+
+          <ProgressTimer
+            ref={sessionTimerIndicator}
+            duration={sessionDuration}
+            tintColor={"orange"}
+            containerStyle={styles.outerCircle}
+            innerStyle={{
+              position: "absolute",
+              transform: [{ rotate: "-90deg" }],
+            }}
+            onPlayerToggle={(value) => {
+              setPaused(value);
+            }}
+            onFinish={() => {
+              setPaused(true);
+              setExerciseCompleted(true);
+            }}
+            backgroundColor={"rgba(0,0,0,0.0)"}
+            size={260}
+            width={8}
+            fill={99.9}
+            children={
+              <ProgressTimer
+                ref={setTimerIndicator}
+                duration={getSeparateTimeUnits(currentSetDuration.wrapper)}
+                tintColor={"white"}
+                containerStyle={styles.innerCircle}
+                innerStyle={{
+                  position: "absolute",
+                  transform: [{ rotate: "-90deg" }],
+                }}
+                backgroundColor={"rgba(0,0,0,0.0)"}
+                size={225}
+                width={8}
+                fill={99.9}
+                children={
+                  <TimerComponent
+                    onFinish={() => {
+                      setSets(
+                        sets.filter((set, index) => {
+                          const isCurrentSet = set.id === currentSet.id;
+
+                          if (isCurrentSet) {
+                            if (index < sets.length)
+                              setCurrentSet(sets[index + 1]);
+                          }
+
+                          return !isCurrentSet;
+                        })
+                      );
+                    }}
+                    setTimer={setTimer}
+                    ref={timer}
+                  />
+                }
+              />
+            }
+          />
+
+          <View style={styles.upcomingContainer}>
             <Text
               style={{
                 color: "white",
                 marginVertical: 5,
-                fontSize: 22,
-                fontWeight: "bold",
+                marginBottom: 10,
+                fontSize: 18,
               }}
             >
-              {set.activity.name}
+              {!!upcomingSets?.length ? "UP COMING" : ""}
             </Text>
-          ))}
+            {upcomingSets.map((set) => (
+              <Text
+                key={set.id}
+                style={{
+                  color: "white",
+                  marginVertical: 5,
+                  fontSize: 22,
+                  fontWeight: "bold",
+                }}
+              >
+                {set.activity.name}
+              </Text>
+            ))}
+          </View>
         </View>
-      </View>
+      )}
 
-      <View style={styles.buttonsContainer}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-around",
-            marginBottom: 50,
-          }}
-        >
-          <TouchableOpacity onPress={() => handlePrevious()}>
-            <MaterialIcons
-              name="skip-previous"
-              size={38}
-              color={currentSetIndex > 0 ? "white" : "transparent"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.playPause}
-            onPress={() => handlePausePlay()}
+      {!exerciseCompleted && (
+        <View style={styles.buttonsContainer}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-around",
+              marginBottom: 50,
+            }}
           >
-            <Fontawesome
-              name={!paused ? "pause" : "play"}
-              size={32}
-              color="white"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleNext()}>
-            <MaterialIcons
-              name="skip-next"
-              size={38}
-              color={
-                sets.length > 0 && currentSetIndex >= sets.length - 1
-                  ? "white"
-                  : "transparent"
-              }
-            />
-          </TouchableOpacity>
+            {/*<TouchableOpacity onPress={() => handlePrevious()}>*/}
+            {/*  <MaterialIcons*/}
+            {/*    name="skip-previous"*/}
+            {/*    size={38}*/}
+            {/*    color={currentSetIndex > 0 ? "white" : "transparent"}*/}
+            {/*  />*/}
+            {/*</TouchableOpacity>*/}
+            <TouchableOpacity
+              style={styles.playPause}
+              onPress={() => handlePausePlay()}
+            >
+              <Fontawesome
+                name={!paused ? "pause" : "play"}
+                size={32}
+                color="white"
+              />
+            </TouchableOpacity>
+            {/*<TouchableOpacity onPress={() => handleNext()}>*/}
+            {/*  <MaterialIcons*/}
+            {/*    name="skip-next"*/}
+            {/*    size={38}*/}
+            {/*    color={*/}
+            {/*      sets.length > 0 && currentSetIndex >= sets.length - 1*/}
+            {/*        ? "white"*/}
+            {/*        : "transparent"*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*</TouchableOpacity>*/}
+          </View>
         </View>
-      </View>
+      )}
     </ImageBackground>
   );
 };

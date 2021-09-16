@@ -12,6 +12,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Image } from "native-base";
 import { instance } from "../../../api/config";
 import { SwipeRow } from "react-native-swipe-list-view";
+import { useAppSelector } from "../../Redux/hooks";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -29,10 +30,39 @@ const SetCard = ({
   const [timed, setTimed] = useState(!set?.duration);
   const [_delete, setDelete] = useState(false);
   const swiper = useRef<SwipeRow<View>>(null);
+  const [duration, setDuration] = useState({ min: 0, sec: 0 });
+  const [caloriesToBurn, setCaloriesToBurn] = useState(0);
+  const measurements = useAppSelector((state) => state.measurements);
+
+  function getSeparateTimeUnits(duration: number) {
+    return {
+      min: duration < 60 ? 0 : Math.floor(duration / 60),
+      sec: duration < 60 ? duration : duration % 60,
+    };
+  }
+
+  function getCaloriesFromMet(met: number) {
+    return (
+      (met *
+        3.5 *
+        (measurements.measurements[measurements.currentMeasurement].mass ||
+          55)) /
+      200
+    ).toFixed(2);
+  }
+
+  useEffect(() => {
+    setDuration(getSeparateTimeUnits(set?.duration ?? 0));
+  }, [set]);
 
   useEffect(() => {
     if (_delete) setTimeout(() => onDelete(set?.id), 500);
   }, [_delete]);
+
+  useEffect(() => {
+    console.log({ met: set.met });
+    setCaloriesToBurn(getCaloriesFromMet(set.met));
+  }, [set]);
 
   return (
     <SwipeRow
@@ -139,7 +169,15 @@ const SetCard = ({
                   />
                   <Text
                     style={{ color: !_delete ? "rgba(0,0,0,0.7)" : "white" }}
-                  >{` ${set?.duration ?? 0} min`}</Text>
+                  >
+                    {duration.min > 0 || duration.sec > 0
+                      ? `${
+                          duration.min > 0
+                            ? ` ${duration.min > 0 ? duration.min : 0} min`
+                            : ``
+                        }${duration.sec > 0 ? ` ${duration.sec} sec` : ``}`
+                      : ` 0 min`}
+                  </Text>
                 </View>
                 <View style={styles.setCalBurn}>
                   <MaterialIcons
@@ -149,7 +187,7 @@ const SetCard = ({
                   />
                   <Text
                     style={{ color: !_delete ? "rgba(0,0,0,0.7)" : "white" }}
-                  >{` ${set?.caloriesToBurn ?? 0} kcal`}</Text>
+                  >{` ${caloriesToBurn ?? 0} kcal`}</Text>
                 </View>
                 <View style={styles.setCalBurn}>
                   <MaterialIcons

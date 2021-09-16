@@ -107,11 +107,11 @@ const SessionView = ({ navigation, route }: Props) => {
   }, [sets]);
 
   function getCaloriesFromMet(met: number) {
-    // TODO
     return (
       (met *
         3.5 *
-        (measurements.measurements[measurements.currentMeasurement] || 55)) /
+        (measurements.measurements[measurements.currentMeasurement].mass ||
+          55)) /
       200
     );
   }
