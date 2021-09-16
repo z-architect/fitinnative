@@ -20,6 +20,7 @@ interface ProgressTimerProps extends Props<any> {
   fill: number;
   duration: { min: number; sec: number };
   onPlayerToggle?: (value: boolean) => void;
+  onFinish?: () => void;
 }
 
 const ProgressTimer = forwardRef(
@@ -35,6 +36,7 @@ const ProgressTimer = forwardRef(
       width,
       duration: _duration,
       onPlayerToggle,
+      onFinish,
     }: ProgressTimerProps,
     ref
   ) => {
@@ -46,6 +48,10 @@ const ProgressTimer = forwardRef(
 
     const [ticker, setTicker] = useState<number>();
     const [filler, setFiller] = useState(calculateFillerPercentage());
+
+    useEffect(() => {
+      console.log({ _duration });
+    }, [_duration]);
 
     function getSeparateTimeUnits(duration: number) {
       return {
@@ -89,8 +95,7 @@ const ProgressTimer = forwardRef(
 
         setTicker(_ticker);
       } else {
-        console.log({ duration });
-        setPaused(true);
+        if (!!ticker && !!onFinish) onFinish();
       }
 
       return () => {
