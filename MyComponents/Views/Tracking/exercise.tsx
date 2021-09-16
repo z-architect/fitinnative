@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,9 @@ import { Props } from "../../types";
 import { instance } from "../../../api/config";
 import { Image } from "native-base";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
+import setIntervalWithTimeout, {
+  TimeoutHandler,
+} from "../../Utils/TimeoutHandler";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -23,6 +26,7 @@ const Exercise = ({ navigation, route }: Props) => {
   const [exerciseName] = useState(
     (route.params as any)?.session.name ?? "Exercise"
   );
+  const [image, setImage] = useState<Asset>();
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [sets, setSets] = useState<SetStateStructure[]>(
     (route.params as any).sets ?? []
@@ -32,14 +36,19 @@ const Exercise = ({ navigation, route }: Props) => {
   );
   const [upcomingSets, setUpcomingSets] = useState<SetStateStructure[]>([]);
   const [currentSetDuration, setCurrentSetDuration] = useState(
-    currentSet?.duration
+    /*currentSet?.duration*/ 3
   );
   const [sessionDuration] = useState(
-    (route.params as any).session.totalSessionTime ?? 0
+    !!(route.params as any).session.totalSessionTime
+      ? (route.params as any).session.totalSessionTime.min * 60 +
+          (route.params as any).session.totalSessionTime.sec
+      : 0
   );
+  const [ticker, setTicker] = useState<TimeoutHandler>();
   const [setTimer, setSetTimer] = useState({ min: 0, sec: 0 });
   const [sessionTimer, setSessionTimer] = useState({ min: 0, sec: 0 });
-  const [image, setImage] = useState<Asset>();
+  const setTimerIndicator = useRef<AnimatedCircularProgress>(null);
+  const sessionTimerIndicator = useRef<AnimatedCircularProgress>(null);
 
   function getSeparateTimeUnits(duration: number) {
     return {
@@ -50,20 +59,18 @@ const Exercise = ({ navigation, route }: Props) => {
 
   useEffect(() => {
     setSetTimer(getSeparateTimeUnits(currentSetDuration));
+
+    console.log({ currentSetDurationInEffect: currentSetDuration });
+
+    if (currentSetDuration <= 0) {
+      console.log({ currentSetDurationInConditional: currentSetDuration });
+      ticker?.clear();
+    }
   }, [currentSetDuration]);
 
   useEffect(() => {
-    setSessionTimer(sessionDuration);
+    setSessionTimer(getSeparateTimeUnits(sessionDuration));
   }, [sessionDuration]);
-
-  useEffect(() => {
-    console.log({
-      setTimer,
-      sessionTimer,
-      currentSetDuration,
-      sessionDuration,
-    });
-  }, [sessionDuration, currentSetDuration]);
 
   function handlePrevious() {
     if (sets.length && currentSetIndex > 0)
@@ -76,8 +83,6 @@ const Exercise = ({ navigation, route }: Props) => {
   }
 
   function handlePausePlay() {}
-
-  useEffect(() => console.log(currentSetIndex < sets.length - 1), []);
 
   function calculateUpcoming() {
     let renderCount = 0;
@@ -94,6 +99,23 @@ const Exercise = ({ navigation, route }: Props) => {
 
     setUpcomingSets(_upcomingSets);
   }
+
+  useEffect(() => {
+    console.log({ currentSetDuration });
+
+    if (!!ticker) ticker.clear();
+
+    const _ticker = setIntervalWithTimeout(() => {
+      console.log({ currentSetDuration });
+      setCurrentSetDuration(currentSetDuration - 1);
+    }, 3000);
+
+    setTicker(_ticker);
+
+    return () => {
+      ticker?.clear();
+    };
+  }, [currentSet, currentSetDuration]);
 
   return (
     <ImageBackground
@@ -123,11 +145,13 @@ const Exercise = ({ navigation, route }: Props) => {
             resizeMode="cover"
             style={{ borderRadius: 75 }}
             source={{
-              uri: `${instance.defaults.baseURL}/upload/${
-                typeof currentSet?.activity?.actionGif === "string"
-                  ? currentSet?.activity?.actionGif
-                  : (currentSet?.activity?.actionGif as any)?.id
-              }`,
+              uri: !!currentSet.activity
+                ? `${instance.defaults.baseURL}/upload/${
+                    typeof currentSet?.activity?.actionGif === "string"
+                      ? currentSet?.activity?.actionGif
+                      : (currentSet?.activity?.actionGif as any)?.id
+                  }`
+                : "no-image",
             }}
           />
         </View>
@@ -138,15 +162,17 @@ const Exercise = ({ navigation, route }: Props) => {
 
         <View style={styles.outerCircle}>
           <AnimatedCircularProgress
+            ref={sessionTimerIndicator}
             tintColor={"orange"}
             style={{ position: "absolute", transform: [{ rotate: "-90deg" }] }}
             backgroundColor={"rgba(0,0,0,0.0)"}
             size={260}
             width={8}
-            fill={20}
+            fill={99.9}
           />
           <View style={styles.innerCircle}>
             <AnimatedCircularProgress
+              ref={setTimerIndicator}
               tintColor={"white"}
               style={{
                 position: "absolute",
@@ -155,7 +181,7 @@ const Exercise = ({ navigation, route }: Props) => {
               backgroundColor={"rgba(0,0,0,0.0)"}
               size={225}
               width={8}
-              fill={70}
+              fill={99.9}
             />
             <View style={styles.innerMostCircle}>
               <Text style={{ color: "white", fontSize: 50 }}>
