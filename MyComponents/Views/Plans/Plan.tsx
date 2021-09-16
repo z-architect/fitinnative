@@ -21,16 +21,19 @@ import { Difficulty, Goal, PlanType, UploadEntity } from "../../../api/spec";
 import RBSheet from "react-native-raw-bottom-sheet";
 import PlanCalendar, { IntervalsStateStructure } from "./PlanCalendar";
 import { FetchSessionsResponseSpec } from "../../../api/spec/SessionSpec";
-import { Plan as _Plan, Upload } from "../../../api/interface";
+import { Plan as _Plan, Session, Upload } from "../../../api/interface";
 import { Select, Switch } from "native-base";
 import DifficultySelector from "./DifficultySelector";
 import SessionList from "./SessionList";
 import { instance } from "../../../api/config";
 import { changePlanType } from "../../Redux/globalsSlice";
+import { useIsFocused } from "@react-navigation/native";
 
 const y = Dimensions.get("window").height;
 
 const Plan = ({ navigation, route }: Props) => {
+  const focusIsHere = useIsFocused();
+
   const bottomSheet = useRef<RBSheet>(null);
   const snapPoints = useMemo(() => ["25%", "50%"], []);
   const dispatch = useAppDispatch();
@@ -38,6 +41,10 @@ const Plan = ({ navigation, route }: Props) => {
   const subscribedPlans = useAppSelector(
     (state) =>
       state.profiles.profiles[state.profiles.activeProfile].user.subscribedPlans
+  );
+
+  const chosenPlanType = useAppSelector(
+    (state) => state.globals.chosenPlanType
   );
 
   const plans = useAppSelector(
@@ -73,12 +80,12 @@ const Plan = ({ navigation, route }: Props) => {
   );
   const [showModal, setShowModal] = useState(false);
 
-  const [id] = useState((route.params as any)?.plan?.id ?? uuidv4());
+  const [id, setId] = useState((route.params as any)?.plan?.id ?? uuidv4());
   const [_private, setPrivate] = useState(
     (route.params as any)?.plan?.private ?? true
   );
   const [type, setType] = useState(
-    (route.params as any)?.plan?.type ?? PlanType.MEAL
+    (route.params as any)?.plan?.type ?? chosenPlanType
   );
   const [category, setCategory] = useState(
     (route.params as any)?.plan?.category ?? Goal.MASS_GAIN
@@ -98,23 +105,11 @@ const Plan = ({ navigation, route }: Props) => {
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedSession, setSelectedSession] =
-    useState<FetchSessionsResponseSpec>({
-      id: "5",
-      name: "karate",
-      description: "fancy",
-      duration: 4,
-      caloriesToBurn: 1,
-      createdBy: "",
-    });
+    useState<FetchSessionsResponseSpec | null>(null);
   const [sessionIntervals, setSessionIntervals] = useState<
     IntervalsStateStructure[]
-  >([
-    { interval: 12, set: { id: "5" } },
-    { interval: 7, set: { id: "5" } },
-    { interval: 23, set: { id: "5" } },
-    { interval: 29, set: { id: "2" } },
-  ]);
-  const [sessions, setSessions] = useState([]);
+  >([]);
+  const [sessions, setSessions] = useState<any[]>([]);
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const removeSession = (id: string) => {
@@ -126,8 +121,6 @@ const Plan = ({ navigation, route }: Props) => {
   async function handleSubscribeToPlan() {
     const result = await _Plan.subscribeToPlan({ id });
 
-    console.log({ subscribed: result });
-
     if (!!result?.data) {
       // TODO
     }
@@ -135,8 +128,6 @@ const Plan = ({ navigation, route }: Props) => {
 
   async function handleUnsubscribeFromPlan() {
     const result = await _Plan.unsubscribeFromPlan({ id });
-
-    console.log({ unsubscribed: result });
 
     if (result) {
       // TODO
@@ -168,10 +159,39 @@ const Plan = ({ navigation, route }: Props) => {
 
     const result = await _Plan.createPlan(planData);
     if (!!result?.data) {
-      console.log("SUCCESS");
+      console.log("CREATE SUCCESS");
     }
 
     navigation.goBack();
+  }
+
+  async function handleUpdate() {
+    console.log({ id });
+
+    const result = await _Plan.updatePlan({
+      id,
+      description,
+      category,
+      difficulty,
+      image,
+      sessionIntervals,
+      private: _private,
+      title,
+    });
+
+    if (!!result?.data) {
+      setId(result.data);
+    }
+
+    if (!(route.params as any).editMode) setEditMode(false);
+    else navigation.replace("MyPlans");
+  }
+
+  async function handleDelete() {
+    setShowDeleteModal(false);
+    const result = await _Plan.removePlan({ id });
+
+    if (result) navigation.goBack();
   }
 
   useEffect(() => {
@@ -187,14 +207,58 @@ const Plan = ({ navigation, route }: Props) => {
     }
   }, []);
 
+  async function fetchSessionIntervals() {
+    const result = await _Plan.fetchSessionIntervals({ id });
+
+    if (!!result?.data) {
+      const _sessions: any = [];
+
+      result.data?.sessionIntervals?.forEach((order) => {
+        const sessionIds = _sessions.map((_session: any) => _session.id);
+
+        if (!sessionIds.includes((order.set as FetchSessionsResponseSpec).id))
+          _sessions.push(order.set);
+      });
+
+      setSessionIntervals(
+        result?.data?.sessionIntervals.map((session) => {
+          return {
+            interval: session.interval,
+            set: (session.set as FetchSessionsResponseSpec).id,
+          };
+        })
+      );
+
+      setSessions(_sessions);
+    }
+  }
+
+  useEffect(() => {
+    const sessionIds = sessions.map((session) => session?.id);
+
+    setSessionIntervals(
+      sessionIntervals.filter((session, index) =>
+        sessionIds.includes(session.set)
+      )
+    );
+  }, [sessions]);
+
+  useEffect(() => {
+    if (focusIsHere) {
+      void fetchSessionIntervals();
+    }
+  }, [focusIsHere]);
+
+  useEffect(() => {
+    console.log({ idInEffect: id });
+  }, [id]);
+
   return (
     <>
       <DeleteModal
         showModal={showDeleteModal}
         setShowModal={setShowDeleteModal}
-        onDelete={() => {
-          setShowDeleteModal(false);
-        }}
+        onDelete={() => handleDelete()}
         prompt={"Do you really want to delete this session?"}
       />
       {showModal ? (
@@ -220,8 +284,7 @@ const Plan = ({ navigation, route }: Props) => {
           ) : !createMode ? (
             <TouchableOpacity
               onPress={() => {
-                setEditMode(false);
-                // TODO
+                void handleUpdate();
               }}
             >
               <MaterialIcons name="check" size={32} color="green" />
@@ -243,7 +306,7 @@ const Plan = ({ navigation, route }: Props) => {
             }}
           >
             {!editMode && !createMode ? (
-              plans.map((v: any) => v.id).includes(id) ? (
+              !plans.map((v: any) => v.id).includes(id) ? (
                 <>
                   <TouchableOpacity
                     onPress={() => {
@@ -286,7 +349,8 @@ const Plan = ({ navigation, route }: Props) => {
                 <TouchableOpacity
                   style={{ marginLeft: 20 }}
                   onPress={() => {
-                    setEditMode(false);
+                    if (!(route.params as any).editMode) setEditMode(false);
+                    else navigation.goBack();
                   }}
                 >
                   <MaterialIcons name="close" size={32} color="red" />
@@ -327,7 +391,7 @@ const Plan = ({ navigation, route }: Props) => {
                 },
               ]}
             >
-              {editMode ? (
+              {editMode && !(route.params as any)?.editMode ? ( // TODO FIX THIS PROPERLY LATER
                 <BlurView
                   style={{
                     position: "absolute",
@@ -568,6 +632,7 @@ const Plan = ({ navigation, route }: Props) => {
                   session={data}
                   onSheetOpen={() => {
                     bottomSheet.current?.open();
+                    setSelectedSession(data);
                     setShowBottomSheet(true);
                   }}
                   editMode={editMode}
@@ -575,12 +640,12 @@ const Plan = ({ navigation, route }: Props) => {
                   scrollEnabled={scrollEnabled}
                   setScrollEnabled={setScrollEnabled}
                   onSelect={() => {
-                    navigation.navigate("SessionView");
+                    navigation.navigate("Session", { session: data });
                   }}
                   onEdit={() => {
-                    navigation.navigate("SessionView", {
+                    navigation.navigate("Session", {
                       editMode: true,
-                      set: data,
+                      session: data,
                     });
                   }}
                   onDelete={(id: string) => {
@@ -637,7 +702,10 @@ const Plan = ({ navigation, route }: Props) => {
         {showBottomSheet ? (
           <RBSheet
             ref={bottomSheet}
-            onClose={() => setShowBottomSheet(false)}
+            onClose={() => {
+              setShowBottomSheet(false);
+              setSelectedSession(null);
+            }}
             height={550}
             closeOnDragDown={true}
             openDuration={250}

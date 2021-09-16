@@ -15,13 +15,19 @@ interface DeleteModalProps {
   showModal: boolean;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   onDelete: () => void;
+  onCancel?: () => void;
   prompt?: string;
 }
 
 const DeleteModal = (props: DeleteModalProps) => {
   return (
     <>
-      <Modal isOpen={props.showModal} onClose={() => props.setShowModal(false)}>
+      <Modal
+        isOpen={props.showModal}
+        onClose={() => {
+          props.setShowModal(false);
+        }}
+      >
         <Modal.Content maxWidth="400px">
           <View style={styles.modalTopHalf}>
             <View style={styles.giantXContainer}>
@@ -44,7 +50,10 @@ const DeleteModal = (props: DeleteModalProps) => {
                   styles.modalButton,
                   { backgroundColor: "rgb(110,140,160)" },
                 ]}
-                onPress={() => props.setShowModal(false)}
+                onPress={() => {
+                  if (!!props.onCancel) props.onCancel();
+                  props.setShowModal(false);
+                }}
               >
                 <Text style={{ color: "white", fontWeight: "bold" }}>
                   Cancel

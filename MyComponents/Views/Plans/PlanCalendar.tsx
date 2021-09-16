@@ -62,6 +62,9 @@ function PlanCalendar({
         setSessionIntervals(
           sessionIntervals.filter((value) => value?.interval !== day)
         );
+        _setSessionIntervals(
+          sessionIntervals.filter((value) => value?.interval !== day)
+        );
       }
     } else {
       const sessionIntervalsCopy = !!sessionIntervals.length
@@ -70,12 +73,11 @@ function PlanCalendar({
 
       sessionIntervalsCopy.push({
         interval: day,
-        set: selectedSession as FetchSessionsResponseSpec,
+        set: selectedSession?.id as string,
       });
 
-      console.log(sessionIntervalsCopy);
-
       setSessionIntervals(sessionIntervalsCopy);
+      _setSessionIntervals(sessionIntervalsCopy);
     }
   }
 

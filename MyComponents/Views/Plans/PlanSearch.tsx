@@ -26,7 +26,7 @@ const PlanSearch = ({ navigation, route }: Props) => {
   const [plans, setPlans] = useState<FetchPlansResponseSpec[]>([]);
 
   async function fetchPlans() {
-    const result = await Plan.fetchPlans({ private: false });
+    const result = await Plan.fetchPlans({ private: false, mine: false });
 
     if (result) {
       setPlans(result.data);

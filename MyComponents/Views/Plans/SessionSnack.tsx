@@ -58,7 +58,14 @@ const SessionSnack = ({
           ) : null}
         </View>
         <View style={styles.sessionName}>
-          <Text>{session.name}</Text>
+          <View
+            style={{
+              width: "100%",
+            }}
+          >
+            <Text>{session.name}</Text>
+          </View>
+
           <View
             style={{
               flexDirection: "row",
@@ -104,8 +111,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     maxHeight: 80,
-    paddingVertical: 20,
-    paddingHorizontal: 20,
     shadowColor: "grey",
     shadowOpacity: 0.5,
     shadowRadius: 5.0,
@@ -115,14 +120,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   image: {
-    height: 50,
-    width: 50,
-    borderWidth: 1,
-    borderRadius: 30,
+    flex: 1,
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
   sessionName: {
+    paddingVertical: 20,
     paddingRight: 24,
     paddingLeft: 5,
     maxWidth: "45%",
@@ -134,6 +138,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
+    paddingRight: 20,
     flex: 1,
   },
   deleteButton: {

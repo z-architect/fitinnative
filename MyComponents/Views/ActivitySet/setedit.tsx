@@ -25,6 +25,7 @@ import ScrollPicker from "react-native-wheel-scroll-picker";
 import ScrollSelector from "./ScrollSelector";
 import { current } from "@reduxjs/toolkit";
 import { ProfileGetOwnResponseSpec } from "../../../api/spec";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 let x = Dimensions.get("window").width;
 let y = Dimensions.get("window").height;
@@ -85,8 +86,6 @@ const ActivitySet = ({ navigation, route }: Props) => {
   const [showActivityList, setShowActivityList] = useState(false);
   const [editMode, setEditMode] = useState(
     !!(route.params as any)?.createMode
-      ? true
-      : !(route.params as any)?.set?.id
       ? true
       : !!(route.params as any)?.editMode
   );
@@ -210,6 +209,17 @@ const ActivitySet = ({ navigation, route }: Props) => {
     navigation.goBack();
   }
 
+  useEffect(() => {
+    console.log({
+      editMode: !!(route.params as any)?.createMode
+        ? true
+        : !!(route.params as any)?.editMode,
+      createMode: !!(route.params as any)?.createMode
+        ? true
+        : !(route.params as any)?.set?.id,
+    });
+  }, []);
+
   return (
     <>
       <DeleteModal
@@ -229,32 +239,31 @@ const ActivitySet = ({ navigation, route }: Props) => {
               else navigation.goBack();
             }}
           >
-            <AntDesign name="left" size={32} color="white" />
+            <MaterialIcons name="navigate-before" size={40} color="white" />
           </TouchableOpacity>
 
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "flex-end",
-              width: "30%",
+              justifyContent: "space-around",
             }}
           >
             {!editMode && !createMode ? (
               <>
                 <TouchableOpacity
-                  style={{ paddingRight: 25 }}
                   onPress={() => {
                     setShowDeleteModal(true);
                   }}
                 >
-                  <AntDesign name="delete" size={32} color="white" />
+                  <MaterialIcons name="delete" size={32} color="white" />
                 </TouchableOpacity>
                 <TouchableOpacity
+                  style={{ marginLeft: 20 }}
                   onPress={() => {
                     setEditMode(true);
                   }}
                 >
-                  <AntDesign name="edit" size={32} color="white" />
+                  <MaterialIcons name="edit" size={32} color="white" />
                 </TouchableOpacity>
               </>
             ) : null}
@@ -273,7 +282,7 @@ const ActivitySet = ({ navigation, route }: Props) => {
                 style={styles.cardHead}
                 onPress={() => {
                   if (editMode) setShowActivityList(true);
-                  else console.log("activityModal"); // TODO
+                  else return; // TODO
                 }}
               >
                 <View style={styles.gif}>
@@ -447,7 +456,6 @@ const ActivitySet = ({ navigation, route }: Props) => {
                           size="lg"
                           isChecked={forReps}
                           onToggle={() => {
-                            console.log({ forReps });
                             setForReps(!forReps);
                           }}
                           trackColor={{ true: "rgb(50,71,85)", false: "grey" }}
@@ -582,12 +590,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   head: {
-    height: y * 0.1,
-    width: x,
+    height: y * 0.085,
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    backgroundColor: "transparent",
     paddingHorizontal: 15,
+    paddingRight: 20,
   },
   card: {
     minHeight: y * 0.55,

@@ -86,7 +86,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log(profiles.profiles[profiles.activeProfile].user);
     NetInfo.addEventListener((networkState) => {
       console.log("Connection type - ", networkState.type);
       console.log("Is connected? - ", networkState.isInternetReachable);

@@ -50,10 +50,6 @@ function PlanCard({
     else if (onBookmark) onBookmark(plan.id);
   }
 
-  useEffect(() => {
-    console.log({ plan });
-  }, []);
-
   return (
     <>
       <TouchableOpacity
@@ -70,7 +66,7 @@ function PlanCard({
                       : plan?.image.id
                   }`,
                 }
-              : require("../../../MyAssets/weighloss.jpg")
+              : { uri: "no-image" }
           }
           style={styles.cardsPlan}
         >
@@ -89,12 +85,12 @@ function PlanCard({
                   color: "white",
                 }}
               >
-                {plan?.title ?? "Vegan"}
+                {plan?.title ?? ""}
               </Text>
               <Text style={{ color: "white" }}>
                 {plan?.type === PlanType.WORKOUT
                   ? plan?.difficulty
-                  : plan?.description ?? "Healthy plan-based diet"}
+                  : plan?.description ?? ""}
               </Text>
             </View>
             <View style={styles.controlsContainer}>
@@ -175,6 +171,7 @@ const styles = StyleSheet.create({
   cardsPlanText: {
     marginBottom: 55,
     marginHorizontal: 30,
+    maxWidth: "55%",
     justifyContent: "flex-end",
   },
   cardsFeatured: {
@@ -203,6 +200,7 @@ const styles = StyleSheet.create({
   controlsContainer: {
     backgroundColor: "rgba(0,0,0,0.1)",
     width: 100,
+    maxWidth: "30%",
   },
   controls: { justifyContent: "center", alignItems: "center", flex: 1 },
   unsubscribeButton: {},

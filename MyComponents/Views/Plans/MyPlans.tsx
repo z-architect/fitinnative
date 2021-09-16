@@ -15,6 +15,7 @@ import { FetchPlansResponseSpec, PlanType } from "../../../api/spec";
 import { useIsFocused } from "@react-navigation/native";
 import { Plan } from "../../../api/interface";
 import PlanCard from "./PlanCard";
+import DeleteModal from "../../Utils/DeleteModal";
 
 const y = Dimensions.get("window").height;
 
@@ -25,15 +26,26 @@ function MyPlans({ navigation }: Props) {
     (state) => state.globals.chosenPlanType
   );
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [toBeDeleted, setToBeDeleted] = useState<string | null>(null);
   const [plans, setPlans] = useState<FetchPlansResponseSpec[]>([]);
 
   async function fetchPlans() {
     const result = await Plan.fetchPlans({ mine: true });
 
-    if (result) {
-      console.log(result.data);
-      setPlans(result.data);
+    if (!!result?.data) {
+      setPlans([...result.data]);
     }
+  }
+
+  async function handleDelete() {
+    const result = await Plan.removePlan({ id: toBeDeleted as string });
+
+    if (result) {
+      setPlans([...plans.filter((plan) => plan.id !== toBeDeleted)]);
+    }
+
+    setToBeDeleted(null);
   }
 
   useEffect(() => {
@@ -44,6 +56,18 @@ function MyPlans({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
+      {showDeleteModal ? (
+        <DeleteModal
+          onDelete={() => {
+            setShowDeleteModal(false);
+            void handleDelete();
+          }}
+          showModal={showDeleteModal}
+          setShowModal={setShowDeleteModal}
+          onCancel={() => setToBeDeleted(null)}
+          prompt={"Are you sure you want to delete this plan?"}
+        />
+      ) : null}
       <View style={styles.head}>
         <TouchableOpacity
           onPress={() => {
@@ -78,13 +102,19 @@ function MyPlans({ navigation }: Props) {
       {!!plans.length ? (
         <ScrollView contentContainerStyle={styles.plansContainer}>
           {plans.map((plan) => (
-            <>
-              <PlanCard
-                plan={plan}
-                onPress={(plan) => navigation.navigate("Plan", { plan })}
-                mine={true}
-              />
-            </>
+            <PlanCard
+              key={plan.id}
+              plan={plan}
+              onPress={(plan) => navigation.navigate("Plan", { plan })}
+              mine={true}
+              onDelete={(id) => {
+                setToBeDeleted(id);
+                setShowDeleteModal(true);
+              }}
+              onEdit={(plan) => {
+                navigation.replace("Plan", { plan, editMode: true });
+              }}
+            />
           ))}
         </ScrollView>
       ) : (

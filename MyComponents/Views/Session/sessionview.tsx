@@ -1,4 +1,4 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -28,183 +28,75 @@ import { BlurView } from "@react-native-community/blur";
 import SetList from "./SetList";
 import { SetStateStructure } from "../ActivitySet/setedit";
 import { useAppSelector } from "../../Redux/hooks";
+import { v4 as uuidv4 } from "uuid";
+import { instance } from "../../../api/config";
+import { Plan as _Plan, Session, Upload } from "../../../api/interface";
+import { UploadEntity } from "../../../api/spec";
+import { FetchActivitySetsResponseSpec } from "../../../api/spec/ActivitySetSpec";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
+export interface SetOrdersStateStructure {
+  order: number;
+  set: FetchActivitySetsResponseSpec | string;
+}
+
 const SessionView = ({ navigation, route }: Props) => {
-  const [editMode, setEditMode] = useState(false);
-  const [createMode, setCreateMode] = useState((route.params as any) ?? false);
+  const focusIsHere = useIsFocused();
+
+  const [editMode, setEditMode] = useState(!!(route.params as any)?.editMode);
+  const [createMode, setCreateMode] = useState(
+    !!(route.params as any).createMode
+  );
+  const [subscribed, setSubscribed] = useState(
+    !!(route.params as any).subscribed
+  );
+
   const [showModal, setShowModal] = useState(false);
 
-  const [type] = useState("Meal");
+  const chosenPlanType = useAppSelector(
+    (state) => state.globals.chosenPlanType
+  );
+
+  const [id, setId] = useState((route.params as any)?.session?.id ?? uuidv4());
+  const [type] = useState(
+    (route.params as any)?.session?.type ?? chosenPlanType
+  );
   const [totalSessionTime, setTotalSessionTime] = useState({ min: 0, sec: 0 });
   const [totalCaloriesToBurn, setTotalCaloriesToBurn] = useState(0);
-  const [image, setImage] = useState<Asset>();
-  const [name, setName] = useState("Enhance Balance");
+  const [image, setImage] = useState(
+    (route.params as any)?.session?.image ?? null
+  );
+  const [imageAsset, setImageAsset] = useState<Asset | null>(null);
+  const [name, setName] = useState((route.params as any)?.session?.name ?? "");
   const [description, setDescription] = useState(
-    "The best session one can ask for."
+    (route.params as any)?.session?.description ?? ""
   );
   const [CTB, SetCTB] = useState("897");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [sets, setSets] = useState<SetStateStructure[]>([
-    {
-      id: "1",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "2",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "3",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "4",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "5",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "6",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "7",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "8",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "9",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "10",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "11",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-    {
-      id: "12",
-      duration: 4,
-      met: 0,
-      reps: 0,
-      activity: {
-        id: "1",
-        name: "karate",
-        description: "fancy",
-      },
-      createdBy: "",
-    },
-  ]);
+  const [_private, setPrivate] = useState(
+    (route.params as any)?.session?.private ?? true
+  );
+  const [sets, setSets] = useState<SetStateStructure[]>([]);
+  const [setOrders, setSetOrders] = useState<SetOrdersStateStructure[]>([]);
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const measurements = useAppSelector((state) => state.measurements);
+
+  async function handleImageUpload(asset: Asset) {
+    // setImageAsset(asset);
+
+    const result = await Upload.uploadResource([asset], UploadEntity.SESSION);
+    if (result) setImage(result.data[0]);
+  }
 
   useEffect(() => {
     let totalTime = 0;
     let totalCalories = 0;
 
     for (const set of sets) {
-      console.log({ met: set.met });
-
-      totalTime += set.duration;
-      totalCalories += getCaloriesFromMet(set.met || 0);
+      totalTime += set?.duration;
+      totalCalories += getCaloriesFromMet(set?.met || 0);
     }
 
     setTotalSessionTime({
@@ -216,9 +108,6 @@ const SessionView = ({ navigation, route }: Props) => {
 
   function getCaloriesFromMet(met: number) {
     // TODO
-
-    console.log(measurements.measurements[measurements.currentMeasurement]);
-
     return (
       (met *
         3.5 *
@@ -227,11 +116,93 @@ const SessionView = ({ navigation, route }: Props) => {
     );
   }
 
-  const removeSet = (id: string) => {
+  function removeSet(id: string) {
     setSets((sets) => {
       return sets.filter((item, j) => item.id !== id);
     });
-  };
+  }
+
+  async function handleCreateSession() {
+    const sessionData: any = {
+      id,
+      description,
+      setOrders,
+      name,
+      image,
+      private: _private,
+      type,
+    };
+
+    if (!!image) {
+      sessionData.image = typeof image === "string" ? image : image.id;
+    }
+
+    const result = await Session.createSession(sessionData);
+    if (!!result?.data) {
+      console.log("CREATE SUCCESS");
+    }
+
+    navigation.goBack();
+  }
+
+  async function handleDelete() {
+    setShowDeleteModal(false);
+    const result = await Session.removeSession({ id });
+
+    if (result) navigation.goBack();
+  }
+
+  async function handleUpdate() {
+    console.log({ sessionId: id });
+
+    const result = await Session.updateSession({
+      id,
+      name,
+      description,
+      setOrders,
+    });
+
+    if (!!result?.data) {
+      setId(result.data);
+    }
+
+    if (!(route.params as any).editMode) setEditMode(false);
+    else navigation.goBack();
+  }
+
+  async function fetchSetOrders() {
+    const result = await Session.fetchSetOrders({ id });
+
+    if (!!result?.data) {
+      const _sets: any = [];
+      result.data?.setOrders?.forEach((order) => {
+        _sets[order.order - 1] = order.set;
+      });
+
+      setSets(_sets);
+    }
+  }
+
+  useEffect(() => {
+    setSetOrders(
+      sets.map((set, index) => {
+        return {
+          order: index + 1,
+          set: set.id,
+        };
+      })
+    );
+  }, [sets]);
+
+  useEffect(() => {
+    if (focusIsHere) {
+      void fetchSetOrders();
+    }
+  }, [focusIsHere]);
+
+  useEffect(() => {
+    console.log({ inEffectSessionId: id });
+  }, [focusIsHere]);
 
   return (
     <>
@@ -248,21 +219,80 @@ const SessionView = ({ navigation, route }: Props) => {
       <DeleteModal
         showModal={showDeleteModal}
         setShowModal={setShowDeleteModal}
-        onDelete={() => {
-          setShowDeleteModal(false);
-        }}
+        onDelete={() => void handleDelete()}
         prompt={"Do you really want to delete this session?"}
       />
 
       <View style={styles.container}>
         <View style={styles.head}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-          >
-            <MaterialIcons name="navigate-before" size={40} color="black" />
-          </TouchableOpacity>
+          {/*<TouchableOpacity*/}
+          {/*  onPress={() => {*/}
+          {/*    navigation.goBack();*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <MaterialIcons name="navigate-before" size={40} color="black" />*/}
+          {/*</TouchableOpacity>*/}
+
+          {/*<View*/}
+          {/*  style={{*/}
+          {/*    flexDirection: "row",*/}
+          {/*    justifyContent: "space-around",*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <TouchableOpacity*/}
+          {/*    onPress={() => {*/}
+          {/*      setShowDeleteModal(true);*/}
+          {/*    }}*/}
+          {/*  >*/}
+          {/*    <MaterialIcons name="delete" size={32} color="black" />*/}
+          {/*  </TouchableOpacity>*/}
+
+          {/*  {!editMode && !createMode ? (*/}
+          {/*    <TouchableOpacity*/}
+          {/*      style={{ marginLeft: 20 }}*/}
+          {/*      onPress={() => {*/}
+          {/*        // navigation.navigate("SessionEdit");*/}
+          {/*        setEditMode(true);*/}
+          {/*      }}*/}
+          {/*    >*/}
+          {/*      <MaterialIcons name="edit" size={32} color="black" />*/}
+          {/*    </TouchableOpacity>*/}
+          {/*  ) : !createMode ? (*/}
+          {/*    <TouchableOpacity*/}
+          {/*      style={{ marginLeft: 20 }}*/}
+          {/*      onPress={() => {*/}
+          {/*        setEditMode(false);*/}
+          {/*      }}*/}
+          {/*    >*/}
+          {/*      <MaterialIcons name="close" size={32} color="black" />*/}
+          {/*    </TouchableOpacity>*/}
+          {/*  ) : null}*/}
+          {/*</View>*/}
+          {!editMode && !createMode ? (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+            >
+              <MaterialIcons name="navigate-before" size={40} color="black" />
+            </TouchableOpacity>
+          ) : !createMode ? (
+            <TouchableOpacity
+              onPress={() => {
+                void handleUpdate();
+              }}
+            >
+              <MaterialIcons name="check" size={32} color="green" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                void handleCreateSession();
+              }}
+            >
+              <Text style={{ fontSize: 20, color: "green" }}>Create</Text>
+            </TouchableOpacity>
+          )}
 
           <View
             style={{
@@ -270,41 +300,62 @@ const SessionView = ({ navigation, route }: Props) => {
               justifyContent: "space-around",
             }}
           >
-            <TouchableOpacity
-              onPress={() => {
-                setShowDeleteModal(true);
-              }}
-            >
-              <MaterialIcons name="delete" size={32} color="black" />
-            </TouchableOpacity>
-
             {!editMode && !createMode ? (
-              <TouchableOpacity
-                style={{ marginLeft: 20 }}
-                onPress={() => {
-                  // navigation.navigate("SessionEdit");
-                  setEditMode(true);
-                }}
-              >
-                <MaterialIcons name="edit" size={32} color="black" />
-              </TouchableOpacity>
+              <>
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowDeleteModal(true);
+                  }}
+                >
+                  <MaterialIcons name="delete" size={32} color="black" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ marginLeft: 20 }}
+                  onPress={() => {
+                    // navigation.navigate("SessionEdit");
+                    setEditMode(true);
+                  }}
+                >
+                  <MaterialIcons name="edit" size={32} color="black" />
+                </TouchableOpacity>
+              </>
             ) : !createMode ? (
-              <TouchableOpacity
-                style={{ marginLeft: 20 }}
-                onPress={() => {
-                  setEditMode(false);
-                }}
-              >
-                <MaterialIcons name="close" size={32} color="black" />
-              </TouchableOpacity>
-            ) : null}
+              <>
+                <TouchableOpacity
+                  style={{ marginLeft: 20 }}
+                  onPress={() => {
+                    if (!(route.params as any).editMode) setEditMode(false);
+                    else navigation.goBack();
+                  }}
+                >
+                  <MaterialIcons name="close" size={32} color="red" />
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={{ marginLeft: 20 }}
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                >
+                  <Text style={{ fontSize: 20, color: "red" }}>Cancel</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
         <ScrollView scrollEnabled={scrollEnabled}>
           <View style={styles.sessionImage}>
             <ImageBackground
               source={
-                !!image ? image : require("../../../MyAssets/runninman.jpg")
+                !!image
+                  ? {
+                      uri: `${instance.defaults.baseURL}/upload/${
+                        typeof image === "string" ? image : image.id
+                      }`,
+                    }
+                  : { uri: "no-image" }
               }
               resizeMode="cover"
               style={[
@@ -403,7 +454,7 @@ const SessionView = ({ navigation, route }: Props) => {
                     />
                   </View>
                 </>*/}
-              {editMode ? (
+              {editMode && !(route.params as any)?.editMode ? (
                 <BlurView
                   style={{
                     position: "absolute",
@@ -453,7 +504,7 @@ const SessionView = ({ navigation, route }: Props) => {
                             )
                               return;
 
-                            setImage(response.assets[0]);
+                            void handleImageUpload(response.assets[0]);
                           }
                         );
                       }}
@@ -502,6 +553,7 @@ const SessionView = ({ navigation, route }: Props) => {
                       ]}
                       autoFocus={true}
                       value={name}
+                      placeholder={"Exercise name"}
                       onChangeText={(value) => setName(value)}
                     />
                   )}
@@ -542,15 +594,23 @@ const SessionView = ({ navigation, route }: Props) => {
                           styles.input,
                           { fontSize: 16, color: "rgba(255,255,255,0.9)" },
                         ]}
-                      >{`${
-                        totalSessionTime.min > 0
-                          ? ` ${totalSessionTime.min} min`
-                          : ``
-                      }${
-                        totalSessionTime.sec > 0
-                          ? ` ${totalSessionTime.sec} sec`
-                          : ``
-                      }`}</Text>
+                      >
+                        {totalSessionTime.min > 0 || totalSessionTime.sec > 0
+                          ? `${
+                              totalSessionTime.min > 0
+                                ? ` ${
+                                    totalSessionTime.min > 0
+                                      ? totalSessionTime.min
+                                      : 0
+                                  } min`
+                                : ``
+                            }${
+                              totalSessionTime.sec > 0
+                                ? ` ${totalSessionTime.sec} sec`
+                                : ``
+                            }`
+                          : ` 0 min`}
+                      </Text>
                     </View>
                     <View
                       style={{
@@ -593,7 +653,20 @@ const SessionView = ({ navigation, route }: Props) => {
           </View>
           <ScrollView style={styles.sessionContainer}>
             {sets.length === 0 ? (
-              <Text>Sorry , you haven't added any sets yet</Text>
+              <>
+                {!editMode && !createMode ? (
+                  <View
+                    style={{
+                      flex: 1,
+                      height: 350,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ fontSize: 16 }}>No exercises</Text>
+                  </View>
+                ) : null}
+              </>
             ) : (
               sets.map((data, i) => (
                 <SetCard
@@ -607,7 +680,7 @@ const SessionView = ({ navigation, route }: Props) => {
                   scrollEnabled={scrollEnabled}
                   setScrollEnabled={setScrollEnabled}
                   onSelect={() => {
-                    navigation.navigate("Set");
+                    navigation.navigate("Set", { set: data });
                   }}
                   onEdit={() => {
                     navigation.navigate("Set", {
@@ -632,6 +705,8 @@ const SessionView = ({ navigation, route }: Props) => {
               else
                 navigation.navigate("Exercise", {
                   /*TODO*/
+                  session: { id, name, description, totalSessionTime, type },
+                  sets,
                 });
             }}
             style={[

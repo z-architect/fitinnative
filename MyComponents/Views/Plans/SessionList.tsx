@@ -29,7 +29,8 @@ function SessionList({
   );
 
   async function fetchSetList() {
-    const result = await Session.fetchSessions({});
+    const result = await Session.fetchSessions({ private: true });
+
     setSessions((result?.data as any[]) ?? []);
   }
 
@@ -109,12 +110,11 @@ function SessionList({
                         }
                         onTouch={(id: string) => handleSelect(id)}
                         deleteSession={(id: string) => deleteSet(id)}
-                        editSession={(currentSet: SetStateStructure) => {
-                          console.log(currentSet.met);
+                        editSession={(currentSession: SetStateStructure) => {
                           setShowModal(false);
                           navigation.navigate("Session", {
                             editMode: true,
-                            set: currentSet,
+                            session: currentSession,
                           });
                         }}
                       />

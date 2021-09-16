@@ -141,7 +141,7 @@ const Profile = ({ navigation }: Props) => {
     if (result) {
       dispatch(updateFirstTimeToProfile());
       navigation.navigate("Goal");
-    } else console.log({ result });
+    }
   }
 
   async function handleProfileUpdate() {
@@ -191,7 +191,8 @@ const Profile = ({ navigation }: Props) => {
             style={styles.profileContainerCircle}
             activeOpacity={editMode ? undefined : 1}
             onPress={() => {
-              if (editMode) setShowImagePickerModal(true);
+              if (editMode || profile.firstTimeToProfile)
+                setShowImagePickerModal(true);
             }}
           >
             {!profileImageAsset ? (
@@ -701,8 +702,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileContainerCircle: {
-    width: 140,
-    height: 140,
+    width: 100,
+    height: 100,
     borderRadius: 70,
     borderWidth: 1,
     justifyContent: "center",

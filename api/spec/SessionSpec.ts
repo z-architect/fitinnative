@@ -48,7 +48,7 @@ export interface FetchSetOrdersRequestSpec {
 export interface FetchSetOrdersResponseSpec {
   setOrders: {
     order: number;
-    set: FetchActivitySetsResponseSpec | FetchSetOrdersRequestSpec; // TODO replace the second one with meal counterpart
+    set: FetchActivitySetsResponseSpec | FetchSetOrdersRequestSpec | string; // TODO replace the second one with meal counterpart
   }[];
 }
 

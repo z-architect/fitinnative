@@ -314,10 +314,10 @@ const Plans = ({ navigation }: Props) => {
           </Text>
         </View>
 
-        {(meal && !currentPlans?.meal) ||
+        {(meal && !!currentPlans?.meal) ||
         (!meal && !!currentPlans?.activity) ? (
           <PlanCard
-            plan={!meal ? currentPlans?.meal : currentPlans?.activity}
+            plan={meal ? currentPlans?.meal : currentPlans?.activity}
             onPress={(plan) => {
               navigation.navigate("Plan", { plan });
             }}

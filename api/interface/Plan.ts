@@ -19,6 +19,7 @@ import {
   requestDelete,
   requestFetch,
   requestUpdate,
+  requestUpdateWithReturn,
 } from "../utils";
 
 export class Plan {
@@ -43,7 +44,10 @@ export class Plan {
   }
 
   static async updatePlan(data: UpdatePlanRequestSpec) {
-    return requestUpdate<UpdatePlanRequestSpec>("/plan", data);
+    return requestUpdateWithReturn<UpdatePlanRequestSpec, string>(
+      "/plan",
+      data
+    );
   }
 
   static async removePlan(params: RemovePlanRequestSpec) {

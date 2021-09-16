@@ -56,7 +56,7 @@ export interface FetchSessionIntervalsRequestSpec {
 export interface FetchSessionIntervalsResponseSpec {
   sessionIntervals: {
     interval: number;
-    set: FetchSessionsResponseSpec;
+    set: FetchSessionsResponseSpec | string;
   }[];
 }
 
@@ -77,6 +77,7 @@ export interface UpdatePlanRequestSpec {
   title?: string;
   description?: string;
   private?: boolean;
+  sessionIntervals?: object[];
 }
 
 export interface RemovePlanRequestSpec {

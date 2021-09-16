@@ -26,17 +26,13 @@ const SetCard = ({
   onEdit,
   onDelete,
 }: any) => {
-  const [timed, setTimed] = useState(!set.duration);
+  const [timed, setTimed] = useState(!set?.duration);
   const [_delete, setDelete] = useState(false);
   const swiper = useRef<SwipeRow<View>>(null);
 
   useEffect(() => {
-    if (_delete) setTimeout(() => onDelete(set.id), 500);
+    if (_delete) setTimeout(() => onDelete(set?.id), 500);
   }, [_delete]);
-
-  useEffect(() => {
-    console.log({ set });
-  }, []);
 
   return (
     <SwipeRow
