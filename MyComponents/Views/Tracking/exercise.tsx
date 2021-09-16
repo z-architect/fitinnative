@@ -18,6 +18,8 @@ import { AnimatedCircularProgress } from "react-native-circular-progress";
 import setIntervalWithTimeout, {
   TimeoutHandler,
 } from "../../Utils/TimeoutHandler";
+import ProgressTimer from "./ProgressTimer";
+import TimerComponent from "./TimerComponent";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -36,19 +38,27 @@ const Exercise = ({ navigation, route }: Props) => {
   );
   const [upcomingSets, setUpcomingSets] = useState<SetStateStructure[]>([]);
   const [currentSetDuration, setCurrentSetDuration] = useState(
-    /*currentSet?.duration*/ 3
+    currentSet?.duration
   );
   const [sessionDuration] = useState(
-    !!(route.params as any).session.totalSessionTime
-      ? (route.params as any).session.totalSessionTime.min * 60 +
-          (route.params as any).session.totalSessionTime.sec
-      : 0
+    (route.params as any).session.totalSessionTime ?? { min: 0, sec: 0 }
   );
-  const [ticker, setTicker] = useState<TimeoutHandler>();
+  const [ticker, setTpausedicker] = useState<number>();
   const [setTimer, setSetTimer] = useState({ min: 0, sec: 0 });
   const [sessionTimer, setSessionTimer] = useState({ min: 0, sec: 0 });
-  const setTimerIndicator = useRef<AnimatedCircularProgress>(null);
-  const sessionTimerIndicator = useRef<AnimatedCircularProgress>(null);
+  const [paused, setPaused] = useState(false);
+
+  const sessionTimerIndicator = useRef<typeof ProgressTimer>(null);
+  const setTimerIndicator = useRef<typeof ProgressTimer>(null);
+  const timer = useRef<typeof TimerComponent>(null);
+
+  useEffect(() => {
+    console.log({ setsSSSS: sets });
+  }, [sets]);
+
+  useEffect(() => {
+    setCurrentSetDuration(currentSet?.duration);
+  }, [currentSet]);
 
   function getSeparateTimeUnits(duration: number) {
     return {
@@ -60,16 +70,14 @@ const Exercise = ({ navigation, route }: Props) => {
   useEffect(() => {
     setSetTimer(getSeparateTimeUnits(currentSetDuration));
 
-    console.log({ currentSetDurationInEffect: currentSetDuration });
-
-    if (currentSetDuration <= 0) {
-      console.log({ currentSetDurationInConditional: currentSetDuration });
-      ticker?.clear();
-    }
+    // if (currentSetDuration <= 0) {
+    //   console.log({ tickerInRemove: ticker });
+    //   clearInterval(ticker as number);
+    // }
   }, [currentSetDuration]);
 
   useEffect(() => {
-    setSessionTimer(getSeparateTimeUnits(sessionDuration));
+    setSessionTimer(sessionDuration);
   }, [sessionDuration]);
 
   function handlePrevious() {
@@ -82,7 +90,12 @@ const Exercise = ({ navigation, route }: Props) => {
       setCurrentSetIndex(currentSetIndex - 1);
   }
 
-  function handlePausePlay() {}
+  function handlePausePlay() {
+    timer?.current?.togglePlayer();
+    setTimerIndicator?.current?.togglePlayer();
+    sessionTimerIndicator?.current?.togglePlayer();
+    setPaused(!paused);
+  }
 
   function calculateUpcoming() {
     let renderCount = 0;
@@ -101,21 +114,29 @@ const Exercise = ({ navigation, route }: Props) => {
   }
 
   useEffect(() => {
-    console.log({ currentSetDuration });
+    calculateUpcoming();
+  }, [currentSet]);
 
-    if (!!ticker) ticker.clear();
-
-    const _ticker = setIntervalWithTimeout(() => {
-      console.log({ currentSetDuration });
-      setCurrentSetDuration(currentSetDuration - 1);
-    }, 3000);
-
-    setTicker(_ticker);
-
-    return () => {
-      ticker?.clear();
-    };
-  }, [currentSet, currentSetDuration]);
+  // useEffect(() => {
+  //   console.log({ ticker });
+  //
+  //   if (currentSetDuration > 0) {
+  //     if (!!ticker) clearInterval(ticker);
+  //
+  //     const _ticker = setInterval(() => {
+  //       console.log({ currentSetDuration });
+  //       setCurrentSetDuration(currentSetDuration - 1);
+  //     }, 3000);
+  //
+  //     setTicker(_ticker);
+  //
+  //     console.log({ _ticker });
+  //   }
+  //
+  //   return () => {
+  //     clearInterval(ticker as number);
+  //   };
+  // }, [currentSet, currentSetDuration]);
 
   return (
     <ImageBackground
@@ -145,7 +166,7 @@ const Exercise = ({ navigation, route }: Props) => {
             resizeMode="cover"
             style={{ borderRadius: 75 }}
             source={{
-              uri: !!currentSet.activity
+              uri: !!currentSet?.activity
                 ? `${instance.defaults.baseURL}/upload/${
                     typeof currentSet?.activity?.actionGif === "string"
                       ? currentSet?.activity?.actionGif
@@ -160,48 +181,62 @@ const Exercise = ({ navigation, route }: Props) => {
           <Text style={styles.sessionName}>{currentSet?.activity?.name}</Text>
         </View>
 
-        <View style={styles.outerCircle}>
-          <AnimatedCircularProgress
-            ref={sessionTimerIndicator}
-            tintColor={"orange"}
-            style={{ position: "absolute", transform: [{ rotate: "-90deg" }] }}
-            backgroundColor={"rgba(0,0,0,0.0)"}
-            size={260}
-            width={8}
-            fill={99.9}
-          />
-          <View style={styles.innerCircle}>
-            <AnimatedCircularProgress
+        <ProgressTimer
+          ref={sessionTimerIndicator}
+          duration={sessionDuration}
+          tintColor={"orange"}
+          containerStyle={styles.outerCircle}
+          innerStyle={{
+            position: "absolute",
+            transform: [{ rotate: "-90deg" }],
+          }}
+          onPlayerToggle={(value) => {
+            setPaused(value);
+          }}
+          backgroundColor={"rgba(0,0,0,0.0)"}
+          size={260}
+          width={8}
+          fill={99.9}
+          children={
+            <ProgressTimer
               ref={setTimerIndicator}
+              duration={getSeparateTimeUnits(currentSetDuration)}
               tintColor={"white"}
-              style={{
+              containerStyle={styles.innerCircle}
+              innerStyle={{
                 position: "absolute",
                 transform: [{ rotate: "-90deg" }],
+              }}
+              onFinish={(value) => {
+                setPaused(value);
               }}
               backgroundColor={"rgba(0,0,0,0.0)"}
               size={225}
               width={8}
               fill={99.9}
+              children={
+                <TimerComponent
+                  onFinish={() => {
+                    setSets(
+                      sets.filter((set, index) => {
+                        const isCurrentSet = set.id === currentSet.id;
+
+                        if (isCurrentSet) {
+                          if (index < sets.length)
+                            setCurrentSet(sets[index + 1]);
+                        }
+
+                        return !isCurrentSet;
+                      })
+                    );
+                  }}
+                  setTimer={setTimer}
+                  ref={timer}
+                />
+              }
             />
-            <View style={styles.innerMostCircle}>
-              <Text style={{ color: "white", fontSize: 50 }}>
-                {`${
-                  setTimer.min > 0 || setTimer.sec > 0
-                    ? `${
-                        setTimer.min > 0
-                          ? ` ${setTimer.min > 0 ? setTimer.min : 0}`
-                          : `00:`
-                      }${setTimer.sec > 0 ? `${setTimer.sec}` : `00`}`
-                    : ` 00:00`
-                }`}
-              </Text>
-              <Text style={{ color: "white", fontSize: 22 }}>__</Text>
-              <Text style={{ color: "white", fontSize: 20 }}>
-                {setTimer.min > 0 ? "Minutes" : "Seconds"}
-              </Text>
-            </View>
-          </View>
-        </View>
+          }
+        />
 
         <View style={styles.upcomingContainer}>
           <Text
@@ -210,7 +245,6 @@ const Exercise = ({ navigation, route }: Props) => {
               marginVertical: 5,
               marginBottom: 10,
               fontSize: 18,
-              fontWeight: "bold",
             }}
           >
             {!!upcomingSets?.length ? "UP COMING" : ""}
@@ -250,7 +284,11 @@ const Exercise = ({ navigation, route }: Props) => {
             style={styles.playPause}
             onPress={() => handlePausePlay()}
           >
-            <Fontawesome name="pause" size={32} color="white" />
+            <Fontawesome
+              name={!paused ? "pause" : "play"}
+              size={32}
+              color="white"
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleNext()}>
             <MaterialIcons
@@ -350,7 +388,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.5)",
     height: 60,
     width: 60,
-    borderRadius: 40,
+    borderRadius: 30,
     marginHorizontal: 40,
     justifyContent: "center",
     alignItems: "center",

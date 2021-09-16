@@ -209,16 +209,16 @@ const ActivitySet = ({ navigation, route }: Props) => {
     navigation.goBack();
   }
 
-  useEffect(() => {
-    console.log({
-      editMode: !!(route.params as any)?.createMode
-        ? true
-        : !!(route.params as any)?.editMode,
-      createMode: !!(route.params as any)?.createMode
-        ? true
-        : !(route.params as any)?.set?.id,
-    });
-  }, []);
+  // useEffect(() => {
+  //   console.log({
+  //     editMode: !!(route.params as any)?.createMode
+  //       ? true
+  //       : !!(route.params as any)?.editMode,
+  //     createMode: !!(route.params as any)?.createMode
+  //       ? true
+  //       : !(route.params as any)?.set?.id,
+  //   });
+  // }, []);
 
   return (
     <>

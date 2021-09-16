@@ -112,6 +112,10 @@ const Plan = ({ navigation, route }: Props) => {
   const [sessions, setSessions] = useState<any[]>([]);
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
+  useEffect(() => {
+    console.log({ idFirst: id });
+  }, []);
+
   const removeSession = (id: string) => {
     setSessions((sets) => {
       return sets.filter((item) => item.id !== id);
@@ -166,8 +170,6 @@ const Plan = ({ navigation, route }: Props) => {
   }
 
   async function handleUpdate() {
-    console.log({ id });
-
     const result = await _Plan.updatePlan({
       id,
       description,
@@ -178,6 +180,8 @@ const Plan = ({ navigation, route }: Props) => {
       private: _private,
       title,
     });
+
+    console.log({ idInUpdate: result?.data });
 
     if (!!result?.data) {
       setId(result.data);
@@ -248,10 +252,6 @@ const Plan = ({ navigation, route }: Props) => {
       void fetchSessionIntervals();
     }
   }, [focusIsHere]);
-
-  useEffect(() => {
-    console.log({ idInEffect: id });
-  }, [id]);
 
   return (
     <>
