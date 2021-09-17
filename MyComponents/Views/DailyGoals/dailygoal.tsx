@@ -16,11 +16,38 @@ import { Input } from "native-base";
 import NumericInput from "react-native-numeric-input";
 import { Props } from "../../types";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import { useAppSelector } from "../../Redux/hooks";
+import { Tracking } from "../../../api/interface/Tracking";
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const DailyGoals = ({ route, navigation }: Props) => {
-  const [Water, SetWater] = useState(route?.params?.waterIntake);
+  const [water, setWater] = useState(route?.params?.waterIntake);
+  const [value, setValue] = useState(0);
+
+  const dailyGlassesOfWater = useAppSelector(
+    (state) =>
+      state.profiles.profiles[state.profiles.activeProfile].user
+        .dailyGlassesOfWater
+  );
+  const dailyHoursOfSleep = useAppSelector(
+    (state) =>
+      state.profiles.profiles[state.profiles.activeProfile].user
+        .dailyHoursOfSleep
+  );
+
+  async function handleTrack() {
+    const data: any = {};
+
+    if (value) {
+      if (water) data.glassesOfWater = value;
+      else data.hoursOfSleep = value;
+      await Tracking.recordEngagement({ ...data });
+    }
+
+    navigation.pop();
+  }
+
   return (
     <>
       <View style={styles.titleContainer}>
@@ -31,7 +58,7 @@ const DailyGoals = ({ route, navigation }: Props) => {
           <TouchableOpacity
             style={{ flexDirection: "row", alignItems: "center" }}
           >
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleTrack()}>
               <AntDesign color="green" size={32} name="check" />
             </TouchableOpacity>
           </TouchableOpacity>
@@ -42,13 +69,16 @@ const DailyGoals = ({ route, navigation }: Props) => {
         <View style={styles.innerContainer}>
           <View style={{ marginBottom: 20 }}>
             <IonIcons
-              name={Water ? "water-outline" : "bed-outline"}
+              name={water ? "water-outline" : "bed-outline"}
               color="black"
               size={200}
             />
             <View>
-              <Text style={{ color: "lightblue" }}>
-                Your Goals : {Water ? "2 Glasses Per Day" : "8 hours of rest"}
+              <Text style={{ color: "teal", fontSize: 16 }}>
+                Your Goal is{" "}
+                {water
+                  ? `${dailyGlassesOfWater ?? 0} Glasses Per Day`
+                  : `${dailyHoursOfSleep} hours of rest`}
               </Text>
             </View>
           </View>
@@ -56,13 +86,14 @@ const DailyGoals = ({ route, navigation }: Props) => {
           <View style={styles.card}>
             <View style={styles.header}>
               <Text style={styles.headerText}>
-                {Water ? "Glasses of Water" : "Hours of Sleep"}
+                {water ? "Glasses of Water" : "Hours of Sleep"}
               </Text>
             </View>
             <View style={styles.inputContainer}>
               <NumericInput
                 type="plus-minus"
-                onChange={(value) => console.log(value)}
+                onChange={(value) => setValue(value)}
+                value={value}
                 totalWidth={210}
                 totalHeight={80}
                 textColor="black"

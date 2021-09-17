@@ -21,8 +21,11 @@ export class Measurement {
   static async fetchMeasurementHistory(
     params: FetchMeasurementHistoryRequestSpec
   ) {
-    return requestFetch<FetchMeasurementHistoryResponseSpec[]>("/history", {
-      params,
-    });
+    return requestFetch<FetchMeasurementHistoryResponseSpec[]>(
+      "/measurement/history",
+      {
+        params,
+      }
+    );
   }
 }
