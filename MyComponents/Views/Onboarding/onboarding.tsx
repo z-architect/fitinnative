@@ -14,7 +14,6 @@ import Planill from "../../../MyAssets/illustration/undraw_To_do_re_jaef.svg";
 import Trackill from "../../../MyAssets/illustration/undraw_fitness_stats_sht6.svg";
 import Monitorkill from "../../../MyAssets/illustration/undraw_Metrics_re_6g90.svg";
 
-
 const OnBoarding = ({ navigation }: Props) => {
   const dispatch = useAppDispatch();
   const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);

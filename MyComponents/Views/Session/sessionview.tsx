@@ -707,6 +707,7 @@ const SessionView = ({ navigation, route }: Props) => {
                   /*TODO*/
                   session: { id, name, description, totalSessionTime, type },
                   sets,
+                  caloriesBurned: totalCaloriesToBurn,
                 });
             }}
             style={[

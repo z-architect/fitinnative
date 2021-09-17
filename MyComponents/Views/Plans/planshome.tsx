@@ -132,7 +132,7 @@ const Plans = ({ navigation }: Props) => {
           style={{
             flex: 1,
             alignItems: "center",
-            paddingTop: 17,
+            paddingTop: 21,
           }}
         >
           <Logo width={80} />

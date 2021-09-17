@@ -7,7 +7,7 @@ export interface RecordEngagementRequestSpec {
   caloriesBurned?: number;
   hoursOfSleep?: number;
   glassesOfWater?: number;
-  unplanned: boolean;
+  unplanned?: boolean;
   plan?: string;
   session?: string;
 }

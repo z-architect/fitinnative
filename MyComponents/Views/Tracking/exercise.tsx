@@ -117,7 +117,10 @@ const Exercise = ({ navigation, route }: Props) => {
   }
 
   async function handleTrack() {
-    // await Tracking.recordEngagement({  })
+    await Tracking.recordEngagement({
+      session: (route.params as any)?.session.id as string,
+      caloriesBurned: (route.params as any)?.caloriesBurned as number,
+    });
   }
 
   useEffect(() => {
@@ -244,6 +247,7 @@ const Exercise = ({ navigation, route }: Props) => {
             onFinish={() => {
               setPaused(true);
               setExerciseCompleted(true);
+              void handleTrack();
             }}
             backgroundColor={"rgba(0,0,0,0.0)"}
             size={260}
