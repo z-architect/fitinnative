@@ -35,6 +35,12 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from "@react-navigation/drawer";
+
+import { useAppSelector } from "../../Redux/hooks";
+import strings from "./strings";
+import stringstwo from './planshomestrings'
+import { Language } from "../../Redux/profilesSlice";
+
 const Drawer = createDrawerNavigator();
 import { Props } from "../../types";
 import { transparentize } from "native-base/lib/typescript/theme/tools";
@@ -88,6 +94,7 @@ function CustomDrawerContent(props: any) {
 }
 
 const DrawerWraped = ({ navigation, route }: Props) => {
+
   return (
     <Drawer.Navigator
       initialRouteName="Fitin Hub"
@@ -106,6 +113,9 @@ const DrawerWraped = ({ navigation, route }: Props) => {
 const Tabs = createBottomTabNavigator();
 
 const Home = ({ navigation, route }: Props) => {
+
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
+
   const [modal, setModal] = useState(false);
   const [showQuickTrackModal, setShowQuickTrackModal] = useState(false);
 

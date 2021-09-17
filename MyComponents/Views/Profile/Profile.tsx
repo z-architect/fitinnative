@@ -37,9 +37,15 @@ import {
 } from "../../Redux/profilesSlice";
 import { useNetInfo } from "@react-native-community/netinfo";
 
+
+import strings from "./strings";
+import { Language } from "../../Redux/profilesSlice";
+
+
 const y = Dimensions.get("window").height;
 
 const Profile = ({ navigation }: Props) => {
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
   const profile = useAppSelector(
     (state) => state.profiles.profiles[state.profiles.activeProfile]
   );
@@ -53,8 +59,8 @@ const Profile = ({ navigation }: Props) => {
   const [profileImageAsset, setProfileImageAsset] = useState<any>(
     profile.user?.profilePicture
       ? {
-          uri: `${instance.defaults.baseURL}/upload/${profile.user?.profilePicture}`,
-        }
+        uri: `${instance.defaults.baseURL}/upload/${profile.user?.profilePicture}`,
+      }
       : null
   );
   const [profilePicture, setProfilePicture] = useState<string | null>(
@@ -182,7 +188,7 @@ const Profile = ({ navigation }: Props) => {
             </TouchableOpacity>
           </>
         ) : (
-          <Text style={{ ...styles.title }}>Profile Setup</Text>
+          <Text style={{ ...styles.title }}>{strings[language].profilesetup}</Text>
         )}
       </View>
       <View style={styles.profileContainer}>
@@ -217,7 +223,7 @@ const Profile = ({ navigation }: Props) => {
             }}
           >
             <Modal.Content maxWidth="400px">
-              <Modal.Header>Choose profile picture</Modal.Header>
+              <Modal.Header>{strings[language].chooseprofilepicture}</Modal.Header>
               <Modal.Body>
                 <TouchableOpacity
                   style={styles.signOutButton}
@@ -235,7 +241,7 @@ const Profile = ({ navigation }: Props) => {
                     );
                   }}
                 >
-                  <Text style={styles.signOutButtonText}>Take a picture</Text>
+                  <Text style={styles.signOutButtonText}>{strings[language].takeapicture}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.removeProfileButton}
@@ -254,7 +260,7 @@ const Profile = ({ navigation }: Props) => {
                   }}
                 >
                   <Text style={styles.signOutButtonText}>
-                    Choose from library
+                    {strings[language].choosefromlibrary}
                   </Text>
                 </TouchableOpacity>
               </Modal.Body>
@@ -296,8 +302,8 @@ const Profile = ({ navigation }: Props) => {
                     selectedActivityLevel === ActivityLevel.SEDENTARY
                       ? "saddlebrown"
                       : selectedActivityLevel === ActivityLevel.AVERAGE
-                      ? "darkblue"
-                      : "darkgreen",
+                        ? "darkblue"
+                        : "darkgreen",
                   fontSize: 16,
                   padding: 5,
                   fontStyle: "italic",
@@ -313,7 +319,7 @@ const Profile = ({ navigation }: Props) => {
             <View style={styles.inputLine}>
               <Input
                 width={"100%"}
-                placeholder="First name"
+                placeholder={strings[language].firstname}
                 value={firstName}
                 onChangeText={setFirstName}
               />
@@ -321,7 +327,7 @@ const Profile = ({ navigation }: Props) => {
             <View style={styles.inputLine}>
               <Input
                 width={"100%"}
-                placeholder="Last name"
+                placeholder={strings[language].lastname}
                 value={lastName}
                 onChangeText={setLastName}
               />
@@ -332,7 +338,7 @@ const Profile = ({ navigation }: Props) => {
       <View style={styles.dataContainer}>
         <View style={{ ...styles.inputLine, marginBottom: 10 }}>
           <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-            Personal information
+            {strings[language].personalinformation}
           </Text>
         </View>
         <View style={styles.dataContainerInside}>
@@ -345,7 +351,7 @@ const Profile = ({ navigation }: Props) => {
                 textAlign: "left",
               }}
             >
-              Date of birth
+              {strings[language].dateofbirth}
             </Text>
             {editMode || profile.firstTimeToProfile ? (
               <TouchableOpacity
@@ -373,7 +379,7 @@ const Profile = ({ navigation }: Props) => {
             >
               <Modal.Content maxWidth="400px">
                 <Modal.CloseButton />
-                <Modal.Header>Choose date</Modal.Header>
+                <Modal.Header>{strings[language].choosedate}</Modal.Header>
                 <Modal.Body>
                   <DatePicker
                     testID={"dateOfBirthPicker"}
@@ -393,7 +399,7 @@ const Profile = ({ navigation }: Props) => {
                 width: editMode ? "30%" : "50%",
               }}
             >
-              Sex
+              {strings[language].sex}
             </Text>
             {editMode || profile.firstTimeToProfile ? (
               <Select
@@ -404,7 +410,9 @@ const Profile = ({ navigation }: Props) => {
                 onValueChange={(value) => setSex(value as Sex)}
               >
                 {Object.values(Sex).map((value) => (
-                  <Select.Item key={value} label={value} value={value} />
+                  <Select.Item key={value} label={
+                    value === "MALE" ? strings[language].male : strings[language].female
+                  } value={value} />
                 ))}
               </Select>
             ) : (
@@ -420,7 +428,7 @@ const Profile = ({ navigation }: Props) => {
         <View style={styles.dataContainer}>
           <View style={{ ...styles.inputLine, marginBottom: 10 }}>
             <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-              Long term goal
+              {strings[language].longtermgoal}
             </Text>
           </View>
           <View style={styles.dataContainerInside}>
@@ -432,7 +440,7 @@ const Profile = ({ navigation }: Props) => {
                   width: editMode ? "30%" : "50%",
                 }}
               >
-                Goal
+                {strings[language].goal}
               </Text>
               {editMode ? (
                 <Select
@@ -443,7 +451,14 @@ const Profile = ({ navigation }: Props) => {
                   onValueChange={(value) => setCurrentGoal(value as Goal)}
                 >
                   {Object.values(Goal).map((value) => (
-                    <Select.Item key={value} label={value} value={value} />
+                    <Select.Item key={value}
+                      label={
+                        value === "ATHLETICISM_ENHANCEMENT" ? strings[language].athelticism :
+                          value === "WEIGHT_LOSS" ? strings[language].losingweight :
+                            value === "MASS_GAIN" ? strings[language].bulkingup :
+                              "FITNESS_MAINTENANCE"
+                      }
+                      value={value} />
                   ))}
                 </Select>
               ) : (
@@ -460,7 +475,7 @@ const Profile = ({ navigation }: Props) => {
 
       <View style={styles.dataContainer}>
         <View style={{ ...styles.inputLine, marginBottom: 10 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 18 }}>Daily goals</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 18 }}>{strings[language].dailygoals}</Text>
         </View>
         <View style={styles.dataContainerInside}>
           {/**
@@ -480,7 +495,7 @@ const Profile = ({ navigation }: Props) => {
                 width: editMode ? "30%" : "50%",
               }}
             >
-              Hours of sleep
+              {strings[language].hoursofsleep}
             </Text>
             <View style={{ width: editMode ? "70%" : "50%" }}>
               {editMode || profile.firstTimeToProfile ? (
@@ -488,6 +503,7 @@ const Profile = ({ navigation }: Props) => {
                   containerStyle={{ width: "100%" }}
                   value={dailyHoursOfSleepGoal}
                   onChange={setDailyHoursOfSleepGoal}
+                  minValue={0}
                 />
               ) : (
                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>
@@ -504,7 +520,7 @@ const Profile = ({ navigation }: Props) => {
                 width: editMode ? "30%" : "50%",
               }}
             >
-              Glasses of water
+              {strings[language].glassesofwater}
             </Text>
             <View style={{ width: editMode ? "70%" : "50%" }}>
               {editMode || profile.firstTimeToProfile ? (
@@ -512,6 +528,7 @@ const Profile = ({ navigation }: Props) => {
                   containerStyle={{ width: "100%" }}
                   value={dailyWaterIntakeGoal}
                   onChange={setDailyWaterIntakeGoal}
+                  minValue={0}
                 />
               ) : (
                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>
@@ -527,7 +544,7 @@ const Profile = ({ navigation }: Props) => {
         <View style={styles.activityContainer}>
           <View style={{ ...styles.inputLine, marginBottom: 10 }}>
             <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-              Activity level
+              {strings[language].activitylevel}
             </Text>
           </View>
           <View style={styles.circlesContainer}>
@@ -555,7 +572,7 @@ const Profile = ({ navigation }: Props) => {
                 />
               </View>
               <Text style={{ paddingBottom: 20, textAlign: "center" }}>
-                Sedentery
+                {strings[language].sedentery}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -582,7 +599,7 @@ const Profile = ({ navigation }: Props) => {
                 />
               </View>
               <Text style={{ paddingBottom: 20, textAlign: "center" }}>
-                Average
+                {strings[language].average}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -609,7 +626,7 @@ const Profile = ({ navigation }: Props) => {
                 />
               </View>
               <Text style={{ paddingBottom: 20, textAlign: "center" }}>
-                Active
+                {strings[language].active}
               </Text>
             </TouchableOpacity>
           </View>
@@ -622,13 +639,13 @@ const Profile = ({ navigation }: Props) => {
             style={styles.signOutButton}
             onPress={handleSignOut}
           >
-            <Text style={styles.signOutButtonText}>Sign out</Text>
+            <Text style={styles.signOutButtonText}> {strings[language].signout}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.removeProfileButton}
             onPress={() => setShowDeleteModal(true)}
           >
-            <Text style={styles.removeProfileButtonText}>Remove profile</Text>
+            <Text style={styles.removeProfileButtonText}> {strings[language].removeprofile}</Text>
           </TouchableOpacity>
           <DeleteModal
             showModal={showDeleteModal}
@@ -646,7 +663,7 @@ const Profile = ({ navigation }: Props) => {
             void handleFirstTimeProfileSetting();
           }}
         >
-          <Text style={{ color: "white", fontSize: 24 }}>Next</Text>
+          <Text style={{ color: "white", fontSize: 24 }}> {strings[language].next}</Text>
         </TouchableOpacity>
       ) : null}
     </ScrollView>

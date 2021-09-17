@@ -22,6 +22,9 @@ import { FirebaseAccessMethod, Subscription } from "../../../api/spec";
 import { Access } from "../../../api/interface";
 import { RootState } from "../../Redux/store";
 
+import strings from "./strings";
+import { Language } from "../../Redux/profilesSlice";
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
@@ -34,6 +37,7 @@ const loginValidationSchema = yup.object().shape({
 const Login = ({ navigation, route }: Props) => {
   const profiles = useAppSelector((state: RootState) => state.profiles);
   const dispatch = useAppDispatch();
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
   const initialValues = {
     email: "",
     password: "",
@@ -145,12 +149,12 @@ const Login = ({ navigation, route }: Props) => {
             return (
               <View style={styles.card}>
                 <View style={styles.cardHeader}>
-                  <Text style={styles.cardHeaderText}>Log In</Text>
+                  <Text style={styles.cardHeaderText}>{strings[language].login}</Text>
                 </View>
                 <View style={styles.form}>
                   {true ? (
                     <>
-                      <Text style={styles.label}>Email</Text>
+                      <Text style={styles.label}>{strings[language].email}</Text>
                       <Input
                         p={2}
                         placeholder=""
@@ -188,7 +192,7 @@ const Login = ({ navigation, route }: Props) => {
                     </>
                   )}
 
-                  <Text style={styles.label}>Password</Text>
+                  <Text style={styles.label}>{strings[language].password}</Text>
                   <Input
                     p={2}
                     type="password"
@@ -207,7 +211,7 @@ const Login = ({ navigation, route }: Props) => {
                     onPress={handleSubmit}
                     style={styles.button}
                   >
-                    Login In
+                    {strings[language].login}
                   </Button>
                 </View>
               </View>
@@ -215,13 +219,13 @@ const Login = ({ navigation, route }: Props) => {
           }}
         </Formik>
         <View style={styles.bottomTextContainer}>
-          <Text style={styles.bottomText}> Don't Have an account?</Text>
+          <Text style={styles.bottomText}>{strings[language].donthaveanaccount}</Text>
           <TouchableOpacity style={{}}>
             <Text
               style={{ fontSize: 18, color: "white" }}
               onPress={() => navigation.navigate("Signup")}
             >
-              SIgn Up <Emoji name="smiley" style={{ fontSize: 22 }} />
+              {strings[language].signup} <Emoji name="smiley" style={{ fontSize: 22 }} />
             </Text>
           </TouchableOpacity>
         </View>

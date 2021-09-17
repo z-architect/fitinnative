@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Props } from "../../types";
-import { FetchPlansResponseSpec, PlanType } from "../../../api/spec";
+import { FetchPlansRequestSpec, FetchPlansResponseSpec, PlanType } from "../../../api/spec";
 import { Button } from "native-base";
 import { useIsFocused } from "@react-navigation/native";
 import { Plan } from "../../../api/interface";
@@ -25,8 +25,12 @@ const PlanSearch = ({ navigation, route }: Props) => {
   const [searchValue, setSearchValue] = useState("");
   const [plans, setPlans] = useState<FetchPlansResponseSpec[]>([]);
 
-  async function fetchPlans() {
-    const result = await Plan.fetchPlans({ private: false, mine: false });
+  async function fetchPlans(searchString?: string) {
+    const params: FetchPlansRequestSpec = { private: false, mine: false };
+
+    if (!!searchString) params.searchString = searchString
+
+    const result = await Plan.fetchPlans({ ...params });
 
     if (result) {
       setPlans(result.data);
@@ -36,6 +40,10 @@ const PlanSearch = ({ navigation, route }: Props) => {
   useEffect(() => {
     if (focusIsHere) void fetchPlans();
   }, [focusIsHere]);
+
+  useEffect(() => {
+    void fetchPlans(searchValue);
+  }, [searchValue])
 
   return (
     <View style={styles.container}>

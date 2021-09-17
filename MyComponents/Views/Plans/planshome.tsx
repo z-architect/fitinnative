@@ -26,10 +26,17 @@ import { instance } from "../../../api/config";
 import { useIsFocused } from "@react-navigation/native";
 import PlanCard from "./PlanCard";
 
+
+import strings from "./strings/planshomestrings";
+import { Language } from "../../Redux/profilesSlice";
+
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Plans = ({ navigation }: Props) => {
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
+
   const focusIsHere = useIsFocused();
   const chosenPlanType = useAppSelector(
     (state) => state.globals.chosenPlanType
@@ -134,7 +141,7 @@ const Plans = ({ navigation }: Props) => {
         <View
           style={{ alignItems: "flex-end", justifyContent: "center", flex: 1 }}
         >
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => { navigation.navigate("Notifications") }}>
             <MaterialIcons name="notifications" size={28} color="black" />
             {!notifications.length ? null : (
               <Badge
@@ -173,7 +180,7 @@ const Plans = ({ navigation }: Props) => {
           }}
         >
           <Text style={[styles.buttonText, { color: meal ? "grey" : "black" }]}>
-            Activities
+            {strings[language].activities}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -191,7 +198,7 @@ const Plans = ({ navigation }: Props) => {
           }}
         >
           <Text style={[styles.buttonText, { color: meal ? "black" : "grey" }]}>
-            Nutrition
+            {strings[language].nutrition}
           </Text>
         </TouchableOpacity>
       </View>
@@ -212,7 +219,7 @@ const Plans = ({ navigation }: Props) => {
                 color: "black",
               }}
             >
-              Featured Plans
+              {strings[language].featuredPlans}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -225,14 +232,14 @@ const Plans = ({ navigation }: Props) => {
                   alignItems: "center",
                 }}
               >
-                <Text style={{ color: "teal" }}>See All Plans</Text>
+                <Text style={{ color: "teal" }}>{strings[language].seeallplans}</Text>
                 <MaterialIcons name="chevron-right" color="teal" size={24} />
               </View>
             </TouchableOpacity>
           </View>
 
           {(meal && !!featuredPlans.meal.length) ||
-          (!meal && !!featuredPlans.activity.length) ? (
+            (!meal && !!featuredPlans.activity.length) ? (
             <ScrollView
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
@@ -257,12 +264,11 @@ const Plans = ({ navigation }: Props) => {
                         source={
                           plan?.image
                             ? {
-                                uri: `${instance.defaults.baseURL}/upload/${
-                                  typeof plan?.image === "string"
-                                    ? plan?.image
-                                    : plan?.image?.id
+                              uri: `${instance.defaults.baseURL}/upload/${typeof plan?.image === "string"
+                                ? plan?.image
+                                : plan?.image?.id
                                 }`,
-                              }
+                            }
                             : require("../../../MyAssets/weighloss.jpg")
                         }
                         style={styles.cardsFeaturedImage}
@@ -297,7 +303,7 @@ const Plans = ({ navigation }: Props) => {
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: 16 }}>The are no featured plans.</Text>
+              <Text style={{ fontSize: 16 }}>{strings[language].therearenofeaturedplans}</Text>
             </View>
           )}
         </View>
@@ -310,12 +316,12 @@ const Plans = ({ navigation }: Props) => {
               color: "black",
             }}
           >
-            Current Plan
+            {strings[language].currentplan}
           </Text>
         </View>
 
         {(meal && !!currentPlans?.meal) ||
-        (!meal && !!currentPlans?.activity) ? (
+          (!meal && !!currentPlans?.activity) ? (
           <PlanCard
             plan={meal ? currentPlans?.meal : currentPlans?.activity}
             onPress={(plan) => {
@@ -332,7 +338,7 @@ const Plans = ({ navigation }: Props) => {
             }}
           >
             <Text style={{ fontSize: 16 }}>
-              You are not following any plans.
+              {strings[language].youarenotfollowinganyplans}
             </Text>
             <Button.Group variant="unstyled">
               <Button
@@ -340,7 +346,7 @@ const Plans = ({ navigation }: Props) => {
                   navigation.navigate("Search");
                 }}
               >
-                <Text style={{ color: "teal", fontSize: 18 }}>Find Plans</Text>
+                <Text style={{ color: "teal", fontSize: 18 }}>{strings[language].findplans}</Text>
               </Button>
             </Button.Group>
           </View>
@@ -371,7 +377,7 @@ const Plans = ({ navigation }: Props) => {
                   color: "black",
                 }}
               >
-                My Plans
+                {strings[language].myplans}
               </Text>
               <MaterialIcons name={"chevron-right"} size={38} />
             </View>
@@ -399,7 +405,7 @@ const Plans = ({ navigation }: Props) => {
                   color: "black",
                 }}
               >
-                Saved Plans
+                {strings[language].savedplans}
               </Text>
               <MaterialIcons name={"chevron-right"} size={38} />
             </View>

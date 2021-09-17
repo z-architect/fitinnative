@@ -23,6 +23,7 @@ export type RootStackParamList = {
   MealSession: { id: string } | undefined;
   MealSessionView: undefined;
   MealSessionEdit: undefined;
+  Notifications: undefined;
   Set: undefined;
   SetEdit: undefined;
   SetView: undefined;

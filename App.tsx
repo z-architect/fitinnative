@@ -24,6 +24,8 @@ import PlanCreation from "./MyComponents/Views/Plans/plancreation";
 import PlanEdit from "./MyComponents/Views/Plans/planedit";
 import PlanView from "./MyComponents/Views/Plans/planview";
 
+import Notifications from "./MyComponents/Views/Notification/Notification";
+
 import MyPlans from "./MyComponents/Views/Plans/MyPlans";
 import PlanSearch from "./MyComponents/Views/Plans/PlanSearch";
 
@@ -109,14 +111,14 @@ const App = () => {
           !globals.hasBeenOnboarded
             ? "Landing"
             : !profiles.profiles[profiles.activeProfile].signedIn
-            ? "Auth"
-            : profiles.profiles[profiles.activeProfile].firstTimeToProfile
-            ? "Profile"
-            : profiles.profiles[profiles.activeProfile].firstTimeToGoalSetting
-            ? "Goal"
-            : profiles.profiles[profiles.activeProfile].firstTimeToMeasurements
-            ? "Vitals"
-            : "Home"
+              ? "Auth"
+              : profiles.profiles[profiles.activeProfile].firstTimeToProfile
+                ? "Profile"
+                : profiles.profiles[profiles.activeProfile].firstTimeToGoalSetting
+                  ? "Goal"
+                  : profiles.profiles[profiles.activeProfile].firstTimeToMeasurements
+                    ? "Vitals"
+                    : "Home"
         }
         screenOptions={{
           headerShown: false,
@@ -151,6 +153,7 @@ const App = () => {
             <Stack.Screen name="PlanView" component={PlanCreation} />
             <Stack.Screen name="MyPlans" component={MyPlans} />
             <Stack.Screen name="SavedPlans" component={SavedPlans} />
+            <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen name="Session" component={SessionView} />
             <Stack.Screen name="SessionView" component={SessionCreation} />
             <Stack.Screen name="SessionEdit" component={SessionEdit} />

@@ -28,6 +28,11 @@ import DatePicker from "react-native-date-picker";
 import PhoneInput from "react-native-phone-number-input";
 import { RootState } from "../../Redux/store";
 
+
+import strings from "./strings";
+import { Language } from "../../Redux/profilesSlice";
+
+
 const y = Dimensions.get("window").height;
 
 const signupValidationSchema = yup.object().shape({
@@ -60,6 +65,7 @@ const signupValidationSchema = yup.object().shape({
 });
 
 const Signup = ({ navigation }: Props) => {
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
   const profiles = useAppSelector((state: RootState) => state.profiles);
   const dispatch = useAppDispatch();
   const initialValues = {
@@ -199,7 +205,7 @@ const Signup = ({ navigation }: Props) => {
           return (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
-                <Text style={styles.cardHeaderText}>Sign Up</Text>
+                <Text style={styles.cardHeaderText}>{strings[language].signup}</Text>
               </View>
               <View style={styles.form}>
                 {/* <Text style={{ borderBottomWidth: 1, fontSize: 18, marginVertical: 20 }}>  </Text> */}
@@ -228,16 +234,16 @@ const Signup = ({ navigation }: Props) => {
                     }}
                   >
                     {pagePosition === 0
-                      ? "Who are you?"
+                      ? strings[language].whoareyou
                       : pagePosition === 1
-                      ? "Getting to know you"
-                      : "Security"}
+                        ? strings[language].gettingtoknowyou
+                        : strings[language].security}
                   </Text>
                 </View>
 
                 {pagePosition === 0 ? (
                   <>
-                    <Text style={styles.label}>First Name</Text>
+                    <Text style={styles.label}>{strings[language].firstname}</Text>
                     <Input
                       p={2}
                       placeholder=""
@@ -250,7 +256,7 @@ const Signup = ({ navigation }: Props) => {
                     {errors.firstName && touched.firstName && (
                       <Text style={styles.errorLabel}>{errors.firstName}</Text>
                     )}
-                    <Text style={styles.label}>Last Name</Text>
+                    <Text style={styles.label}>{strings[language].lastname}</Text>
                     <Input
                       p={2}
                       placeholder=""
@@ -266,7 +272,7 @@ const Signup = ({ navigation }: Props) => {
                   </>
                 ) : pagePosition === 1 ? (
                   <>
-                    <Text style={styles.label}>PhoneNumber</Text>
+                    <Text style={styles.label}>{strings[language].phonenumber}</Text>
                     <PhoneInput
                       containerStyle={styles.phoneNumber}
                       textContainerStyle={styles.phoneNumberInputContainer}
@@ -280,7 +286,7 @@ const Signup = ({ navigation }: Props) => {
                         {errors.phoneNumber}
                       </Text>
                     )}
-                    <Text style={styles.label}>Sex</Text>
+                    <Text style={styles.label}>{strings[language].sex}</Text>
                     <Select
                       selectedValue={values.sex}
                       minWidth={200}
@@ -289,13 +295,17 @@ const Signup = ({ navigation }: Props) => {
                       onValueChange={handleChange("sex")}
                     >
                       {Object.values(Sex).map((value) => (
-                        <Select.Item key={value} label={value} value={value} />
+                        <Select.Item key={value}
+                          label={
+                            value === "MALE" ? strings[language].male : strings[language].female
+                          }
+                          value={value} />
                       ))}
                     </Select>
                     {errors.sex && touched.sex && (
                       <Text style={styles.errorLabel}>{errors.sex}</Text>
                     )}
-                    <Text style={styles.label}>Date of Birth</Text>
+                    <Text style={styles.label}>{strings[language].dateofbirth}</Text>
                     <TouchableOpacity onPress={() => setShowDatePicker(true)}>
                       <Input
                         p={2}
@@ -320,7 +330,7 @@ const Signup = ({ navigation }: Props) => {
                     >
                       <Modal.Content maxWidth="400px">
                         <Modal.CloseButton />
-                        <Modal.Header>Choose date</Modal.Header>
+                        <Modal.Header> {strings[language].choosedate}</Modal.Header>
                         <Modal.Body>
                           <DatePicker
                             testID={"dateOfBirthPicker"}
@@ -339,7 +349,7 @@ const Signup = ({ navigation }: Props) => {
                         {errors.dateOfBirth}
                       </Text>
                     )}
-                    <Text style={styles.label}>Role</Text>
+                    <Text style={styles.label}>{strings[language].role}</Text>
                     <Select
                       selectedValue={values.role}
                       minWidth={200}
@@ -348,7 +358,14 @@ const Signup = ({ navigation }: Props) => {
                       onValueChange={handleChange("role")}
                     >
                       {Object.values(Role).map((value) => (
-                        <Select.Item key={value} label={value} value={value} />
+                        <Select.Item key={value}
+                          label={value === "TRAINER" ? strings[language].trainer :
+                            value === "TRAINEE" ? strings[language].trainee :
+                              value === "ADMIN" ? strings[language].admin :
+                                strings[language].nutritionist
+                          }
+
+                          value={value} />
                       ))}
                     </Select>
                     {errors.role && touched.role && (
@@ -357,7 +374,7 @@ const Signup = ({ navigation }: Props) => {
                   </>
                 ) : (
                   <>
-                    <Text style={styles.label}>Email</Text>
+                    <Text style={styles.label}>{strings[language].email}</Text>
                     <Input
                       p={2}
                       placeholder=""
@@ -370,7 +387,7 @@ const Signup = ({ navigation }: Props) => {
                     {errors.email && touched.email && (
                       <Text style={styles.errorLabel}>{errors.email}</Text>
                     )}
-                    <Text style={styles.label}>Password</Text>
+                    <Text style={styles.label}>{strings[language].password}</Text>
                     <Input
                       p={2}
                       type="password"
@@ -384,7 +401,7 @@ const Signup = ({ navigation }: Props) => {
                     {errors.password && touched.password && (
                       <Text style={styles.errorLabel}>{errors.password}</Text>
                     )}
-                    <Text style={styles.label}>Confirm Password</Text>
+                    <Text style={styles.label}>{strings[language].confirmpassword}</Text>
                     <Input
                       p={2}
                       type="password"
@@ -411,7 +428,7 @@ const Signup = ({ navigation }: Props) => {
                     onPress={handleSubmit}
                     style={styles.button}
                   >
-                    Sign Up
+                    {strings[language].signup}
                   </Button>
                 ) : (
                   <Button
@@ -419,7 +436,7 @@ const Signup = ({ navigation }: Props) => {
                     onPress={handleNext}
                     style={styles.nextButton}
                   >
-                    Next
+                    {strings[language].next}
                   </Button>
                 )}
               </View>
@@ -428,7 +445,7 @@ const Signup = ({ navigation }: Props) => {
         }}
       </Formik>
       <View style={styles.bottomTextContainer}>
-        <Text style={styles.bottomText}> Already Have an account?</Text>
+        <Text style={styles.bottomText}> {strings[language].alreadyhaveanaccount}</Text>
         <TouchableOpacity style={{}}>
           <Text
             style={{ fontSize: 18, color: "white" }}
@@ -437,7 +454,7 @@ const Signup = ({ navigation }: Props) => {
               navigation.navigate("Login");
             }}
           >
-            Login <Emoji name="smiley" style={{ fontSize: 22 }} />
+            {strings[language].login} <Emoji name="smiley" style={{ fontSize: 22 }} />
           </Text>
         </TouchableOpacity>
       </View>

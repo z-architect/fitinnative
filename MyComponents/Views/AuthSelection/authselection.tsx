@@ -13,11 +13,17 @@ import { onAuthStateChanged } from "../../../api/utils";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import Auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
+import { useAppSelector } from "../../Redux/hooks";
+import strings from "./strings";
+import { Language } from "../../Redux/profilesSlice";
+
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Signin = ({ navigation, route }: Props) => {
   const [authType, setauthType] = useState(true);
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
 
@@ -61,10 +67,10 @@ const Signin = ({ navigation, route }: Props) => {
         </View>
         <View style={styles.lowerTextContainer}>
           <View style={styles.innerLowerTextContainer}>
-            <Text style={styles.bigText}>Create a New Account</Text>
+            <Text style={styles.bigText}>{strings[language].createanaccount}</Text>
             <Text style={{ color: "white", fontSize: 32 }}>___</Text>
             <Text style={styles.smallText}>
-              For the best experience with fitin
+              {strings[language].forthebestexperiencewithfitin}
             </Text>
           </View>
         </View>
@@ -83,7 +89,7 @@ const Signin = ({ navigation, route }: Props) => {
             setauthType(true);
           }}
         >
-          <Text style={styles.buttonText}>SignUp</Text>
+          <Text style={styles.buttonText}>{strings[language].signup}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -97,7 +103,7 @@ const Signin = ({ navigation, route }: Props) => {
             setauthType(false);
           }}
         >
-          <Text style={styles.buttonText}>SignIn</Text>
+          <Text style={styles.buttonText}>{strings[language].signin}</Text>
         </TouchableOpacity>
       </View>
 
@@ -110,7 +116,7 @@ const Signin = ({ navigation, route }: Props) => {
         >
           <Fontisto name="email" color="black" size={28} />
           <Text style={{ color: "black", marginHorizontal: 10 }}>
-            {authType ? "SIGN UP WITH EMAIL" : "LOGIN WITH EMAIL"}
+            {authType ? strings[language].signupwithemail : strings[language].loginwithemail}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -123,7 +129,7 @@ const Signin = ({ navigation, route }: Props) => {
         >
           <AntDesign name="googleplus" color="white" size={28} />
           <Text style={{ color: "white", marginHorizontal: 10 }}>
-            {authType ? "SIGN UP WITH GOOGLE" : "LOGIN WITH GOOGLE"}
+            {authType ? strings[language].signupwithgoogle : strings[language].loginwithgoogle}
           </Text>
         </TouchableOpacity>
       </View>

@@ -16,14 +16,24 @@ import { updateMeasurements } from "../../Redux/measurementsSlice";
 import { v4 as uuidv4 } from "uuid";
 import { Measurement } from "../../../api/interface";
 
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
+
+
+import strings from "./strings";
+import { Language } from "../../Redux/profilesSlice";
+
 
 const Vitals = ({ navigation }: Props) => {
   const profiles = useAppSelector((state) => state.profiles);
   const measurements = useAppSelector((state) => state.measurements);
   const dispatch = useAppDispatch();
-
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
   const [firstTimeToMeasurements] = useState(
     profiles.profiles[profiles.activeProfile].firstTimeToMeasurements
   );
@@ -44,8 +54,7 @@ const Vitals = ({ navigation }: Props) => {
     `${measurements.measurements[measurements.currentMeasurement].heartRate}`
   );
   const [bloodPressure, setBloodPressure] = useState(
-    `${
-      measurements.measurements[measurements.currentMeasurement].bloodPressure
+    `${measurements.measurements[measurements.currentMeasurement].bloodPressure
     }`
   );
   const [waistSize, setWaistSize] = useState(
@@ -130,7 +139,7 @@ const Vitals = ({ navigation }: Props) => {
 
       if (isNaN(_height) || _height == 0) setBMI("0");
       else setBMI((_weight / (_height * _height)).toFixed(2));
-    } catch (e) {}
+    } catch (e) { }
   }
 
   return (
@@ -138,7 +147,9 @@ const Vitals = ({ navigation }: Props) => {
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={{ ...styles.title }}>
-            {firstTimeToMeasurements ? "Body Metrics" : "Measurements"}
+            {firstTimeToMeasurements ? "Body Metrics" :
+              strings[language].measurments
+            }
           </Text>
           {!firstTimeToMeasurements ? (
             <>
@@ -173,7 +184,7 @@ const Vitals = ({ navigation }: Props) => {
                   }}
                 >
                   <Text style={{ color: "cornflowerblue", fontSize: 20 }}>
-                    Skip
+                    {strings[language].skip}
                   </Text>
                 </TouchableOpacity>
               </>
@@ -193,48 +204,48 @@ const Vitals = ({ navigation }: Props) => {
                 paddingHorizontal: 20,
               }}
             >
-              Basic
+              {strings[language].basic}
             </Text>
           ) : null}
 
           <VitalsCard
-            measurement="Height"
+            measurement={strings[language].height}
             editMode={editMode}
             value={height}
             staticValue={height}
             unit="m"
-            descriptor="Height"
+            descriptor={strings[language].height}
             onRecord={(value) => {
               setHeight(value);
             }}
           >
-            <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+            <MaterialCommunity name="human-male-height" size={52} color="rgb(50,71,85)" />
           </VitalsCard>
           <VitalsCard
-            measurement="Weight"
+            measurement={strings[language].weight}
             editMode={editMode}
             value={mass}
             staticValue={mass}
             unit="Kg"
-            descriptor="Weight"
+            descriptor={strings[language].weight}
             onRecord={(value) => {
               setMass(value);
             }}
           >
-            <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+            <FontAwesome5 name="weight" size={52} color="rgb(50,71,85)" />
           </VitalsCard>
 
           {!editMode ? (
             <VitalsCard
-              measurement="BMI"
+              measurement={strings[language].BMI}
               editMode={editMode}
               value={bmi}
               staticValue={bmi}
               unit="Kg/m²"
-              descriptor=""
+              descriptor={strings[language].BMI}
               onRecord={setMass}
             >
-              <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+              <FontAwesome5 name="tape" size={52} color="rgb(50,71,85)" />
             </VitalsCard>
           ) : null}
 
@@ -249,63 +260,63 @@ const Vitals = ({ navigation }: Props) => {
                   paddingHorizontal: 20,
                 }}
               >
-                Internal
+                {strings[language].internal}
               </Text>
 
               <VitalsCard
-                measurement="Heart Rate"
+                measurement={strings[language].heartrate}
                 editMode={editMode}
                 value={heartRate}
                 staticValue={heartRate}
                 unit="bpm"
-                descriptor="Resting heart rate"
+                descriptor={strings[language].heartrate}
                 onRecord={setHeartRate}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <Fontisto name="heart" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
               <VitalsCard
-                measurement="Blood Pressure"
+                measurement={strings[language].bloodpressure}
                 editMode={editMode}
                 value={bloodPressure}
                 staticValue={bloodPressure}
                 unit="Pa"
-                descriptor="Blood pressure"
+                descriptor={strings[language].bloodpressure}
                 onRecord={setBloodPressure}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity name="blood-bag" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
               <VitalsCard
-                measurement="Blood Glucose"
+                measurement={strings[language].bloodglucose}
                 editMode={editMode}
                 value={bloodGlucose}
                 staticValue={bloodGlucose}
                 unit="m"
-                descriptor="Blood Glucose"
+                descriptor={strings[language].bloodglucose}
                 onRecord={setBloodGlucose}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <Fontisto name="blood-test" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
               <VitalsCard
-                measurement="Body Fat"
+                measurement={strings[language].bodyfat}
                 editMode={editMode}
                 value={bodyFat}
                 staticValue={bodyFat}
                 unit="m"
-                descriptor="Body Fat"
+                descriptor={strings[language].bodyfat}
                 onRecord={setBodyFat}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity name="food-steak" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
               <VitalsCard
-                measurement="Lean Mass"
+                measurement={strings[language].leanmass}
                 editMode={editMode}
                 value={leanMass}
                 staticValue={leanMass}
                 unit="m"
-                descriptor="Lean Mass"
+                descriptor={strings[language].leanmass}
                 onRecord={setLeanMass}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity name="food-drumstick-outline" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
 
               <Text
@@ -317,52 +328,52 @@ const Vitals = ({ navigation }: Props) => {
                   paddingHorizontal: 20,
                 }}
               >
-                Body figure
+                {strings[language].bodyfigure}
               </Text>
 
               <VitalsCard
-                measurement="Waist Size"
+                measurement={strings[language].waistsize}
                 editMode={editMode}
                 value={waistSize}
                 staticValue={waistSize}
                 unit="m"
-                descriptor="Waist Size"
+                descriptor={strings[language].waistsize}
                 onRecord={setWaistSize}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <Fontisto name="arrow-resize" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
               <VitalsCard
-                measurement="Hip Size"
+                measurement={strings[language].hipsize}
                 editMode={editMode}
                 value={hipSize}
                 staticValue={hipSize}
                 unit="m"
-                descriptor="Hip Size"
+                descriptor={strings[language].hipsize}
                 onRecord={setHipSize}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity name="move-resize-variant" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
               <VitalsCard
-                measurement="Arm Size"
+                measurement={strings[language].armsize}
                 editMode={editMode}
                 value={armSize}
                 staticValue={armSize}
                 unit="m"
-                descriptor="Arm Size"
+                descriptor={strings[language].armsize}
                 onRecord={setArmSize}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity name="arm-flex" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
               <VitalsCard
-                measurement="Shoulder Size"
+                measurement={strings[language].shouldersize}
                 editMode={editMode}
                 value={shoulderSize}
                 staticValue={shoulderSize}
                 unit="m"
-                descriptor="Shoulder Size"
+                descriptor={strings[language].shouldersize}
                 onRecord={setShoulderSize}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <Ionicons name="body" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
 
               <Text
@@ -374,30 +385,30 @@ const Vitals = ({ navigation }: Props) => {
                   paddingHorizontal: 20,
                 }}
               >
-                Advanced
+                {strings[language].advanced}
               </Text>
 
               <VitalsCard
-                measurement="BMR"
+                measurement={strings[language].bmr}
                 editMode={editMode}
                 value={bmr}
                 staticValue={bmr}
                 unit="m"
-                descriptor="BMR"
+                descriptor={strings[language].bmr}
                 onRecord={setBMR}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity name="ballot-recount" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
               <VitalsCard
-                measurement="TDEE"
+                measurement={strings[language].tdee}
                 editMode={editMode}
                 value={tdee}
                 staticValue={tdee}
                 unit="m"
-                descriptor="TDEE"
+                descriptor={strings[language].tdee}
                 onRecord={setTDEE}
               >
-                <AntDesign name="heart" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity name="state-machine" size={52} color="rgb(50,71,85)" />
               </VitalsCard>
               {/**
                * Do not touch the following empty view or you will be fired
@@ -411,7 +422,7 @@ const Vitals = ({ navigation }: Props) => {
             style={styles.nextButton}
             onPress={handleFirstTimeVitalsSetting}
           >
-            <Text style={{ color: "white", fontSize: 24 }}>Next</Text>
+            <Text style={{ color: "white", fontSize: 24 }}>{strings[language].next}</Text>
           </TouchableOpacity>
         ) : null}
       </View>

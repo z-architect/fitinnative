@@ -12,7 +12,20 @@ import { Props } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Access } from "../../../api/interface";
 
+
+import { useAppSelector } from "../../Redux/hooks";
+import strings from "./strings";
+import { Language } from "../../Redux/profilesSlice";
+//const language = Language.AMHARIC;
+//useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
+
+
+
+
 const LandingPage = ({ navigation }: Props) => {
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
+  //useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
+
   const getData = async () => {
     /*try {
       const { hasOnboarded } = JSON.parse(
@@ -61,9 +74,9 @@ const LandingPage = ({ navigation }: Props) => {
         </View>
         <View style={styles.lowerTextContainer}>
           <View style={styles.innerLowerTextContainer}>
-            <Text style={styles.bigText}>Track Your Active Life Style</Text>
+            <Text style={styles.bigText}>{strings[language].trackyouractivelifestyle}</Text>
             <Text style={{ color: "white", fontSize: 40 }}>___</Text>
-            <Text style={styles.smallText}>With a goal driven approach</Text>
+            <Text style={styles.smallText}>{strings[language].withagoaldrivenapproach}</Text>
           </View>
         </View>
       </TouchableOpacity>

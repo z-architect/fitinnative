@@ -8,6 +8,11 @@ import {
 } from "react-native";
 import EntryModal from "../../../Utils/EntryModal";
 
+
+import strings from "../strings";
+import { Language } from "../../../Redux/profilesSlice";
+import { useAppSelector } from "../../../Redux/hooks";
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
@@ -25,7 +30,7 @@ interface VitalsCardProps {
 
 const VitalsCard = (props: VitalsCardProps) => {
   const [showModal, setShowModal] = useState(false);
-
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
   return (
     <>
       <View style={styles.card}>
@@ -47,7 +52,7 @@ const VitalsCard = (props: VitalsCardProps) => {
             style={styles.button}
             onPress={() => setShowModal(true)}
           >
-            <Text style={styles.buttonText}>Record</Text>
+            <Text style={styles.buttonText}>  {strings[language].record}</Text>
           </TouchableOpacity>
         ) : null}
       </View>

@@ -16,10 +16,17 @@ import {
   Language,
 } from "../../Redux/profilesSlice";
 
+
+import strings from "./strings";
+
+
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Settings = () => {
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
+
   const settings = useAppSelector(
     (state) => state.profiles.profiles[state.profiles.activeProfile].settings
   );
@@ -27,9 +34,9 @@ const Settings = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Settings</Text>
+      <Text style={styles.headerText}>{strings[language].settings}</Text>
       <View style={[styles.container1, styles.cardContainer]}>
-        <Text style={styles.cardHeaderText}>Theme</Text>
+        <Text style={styles.cardHeaderText}>{strings[language].theme}</Text>
 
         <View style={styles.optionContainer}>
           <TouchableOpacity
@@ -43,7 +50,7 @@ const Settings = () => {
                   settings.theme === AppTheme.LIGHT && styles.active,
                 ]}
               >
-                Light Mode
+                {strings[language].lightmode}
               </Text>
             </View>
             {settings.theme === AppTheme.LIGHT && (
@@ -67,7 +74,7 @@ const Settings = () => {
                   settings.theme === AppTheme.DIMMED && styles.active,
                 ]}
               >
-                Dimmed Mode
+                {strings[language].dimmedmode}
               </Text>
             </View>
             {settings.theme === AppTheme.DIMMED && (
@@ -91,7 +98,7 @@ const Settings = () => {
                   settings.theme === AppTheme.DARK && styles.active,
                 ]}
               >
-                Dark Mode
+                {strings[language].darkmode}
               </Text>
             </View>
             {settings.theme === AppTheme.DARK && (
@@ -105,7 +112,7 @@ const Settings = () => {
         </View>
       </View>
       <View style={[styles.container2, styles.cardContainer]}>
-        <Text style={styles.cardHeaderText}>Language</Text>
+        <Text style={styles.cardHeaderText}>{strings[language].language}</Text>
 
         <View style={styles.optionContainer}>
           <TouchableOpacity
@@ -119,7 +126,7 @@ const Settings = () => {
                   settings.language === Language.ENGLISH && styles.active,
                 ]}
               >
-                English
+                {strings[language].english}
               </Text>
             </View>
             {settings.language === Language.ENGLISH && (
@@ -144,7 +151,7 @@ const Settings = () => {
                   settings.language === Language.AMHARIC && styles.active,
                 ]}
               >
-                Amharic
+                {strings[language].amharic}
               </Text>
             </View>
             {settings.language === Language.AMHARIC && (
@@ -169,7 +176,7 @@ const Settings = () => {
                   settings.language === Language.FRENCH && styles.active,
                 ]}
               >
-                French
+                {strings[language].french}
               </Text>
             </View>
             {settings.language === Language.FRENCH && (
@@ -212,10 +219,10 @@ const Settings = () => {
           </View>
 
           <Text style={{ textAlign: "center", fontSize: 15 }}>
-            Version 0.0.1
+            {strings[language].version} 0.0.1
           </Text>
           <Text style={{ textAlign: "center", fontSize: 15 }}>
-            Property of AXE Software
+            {strings[language].propertyofaxesoftware}
           </Text>
           <Text style={{ textAlign: "center", fontSize: 15 }}>© 2021, AXE</Text>
         </View>

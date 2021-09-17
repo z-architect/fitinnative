@@ -19,12 +19,17 @@ import { Profile as _Profile } from "../../../api/interface";
 import { ProfileUpdateRequestSpec } from "../../../api/spec";
 import { useAppDispatch } from "../../Redux/hooks";
 
+import { useAppSelector } from "../../Redux/hooks";
+import strings from "./strings";
+import { Language } from "../../Redux/profilesSlice";
+
+
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Goal = ({ navigation, route }: Props) => {
   const dispatch = useAppDispatch();
-
+  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
   async function handleGoalSetting(goal: _Goal) {
     //TODO handle goal setting
     const result = await _Profile.updateProfile({ currentGoal: goal });
@@ -43,7 +48,7 @@ const Goal = ({ navigation, route }: Props) => {
           <Text
             style={{ fontSize: 28, fontWeight: "bold", paddingHorizontal: 20 }}
           >
-            What is your goal?
+            {strings[language].whatisyourgoal}
           </Text>
         </View>
       </TouchableOpacity>
@@ -59,9 +64,9 @@ const Goal = ({ navigation, route }: Props) => {
             imageStyle={{ borderRadius: 20 }}
           >
             <View style={styles.goalCardContentContainer}>
-              <Text style={styles.goalText}>Bulking up</Text>
+              <Text style={styles.goalText}>{strings[language].bulkingup}</Text>
               <Text style={styles.goalDescription}>
-                Focus On Weight Training To Build Muscle
+                {strings[language].focusonweighttrainingtobuildmuscle}
               </Text>
             </View>
           </ImageBackground>
@@ -77,9 +82,9 @@ const Goal = ({ navigation, route }: Props) => {
             imageStyle={{ borderRadius: 20 }}
           >
             <View style={styles.goalCardContentContainer}>
-              <Text style={styles.goalText}>Losing Weight</Text>
+              <Text style={styles.goalText}>{strings[language].losingweight}</Text>
               <Text style={styles.goalDescription}>
-                Focus On Cleaning Up Diet and Cardio
+                {strings[language].focusoncleaningupdietandcardio}
               </Text>
             </View>
           </ImageBackground>
@@ -95,9 +100,9 @@ const Goal = ({ navigation, route }: Props) => {
             imageStyle={{ borderRadius: 20 }}
           >
             <View style={styles.goalCardContentContainer}>
-              <Text style={styles.goalText}>Maintenance</Text>
+              <Text style={styles.goalText}>{strings[language].maintenance}</Text>
               <Text style={styles.goalDescription}>
-                Focus On Light Exercises For Longevity
+                {strings[language].focusonlightexercisesforlongevity}
               </Text>
             </View>
           </ImageBackground>
@@ -113,9 +118,9 @@ const Goal = ({ navigation, route }: Props) => {
             imageStyle={{ borderRadius: 20 }}
           >
             <View style={styles.goalCardContentContainer}>
-              <Text style={styles.goalText}>Athleticism</Text>
+              <Text style={styles.goalText}>{strings[language].athelticism}</Text>
               <Text style={styles.goalDescription}>
-                Focus On Improving Athletic Attributes
+                {strings[language].focusonimprovingathleticattributes}
               </Text>
             </View>
           </ImageBackground>
