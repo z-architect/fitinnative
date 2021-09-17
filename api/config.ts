@@ -7,7 +7,7 @@ import GoogleServicesKey from "../android/app/google-services.json";
 
 // initialize axios
 export const instance = axios.create({
-  baseURL: "http://192.168.77.109:44032/v1",
+  baseURL: "http://192.168.32.109:44032/v1",
   headers: {
     common: {
       ["X-Instance-Id"]: getInstallationId(),
@@ -16,7 +16,7 @@ export const instance = axios.create({
   },
 });
 
-auth().useEmulator("http://192.168.77.109:9099");
+auth().useEmulator("http://192.168.32.109:9099");
 
 // initialize Google SDK
 GoogleSignin.configure({

@@ -26,16 +26,17 @@ import { instance } from "../../../api/config";
 import { useIsFocused } from "@react-navigation/native";
 import PlanCard from "./PlanCard";
 
-
 import strings from "./strings/planshomestrings";
 import { Language } from "../../Redux/profilesSlice";
-
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
 const Plans = ({ navigation }: Props) => {
-  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
+  const language = useAppSelector(
+    (state) =>
+      state.profiles.profiles[state.profiles.activeProfile]?.settings?.language
+  );
 
   const focusIsHere = useIsFocused();
   const chosenPlanType = useAppSelector(
@@ -101,13 +102,18 @@ const Plans = ({ navigation }: Props) => {
     setMeal(chosenPlanType !== PlanType.WORKOUT);
   }, [chosenPlanType]);
 
-  useEffect(() => {
-    void fetchPlans();
-  }, [subscribedPlans, meal, focusIsHere]);
+  useEffect(() => {}, [subscribedPlans, meal]);
 
   useEffect(() => {
     void fetchCurrentPlans();
-  }, [subscribedPlans, meal, focusIsHere]);
+  }, [subscribedPlans, meal]);
+
+  useEffect(() => {
+    if (focusIsHere) {
+      void fetchPlans();
+      void fetchCurrentPlans();
+    }
+  }, [focusIsHere]);
 
   return (
     <View style={styles.container}>
@@ -141,7 +147,11 @@ const Plans = ({ navigation }: Props) => {
         <View
           style={{ alignItems: "flex-end", justifyContent: "center", flex: 1 }}
         >
-          <TouchableOpacity onPress={() => { navigation.navigate("Notifications") }}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Notifications");
+            }}
+          >
             <MaterialIcons name="notifications" size={28} color="black" />
             {!notifications.length ? null : (
               <Badge
@@ -232,14 +242,16 @@ const Plans = ({ navigation }: Props) => {
                   alignItems: "center",
                 }}
               >
-                <Text style={{ color: "teal" }}>{strings[language].seeallplans}</Text>
+                <Text style={{ color: "teal" }}>
+                  {strings[language].seeallplans}
+                </Text>
                 <MaterialIcons name="chevron-right" color="teal" size={24} />
               </View>
             </TouchableOpacity>
           </View>
 
           {(meal && !!featuredPlans.meal.length) ||
-            (!meal && !!featuredPlans.activity.length) ? (
+          (!meal && !!featuredPlans.activity.length) ? (
             <ScrollView
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
@@ -264,11 +276,12 @@ const Plans = ({ navigation }: Props) => {
                         source={
                           plan?.image
                             ? {
-                              uri: `${instance.defaults.baseURL}/upload/${typeof plan?.image === "string"
-                                ? plan?.image
-                                : plan?.image?.id
+                                uri: `${instance.defaults.baseURL}/upload/${
+                                  typeof plan?.image === "string"
+                                    ? plan?.image
+                                    : plan?.image?.id
                                 }`,
-                            }
+                              }
                             : require("../../../MyAssets/weighloss.jpg")
                         }
                         style={styles.cardsFeaturedImage}
@@ -303,7 +316,9 @@ const Plans = ({ navigation }: Props) => {
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: 16 }}>{strings[language].therearenofeaturedplans}</Text>
+              <Text style={{ fontSize: 16 }}>
+                {strings[language].therearenofeaturedplans}
+              </Text>
             </View>
           )}
         </View>
@@ -321,7 +336,7 @@ const Plans = ({ navigation }: Props) => {
         </View>
 
         {(meal && !!currentPlans?.meal) ||
-          (!meal && !!currentPlans?.activity) ? (
+        (!meal && !!currentPlans?.activity) ? (
           <PlanCard
             plan={meal ? currentPlans?.meal : currentPlans?.activity}
             onPress={(plan) => {
@@ -346,7 +361,9 @@ const Plans = ({ navigation }: Props) => {
                   navigation.navigate("Search");
                 }}
               >
-                <Text style={{ color: "teal", fontSize: 18 }}>{strings[language].findplans}</Text>
+                <Text style={{ color: "teal", fontSize: 18 }}>
+                  {strings[language].findplans}
+                </Text>
               </Button>
             </Button.Group>
           </View>

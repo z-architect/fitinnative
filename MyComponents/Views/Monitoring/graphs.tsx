@@ -253,36 +253,28 @@ const Engagements = ({ navigation }: Props) => {
   return (
     <>
       <View style={styles.head}>
-        <View
-          style={{
-            alignItems: "flex-start",
-            justifyContent: "center",
-            flex: 1,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              navigation.toggleDrawer();
-            }}
-          >
-            <MaterialIcons name="menu" size={32} color="black" />
-          </TouchableOpacity>
+        <View style={{ justifyContent: "center", marginLeft: 20 }}>
+          <Text style={{ fontSize: 22 }}>My Plans</Text>
         </View>
 
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            // paddingTop: 17,
-          }}
-        >
-          <Logo width={80} />
-        </View>
+        {/*<View*/}
+        {/*  style={{*/}
+        {/*    flex: 1,*/}
+        {/*    alignItems: "center",*/}
+        {/*    // paddingTop: 17,*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <Logo width={80} />*/}
+        {/*</View>*/}
 
         <View
           style={{ alignItems: "flex-end", justifyContent: "center", flex: 1 }}
         >
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Notifications");
+            }}
+          >
             <MaterialIcons name="notifications" size={28} color="black" />
             {![].length ? null : (
               <Badge

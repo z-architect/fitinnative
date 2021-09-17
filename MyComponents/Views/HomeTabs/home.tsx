@@ -38,12 +38,14 @@ import {
 
 import { useAppSelector } from "../../Redux/hooks";
 import strings from "./strings";
-import stringstwo from './planshomestrings'
+import stringstwo from "./planshomestrings";
 import { Language } from "../../Redux/profilesSlice";
 
 const Drawer = createDrawerNavigator();
 import { Props } from "../../types";
 import { transparentize } from "native-base/lib/typescript/theme/tools";
+import People from "../../People/People";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
@@ -94,7 +96,6 @@ function CustomDrawerContent(props: any) {
 }
 
 const DrawerWraped = ({ navigation, route }: Props) => {
-
   return (
     <Drawer.Navigator
       initialRouteName="Fitin Hub"
@@ -113,8 +114,10 @@ const DrawerWraped = ({ navigation, route }: Props) => {
 const Tabs = createBottomTabNavigator();
 
 const Home = ({ navigation, route }: Props) => {
-
-  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
+  const language = useAppSelector(
+    (state) =>
+      state.profiles.profiles[state.profiles.activeProfile]?.settings?.language
+  );
 
   const [modal, setModal] = useState(false);
   const [showQuickTrackModal, setShowQuickTrackModal] = useState(false);
@@ -130,7 +133,8 @@ const Home = ({ navigation, route }: Props) => {
 
             if (route.name === "Plans") iconName = "compass";
             else if (route.name === "Monitor") iconName = "pie-chart";
-            else if (route.name === "Meal") iconName = "leaf";
+            else if (route.name === "People")
+              return <Ionicons name={"people"} size={size} color={color} />;
             else if (route.name === "Vitals") iconName = "heart";
             else iconName = "left";
 
@@ -191,9 +195,9 @@ const Home = ({ navigation, route }: Props) => {
           component={Tracking}
         />
         <Tabs.Screen
-          name="Meal"
+          name="People"
           options={{ tabBarShowLabel: true }}
-          component={Daily}
+          component={People}
         />
         <Tabs.Screen
           name="Vitals"

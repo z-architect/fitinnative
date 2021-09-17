@@ -16,24 +16,28 @@ import { updateMeasurements } from "../../Redux/measurementsSlice";
 import { v4 as uuidv4 } from "uuid";
 import { Measurement } from "../../../api/interface";
 
-import Fontisto from 'react-native-vector-icons/Fontisto';
-import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Fontisto from "react-native-vector-icons/Fontisto";
+import MaterialCommunity from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const x = Dimensions.get("window").width;
 const y = Dimensions.get("window").height;
 
-
 import strings from "./strings";
 import { Language } from "../../Redux/profilesSlice";
-
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Logo from "../../../MyAssets/splash_logo.svg";
+import { Badge } from "react-native-elements";
 
 const Vitals = ({ navigation }: Props) => {
   const profiles = useAppSelector((state) => state.profiles);
   const measurements = useAppSelector((state) => state.measurements);
   const dispatch = useAppDispatch();
-  const language = useAppSelector(state => state.profiles.profiles[state.profiles.activeProfile]?.settings?.language);
+  const language = useAppSelector(
+    (state) =>
+      state.profiles.profiles[state.profiles.activeProfile]?.settings?.language
+  );
   const [firstTimeToMeasurements] = useState(
     profiles.profiles[profiles.activeProfile].firstTimeToMeasurements
   );
@@ -54,7 +58,8 @@ const Vitals = ({ navigation }: Props) => {
     `${measurements.measurements[measurements.currentMeasurement].heartRate}`
   );
   const [bloodPressure, setBloodPressure] = useState(
-    `${measurements.measurements[measurements.currentMeasurement].bloodPressure
+    `${
+      measurements.measurements[measurements.currentMeasurement].bloodPressure
     }`
   );
   const [waistSize, setWaistSize] = useState(
@@ -139,18 +144,49 @@ const Vitals = ({ navigation }: Props) => {
 
       if (isNaN(_height) || _height == 0) setBMI("0");
       else setBMI((_weight / (_height * _height)).toFixed(2));
-    } catch (e) { }
+    } catch (e) {}
   }
 
   return (
     <>
-      <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text style={{ ...styles.title }}>
-            {firstTimeToMeasurements ? "Body Metrics" :
-              strings[language].measurments
-            }
+      <View style={styles.head}>
+        {/*<View*/}
+        {/*  style={{*/}
+        {/*    alignItems: "flex-start",*/}
+        {/*    justifyContent: "center",*/}
+        {/*    flex: 1,*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <TouchableOpacity*/}
+        {/*    onPress={() => {*/}
+        {/*      navigation.toggleDrawer();*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <MaterialIcons name="menu" size={32} color="black" />*/}
+        {/*  </TouchableOpacity>*/}
+        {/*</View>*/}
+
+        {/*<View*/}
+        {/*  style={{*/}
+        {/*    flex: 1,*/}
+        {/*    alignItems: "center",*/}
+        {/*    // paddingTop: 17,*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <Logo width={80} />*/}
+        {/*</View>*/}
+
+        <View style={{ justifyContent: "center", marginLeft: 20 }}>
+          <Text style={{ fontSize: 22 }}>
+            {firstTimeToMeasurements
+              ? "Body Metrics"
+              : strings[language].measurments}
           </Text>
+        </View>
+
+        <View
+          style={{ alignItems: "flex-end", justifyContent: "center", flex: 1 }}
+        >
           {!firstTimeToMeasurements ? (
             <>
               <TouchableOpacity
@@ -191,6 +227,13 @@ const Vitals = ({ navigation }: Props) => {
             </TouchableOpacity>
           )}
         </View>
+      </View>
+      <View style={styles.container}>
+        {/*<View style={styles.titleContainer}>*/}
+        {/*  <Text style={{ ...styles.title }}>*/}
+        {/*    */}
+        {/*  </Text>*/}
+        {/*</View>*/}
         <ScrollView
           scrollEnabled={!firstTimeToMeasurements}
           contentContainerStyle={styles.cardContainer}
@@ -219,7 +262,11 @@ const Vitals = ({ navigation }: Props) => {
               setHeight(value);
             }}
           >
-            <MaterialCommunity name="human-male-height" size={52} color="rgb(50,71,85)" />
+            <MaterialCommunity
+              name="human-male-height"
+              size={52}
+              color="rgb(50,71,85)"
+            />
           </VitalsCard>
           <VitalsCard
             measurement={strings[language].weight}
@@ -283,7 +330,11 @@ const Vitals = ({ navigation }: Props) => {
                 descriptor={strings[language].bloodpressure}
                 onRecord={setBloodPressure}
               >
-                <MaterialCommunity name="blood-bag" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity
+                  name="blood-bag"
+                  size={52}
+                  color="rgb(50,71,85)"
+                />
               </VitalsCard>
               <VitalsCard
                 measurement={strings[language].bloodglucose}
@@ -305,7 +356,11 @@ const Vitals = ({ navigation }: Props) => {
                 descriptor={strings[language].bodyfat}
                 onRecord={setBodyFat}
               >
-                <MaterialCommunity name="food-steak" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity
+                  name="food-steak"
+                  size={52}
+                  color="rgb(50,71,85)"
+                />
               </VitalsCard>
               <VitalsCard
                 measurement={strings[language].leanmass}
@@ -316,7 +371,11 @@ const Vitals = ({ navigation }: Props) => {
                 descriptor={strings[language].leanmass}
                 onRecord={setLeanMass}
               >
-                <MaterialCommunity name="food-drumstick-outline" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity
+                  name="food-drumstick-outline"
+                  size={52}
+                  color="rgb(50,71,85)"
+                />
               </VitalsCard>
 
               <Text
@@ -351,7 +410,11 @@ const Vitals = ({ navigation }: Props) => {
                 descriptor={strings[language].hipsize}
                 onRecord={setHipSize}
               >
-                <MaterialCommunity name="move-resize-variant" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity
+                  name="move-resize-variant"
+                  size={52}
+                  color="rgb(50,71,85)"
+                />
               </VitalsCard>
               <VitalsCard
                 measurement={strings[language].armsize}
@@ -362,7 +425,11 @@ const Vitals = ({ navigation }: Props) => {
                 descriptor={strings[language].armsize}
                 onRecord={setArmSize}
               >
-                <MaterialCommunity name="arm-flex" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity
+                  name="arm-flex"
+                  size={52}
+                  color="rgb(50,71,85)"
+                />
               </VitalsCard>
               <VitalsCard
                 measurement={strings[language].shouldersize}
@@ -397,7 +464,11 @@ const Vitals = ({ navigation }: Props) => {
                 descriptor={strings[language].bmr}
                 onRecord={setBMR}
               >
-                <MaterialCommunity name="ballot-recount" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity
+                  name="ballot-recount"
+                  size={52}
+                  color="rgb(50,71,85)"
+                />
               </VitalsCard>
               <VitalsCard
                 measurement={strings[language].tdee}
@@ -408,12 +479,16 @@ const Vitals = ({ navigation }: Props) => {
                 descriptor={strings[language].tdee}
                 onRecord={setTDEE}
               >
-                <MaterialCommunity name="state-machine" size={52} color="rgb(50,71,85)" />
+                <MaterialCommunity
+                  name="state-machine"
+                  size={52}
+                  color="rgb(50,71,85)"
+                />
               </VitalsCard>
               {/**
                * Do not touch the following empty view or you will be fired
                */}
-              <View style={{ height: 100 }} />
+              <View style={{ height: 170 }} />
             </>
           ) : null}
         </ScrollView>
@@ -422,7 +497,9 @@ const Vitals = ({ navigation }: Props) => {
             style={styles.nextButton}
             onPress={handleFirstTimeVitalsSetting}
           >
-            <Text style={{ color: "white", fontSize: 24 }}>{strings[language].next}</Text>
+            <Text style={{ color: "white", fontSize: 24 }}>
+              {strings[language].next}
+            </Text>
           </TouchableOpacity>
         ) : null}
       </View>
@@ -436,13 +513,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#C8D1D3",
   },
   head: {
-    height: y * 0.1,
-    width: x,
+    height: y * 0.085,
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     backgroundColor: "white",
     paddingHorizontal: 15,
+    paddingRight: 20,
+    elevation: 5,
   },
 
   titleContainer: {
